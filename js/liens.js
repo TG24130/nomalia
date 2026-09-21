@@ -81,6 +81,7 @@ const PARTENAIRES = {
     preremplissage: 'observe',
     // Format produit par le site lui-même :
     // /transport/vols/{origine}/{destination}/{AAMMJJ}/{AAMMJJ}/
+    // Vérifié le 21/09/2026 : la recherche arrive bien préremplie.
     // Les codes d'aéroport viennent de js/aeroports.js ; sans eux, ou sans
     // date, on ouvre la page de recherche.
     construire: ({ iataOrigine, iataDestination, dateDebut, dateFin, adultes, enfants }) => {
@@ -178,25 +179,50 @@ const PARTENAIRES = {
   booking: {
     nom: 'Booking.com',
     affiliateId: null,
-    preremplissage: 'observe',
-    // Format produit par le site : searchresults.fr.html?ss=…&checkin=…
-    construire: ({ destination, dateDebut, dateFin, adultes, enfants }) => {
-      if (!destination || !dateDebut) return 'https://www.booking.com/index.fr.html';
-
-      return `https://www.booking.com/searchresults.fr.html${requete([
-        ['ss', destination],
-        ['checkin', dateDebut],
-        ['checkout', dateFin],
-        ['group_adults', adultes],
-        ['group_children', enfants],
-        ['no_rooms', 1],
-      ])}`;
-    },
+    // Testé le 21/09/2026 : searchresults.fr.html?ss=…&checkin=… n'ouvre
+    // aucune recherche, le site retombe sur sa page d'accueil. Le paramètre
+    // de destination ne suffit manifestement plus, un identifiant interne
+    // semble attendu. On s'en tient donc à la page de recherche.
+    preremplissage: false,
+    construire: () => 'https://www.booking.com/index.fr.html',
   },
   hotels: { nom: 'Hotels.com', affiliateId: null, preremplissage: false, construire: () => 'https://fr.hotels.com/' },
   abritel: { nom: 'Abritel', affiliateId: null, preremplissage: false, construire: () => 'https://www.abritel.fr/' },
   gitesdefrance: { nom: 'Gîtes de France', affiliateId: null, preremplissage: false, construire: () => 'https://www.gites-de-france.com/fr' },
-  airbnb: { nom: 'Airbnb', affiliateId: null, preremplissage: false, construire: () => 'https://www.airbnb.fr/' },
+  airbnb: {
+    nom: 'Airbnb',
+    affiliateId: null,
+    preremplissage: 'observe',
+    // Format produit par le site : /s/{lieu}/homes?checkin=…&checkout=…
+    // Vérifié le 21/09/2026 : la page renvoyée porte bien la destination et
+    // les dates demandées, y compris avec un nom accentué.
+    construire: ({ destination, dateDebut, dateFin, adultes, enfants }) => {
+      if (!destination || !dateDebut) return 'https://www.airbnb.fr/';
+
+      return `https://www.airbnb.fr/s/${encoder(destination)}/homes${requete([
+        ['checkin', dateDebut],
+        ['checkout', dateFin],
+        ['adults', adultes],
+        ['children', enfants],
+      ])}`;
+    },
+  },
+
+  kayakhotels: {
+    nom: 'Kayak',
+    affiliateId: null,
+    preremplissage: 'observe',
+    // Format produit par le site : /hotels/{lieu}/{début}/{fin}/{n}adults
+    // Vérifié le 21/09/2026, même méthode qu'Airbnb.
+    construire: ({ destination, dateDebut, dateFin, adultes, enfants }) => {
+      if (!destination || !dateDebut || !dateFin) return 'https://www.kayak.fr/hotels';
+
+      const voyageurs = [`${adultes ?? 1}adults`];
+      if (enfants) voyageurs.push(`${enfants}children`);
+
+      return `https://www.kayak.fr/hotels/${encoder(destination)}/${dateDebut}/${dateFin}/${voyageurs.join('/')}`;
+    },
+  },
   pitchup: { nom: 'Pitchup', affiliateId: null, preremplissage: false, construire: () => 'https://www.pitchup.com/fr/' },
 
   /* — Activités (tiroir 4) — */
@@ -248,9 +274,12 @@ export function estPrerempli(cle, params) {
   if (!entree || entree.preremplissage === false) return false;
   if (!params) return true;
 
-  // Un lien prérempli porte toujours des paramètres ou un chemin de recherche.
-  const url = entree.construire(params, entree.affiliateId);
-  return url.includes('?') || /\/\w{3}\/\w{3}\//.test(url);
+  // Chaque constructeur retombe sur la même page de recherche quand il lui
+  // manque un élément : si le lien produit en diffère, c'est qu'il porte
+  // réellement la recherche.
+  return (
+    entree.construire(params, entree.affiliateId) !== entree.construire({}, entree.affiliateId)
+  );
 }
 
 /**
