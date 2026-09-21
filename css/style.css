@@ -1,0 +1,213 @@
+/* style.css — mobile-first, sobre, gros boutons tactiles. */
+
+:root {
+  --couleur-fond: #f6f7f9;
+  --couleur-carte: #ffffff;
+  --couleur-texte: #1c2733;
+  --couleur-texte-doux: #5b6b7c;
+  --couleur-accent: #1f6f8b;
+  --couleur-accent-clair: #e3eff3;
+  --couleur-bordure: #dde3e9;
+  --couleur-erreur: #a4262c;
+  --couleur-erreur-fond: #fbeaea;
+  --couleur-alerte: #8a6100;
+  --couleur-alerte-fond: #fdf3e2;
+
+  --rayon: 12px;
+  --espace: 16px;
+  --hauteur-tactile: 48px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--couleur-fond);
+  color: var(--couleur-texte);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 17px;
+  line-height: 1.5;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right)
+    env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+/* — En-tête — */
+
+.entete {
+  padding: var(--espace);
+  text-align: center;
+}
+
+.entete__titre {
+  margin: 0;
+  font-size: 1.6rem;
+  color: var(--couleur-accent);
+}
+
+.entete__slogan {
+  margin: 4px 0 0;
+  color: var(--couleur-texte-doux);
+  font-size: 0.95rem;
+}
+
+/* — Barre de progression — */
+
+.progression {
+  height: 4px;
+  background: var(--couleur-bordure);
+}
+
+.progression__barre {
+  height: 100%;
+  width: 0;
+  background: var(--couleur-accent);
+  transition: width 0.25s ease;
+}
+
+/* — Vue principale — */
+
+.vue {
+  flex: 1;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: var(--espace);
+}
+
+.carte {
+  background: var(--couleur-carte);
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--rayon);
+  padding: var(--espace);
+  margin-bottom: var(--espace);
+}
+
+.carte h2 {
+  margin-top: 0;
+  font-size: 1.15rem;
+}
+
+.note {
+  color: var(--couleur-texte-doux);
+  font-size: 0.85rem;
+}
+
+.chargement {
+  text-align: center;
+  color: var(--couleur-texte-doux);
+}
+
+/* — Boutons et champs — */
+
+.bouton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--hauteur-tactile);
+  width: 100%;
+  padding: 0 var(--espace);
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--rayon);
+  background: var(--couleur-carte);
+  color: var(--couleur-texte);
+  font: inherit;
+  cursor: pointer;
+}
+
+.bouton--principal {
+  background: var(--couleur-accent);
+  border-color: var(--couleur-accent);
+  color: #fff;
+  font-weight: 600;
+}
+
+.bouton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.bouton + .bouton {
+  margin-top: 8px;
+}
+
+label {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+input,
+select {
+  width: 100%;
+  min-height: var(--hauteur-tactile);
+  padding: 0 12px;
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--rayon);
+  background: var(--couleur-carte);
+  color: inherit;
+  font: inherit;
+}
+
+.champ {
+  margin-bottom: var(--espace);
+}
+
+.champ__aide {
+  margin: 4px 0 0;
+  color: var(--couleur-texte-doux);
+  font-size: 0.85rem;
+}
+
+/* — Messages — */
+
+.message {
+  max-width: 640px;
+  margin: 0 auto var(--espace);
+  padding: 12px var(--espace);
+  border-radius: var(--rayon);
+  font-size: 0.95rem;
+}
+
+.message--info {
+  background: var(--couleur-accent-clair);
+  color: var(--couleur-texte);
+}
+
+.message--erreur {
+  background: var(--couleur-erreur-fond);
+  color: var(--couleur-erreur);
+}
+
+.avertissement {
+  padding: 10px 12px;
+  border-radius: var(--rayon);
+  background: var(--couleur-alerte-fond);
+  color: var(--couleur-alerte);
+  font-size: 0.9rem;
+}
+
+/* — Pied de page — */
+
+.pied {
+  padding: var(--espace);
+  text-align: center;
+  color: var(--couleur-texte-doux);
+  font-size: 0.8rem;
+}
+
+.pied__env {
+  display: block;
+  margin-top: 4px;
+  opacity: 0.6;
+}

@@ -1,0 +1,22 @@
+{
+  "name": "mytrip-functions",
+  "description": "Cloud Functions MyTrip — appels à l'API Claude (fiche, lieux, randonnées)",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "index.js",
+  "engines": {
+    "node": "20"
+  },
+  "scripts": {
+    "emulateurs": "firebase emulators:start --only auth,firestore,functions,hosting",
+    "journaux": "firebase functions:log",
+    "deployer": "firebase deploy --only functions"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.68.0",
+    "firebase-admin": "^13.0.0",
+    "firebase-functions": "^6.1.0"
+  },
+  "devDependencies": {}
+}

@@ -1,0 +1,195 @@
+{
+  "app": {
+    "nom": "MyTrip",
+    "slogan": "Préparez votre voyage, étape par étape",
+    "mentionEstimation": "Estimations indicatives — à vérifier avant de réserver."
+  },
+
+  "commun": {
+    "chargement": "Chargement…",
+    "chargementIA": "Recherche en cours, cela peut prendre quelques secondes…",
+    "suivant": "Suivant",
+    "precedent": "Retour",
+    "passer": "Passer cette étape",
+    "enregistrer": "Enregistrer",
+    "annuler": "Annuler",
+    "supprimer": "Supprimer",
+    "dupliquer": "Dupliquer",
+    "reprendre": "Reprendre",
+    "oui": "Oui",
+    "non": "Non",
+    "aVerifier": "à vérifier",
+    "etape": "Étape {courante} sur {total}"
+  },
+
+  "erreurs": {
+    "generique": "Une erreur est survenue. Réessayez dans un instant.",
+    "reseau": "Connexion impossible. Vérifiez votre connexion internet.",
+    "nonAutorise": "Cette adresse e-mail n'a pas accès à l'application.",
+    "connexion": "La connexion a échoué. Réessayez.",
+    "ia": "La recherche n'a pas abouti. Réessayez dans un instant.",
+    "voyageIntrouvable": "Ce voyage est introuvable."
+  },
+
+  "auth": {
+    "connexionGoogle": "Se connecter avec Google",
+    "deconnexion": "Se déconnecter",
+    "invite": "Connectez-vous pour retrouver vos voyages."
+  },
+
+  "accueil": {
+    "titre": "Mes voyages",
+    "aucunVoyage": "Aucun voyage pour le moment.",
+    "nouveauVoyage": "Nouveau voyage",
+    "confirmerSuppression": "Supprimer définitivement ce voyage ?"
+  },
+
+  "saisie": {
+    "titre": "Votre voyage",
+    "destination": "Destination",
+    "destinationAide": "Ville, île, région ou pays",
+    "jours": "Nombre de jours",
+    "mois": "Mois de départ",
+    "adultes": "Adultes",
+    "enfants": "Enfants",
+    "depart": "Ville de départ",
+    "valider": "Préparer mon voyage"
+  },
+
+  "mois": {
+    "1": "Janvier",
+    "2": "Février",
+    "3": "Mars",
+    "4": "Avril",
+    "5": "Mai",
+    "6": "Juin",
+    "7": "Juillet",
+    "8": "Août",
+    "9": "Septembre",
+    "10": "Octobre",
+    "11": "Novembre",
+    "12": "Décembre"
+  },
+
+  "fiche": {
+    "titre": "Fiche pratique",
+    "visa": "Formalités et visa",
+    "climat": "Climat",
+    "meilleuresPeriodes": "Meilleures périodes",
+    "decalageHoraire": "Décalage horaire",
+    "monnaie": "Monnaie",
+    "langue": "Langue",
+    "prises": "Prises électriques",
+    "vaccins": "Santé et vaccins",
+    "budgetMoyen": "Budget moyen sur place",
+    "temperatureMer": "Température de la mer",
+    "avertissementVisa": "Vérifiez sur France Diplomatie avant de partir.",
+    "avertissementVaccins": "Informations indicatives, à confirmer avec votre médecin ou un centre de vaccinations internationales.",
+    "alerteMois": "Le mois choisi ne fait pas partie des meilleures périodes pour cette destination.",
+    "adaptateurOui": "Adaptateur nécessaire",
+    "adaptateurNon": "Pas d'adaptateur nécessaire",
+    "sources": "Sources"
+  },
+
+  "transport": {
+    "titre": "Transport",
+    "question": "Comment comptez-vous vous y rendre ?",
+    "mode": {
+      "avion": "Avion",
+      "bateau": "Bateau",
+      "train": "Train",
+      "voiture": "Voiture",
+      "avion+voiture": "Avion puis voiture",
+      "train+voiture": "Train puis voiture",
+      "bateau+voiture": "Bateau puis voiture"
+    },
+    "prixEstime": "Prix estimé du transport (€, total)",
+    "prixEstimeAide": "Facultatif — affine le budget."
+  },
+
+  "hebergement": {
+    "titre": "Hébergement",
+    "question": "Quel type d'hébergement recherchez-vous ?",
+    "type": {
+      "hotel": "Hôtel",
+      "gite": "Gîte",
+      "appartement": "Appartement",
+      "chez-habitant": "Chez l'habitant",
+      "camping": "Camping",
+      "camping-materiel-loue": "Camping avec matériel loué"
+    },
+    "filtres": "Critères souhaités",
+    "filtre": {
+      "petit-dejeuner": "Petit-déjeuner inclus",
+      "piscine": "Piscine",
+      "parking": "Parking",
+      "annulation-gratuite": "Annulation gratuite",
+      "animaux": "Animaux acceptés",
+      "vue-mer": "Vue mer",
+      "climatisation": "Climatisation",
+      "etoiles-3": "3 étoiles",
+      "etoiles-4": "4 étoiles",
+      "etoiles-5": "5 étoiles"
+    },
+    "prixNuit": "Prix par nuit trouvé (€)",
+    "prixNuitAide": "Facultatif — affine le budget."
+  },
+
+  "tourisme": {
+    "titre": "Type de séjour",
+    "question": "Quel séjour souhaitez-vous ?",
+    "type": {
+      "plage-repos": "Plage et repos",
+      "repos-total": "Repos total",
+      "incontournables": "Les incontournables"
+    },
+    "lieuxRetenus": "Lieux retenus",
+    "prixEntree": "Entrée estimée",
+    "lienOfficiel": "Site officiel",
+    "reserver": "Voir les activités"
+  },
+
+  "randos": {
+    "titre": "Randonnées",
+    "question": "Souhaitez-vous des randonnées ?",
+    "niveau": "Niveau",
+    "niveaux": {
+      "facile": "Facile",
+      "moyen": "Moyen",
+      "difficile": "Difficile"
+    },
+    "dureeMax": "Durée maximale",
+    "denivelemax": "Dénivelé maximal (m)",
+    "boucle": "Boucle uniquement",
+    "enfants": "Adaptée aux enfants",
+    "distance": "Distance",
+    "duree": "Durée",
+    "denivele": "Dénivelé",
+    "depart": "Départ",
+    "meilleureSaison": "Meilleure saison",
+    "voirTrace": "Chercher le tracé"
+  },
+
+  "budget": {
+    "titre": "Budget estimatif",
+    "bas": "Économique",
+    "moyen": "Moyen",
+    "haut": "Confort",
+    "detail": {
+      "transport": "Transport",
+      "hebergement": "Hébergement",
+      "repas": "Repas",
+      "activites": "Activités",
+      "transportLocal": "Transport sur place",
+      "annexes": "Dépenses annexes",
+      "imprevus": "Imprévus"
+    },
+    "hypotheses": "Hypothèses retenues",
+    "mention": "Estimation indicative."
+  },
+
+  "liens": {
+    "chercherSur": "Chercher sur {partenaire}",
+    "itineraire": "Voir l'itinéraire"
+  }
+}

@@ -1,0 +1,78 @@
+rules_version = '2';
+
+// Règles Firestore — MyTrip V0.
+//
+// Accès restreint : l'identifiant du document dans `autorises` est l'adresse
+// e-mail en minuscules (ex. `autorises/prenom.nom@gmail.com`).
+// Les Cloud Functions utilisent l'Admin SDK et ne sont pas soumises à ces
+// règles : elles refont la même vérification dans leur code (CLAUDE.md §9).
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // — Fonctions utilitaires —
+
+    function connecte() {
+      return request.auth != null;
+    }
+
+    function emailVerifie() {
+      return connecte()
+        && request.auth.token.email != null
+        && request.auth.token.email_verified == true;
+    }
+
+    function email() {
+      return request.auth.token.email.lower();
+    }
+
+    function autorise() {
+      return emailVerifie()
+        && exists(/databases/$(database)/documents/autorises/$(email()));
+    }
+
+    function proprietaire(donnees) {
+      return connecte() && donnees.proprietaire == request.auth.uid;
+    }
+
+    // — Liste blanche —
+    // Chacun peut vérifier sa propre entrée ; personne n'écrit depuis le front.
+    match /autorises/{adresse} {
+      allow get: if emailVerifie() && adresse == email();
+      allow list, write: if false;
+    }
+
+    // — Voyages —
+    match /voyages/{voyageId} {
+      allow read, delete: if autorise() && proprietaire(resource.data);
+      allow create: if autorise()
+        && proprietaire(request.resource.data)
+        && request.resource.data.langue is string;
+      allow update: if autorise()
+        && proprietaire(resource.data)
+        && request.resource.data.proprietaire == resource.data.proprietaire;
+    }
+
+    // — Caches alimentés par les Cloud Functions —
+    // Lecture seule depuis le front ; l'écriture passe par l'Admin SDK.
+    match /fiches/{ficheId} {
+      allow read: if autorise();
+      allow write: if false;
+    }
+
+    match /lieux/{cleCache} {
+      allow read: if autorise();
+      allow write: if false;
+    }
+
+    match /randos/{cleCache} {
+      allow read: if autorise();
+      allow write: if false;
+    }
+
+    // — Tout le reste est refusé —
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

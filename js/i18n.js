@@ -1,0 +1,110 @@
+/**
+ * i18n.js — internationalisation.
+ *
+ * Seul point d'accès aux libellés de l'interface. Aucun texte ne doit être
+ * écrit en dur ailleurs dans le code.
+ *
+ * V0 : seul `fr` existe, mais ajouter en.json / es.json / zh.json dans lang/
+ * suffit — aucune modification de code nécessaire.
+ */
+
+/** Langues prévues. Seule `fr` possède un fichier en V0. */
+export const LANGUES_PREVUES = ['fr', 'en', 'es', 'zh'];
+
+/** Langue utilisée si aucune n'est demandée ou si le fichier est introuvable. */
+export const LANGUE_DEFAUT = 'fr';
+
+let langueCourante = LANGUE_DEFAUT;
+let traductions = {};
+
+/**
+ * Charge le fichier de langue et le garde en mémoire.
+ * @param {string} langue code ISO à deux lettres
+ * @returns {Promise<string>} la langue réellement chargée
+ */
+export async function chargerLangue(langue = LANGUE_DEFAUT) {
+  const demandee = LANGUES_PREVUES.includes(langue) ? langue : LANGUE_DEFAUT;
+
+  try {
+    const reponse = await fetch(`lang/${demandee}.json`, { cache: 'no-cache' });
+    if (!reponse.ok) throw new Error(`HTTP ${reponse.status}`);
+    traductions = await reponse.json();
+    langueCourante = demandee;
+  } catch (erreur) {
+    // Repli sur le français si la langue demandée est absente.
+    if (demandee !== LANGUE_DEFAUT) return chargerLangue(LANGUE_DEFAUT);
+    console.error('Impossible de charger les libellés', erreur);
+    traductions = {};
+  }
+
+  document.documentElement.lang = langueCourante;
+  return langueCourante;
+}
+
+/** @returns {string} la langue actuellement chargée */
+export function langue() {
+  return langueCourante;
+}
+
+/**
+ * Renvoie le libellé associé à une clé.
+ *
+ * Les clés sont hiérarchiques : `t('saisie.destination')` lit
+ * `{ "saisie": { "destination": "…" } }`.
+ *
+ * Les variables sont interpolées avec la syntaxe `{nom}` :
+ * `t('budget.total', { montant: 1200 })` → « Total : 1200 € ».
+ *
+ * Si la clé est absente, la clé elle-même est renvoyée (repérable en test).
+ *
+ * @param {string} cle
+ * @param {Object<string, string|number>} [variables]
+ * @returns {string}
+ */
+export function t(cle, variables) {
+  const valeur = cle.split('.').reduce(
+    (noeud, morceau) => (noeud && typeof noeud === 'object' ? noeud[morceau] : undefined),
+    traductions
+  );
+
+  if (typeof valeur !== 'string') {
+    console.warn(`Libellé manquant : ${cle}`);
+    return cle;
+  }
+
+  if (!variables) return valeur;
+
+  return valeur.replace(/\{(\w+)\}/g, (correspondance, nom) =>
+    nom in variables ? String(variables[nom]) : correspondance
+  );
+}
+
+/**
+ * Remplace le contenu des éléments porteurs d'un attribut `data-i18n`
+ * par le libellé correspondant.
+ *
+ * Variantes acceptées :
+ *  - `data-i18n="cle"`             → textContent
+ *  - `data-i18n-placeholder="cle"` → attribut placeholder
+ *  - `data-i18n-aria="cle"`        → attribut aria-label
+ *  - `data-i18n-titre="cle"`       → attribut title
+ *
+ * @param {ParentNode} [racine=document] portée à traduire
+ */
+export function traduireDom(racine = document) {
+  racine.querySelectorAll('[data-i18n]').forEach((element) => {
+    element.textContent = t(element.dataset.i18n);
+  });
+
+  const attributs = {
+    'data-i18n-placeholder': 'placeholder',
+    'data-i18n-aria': 'aria-label',
+    'data-i18n-titre': 'title',
+  };
+
+  for (const [donnee, attribut] of Object.entries(attributs)) {
+    racine.querySelectorAll(`[${donnee}]`).forEach((element) => {
+      element.setAttribute(attribut, t(element.getAttribute(donnee)));
+    });
+  }
+}

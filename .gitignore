@@ -1,0 +1,21 @@
+# Dépendances
+node_modules/
+functions/node_modules/
+
+# Secrets et configuration locale — ne jamais committer
+.env
+.env.*
+.runtimeconfig.json
+*.local
+
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+firebase-export-*/
+
+# Système
+.DS_Store
+Thumbs.db
+desktop.ini
