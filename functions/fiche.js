@@ -110,13 +110,40 @@ function traduireErreurApi(erreur) {
     return new HttpsError('unavailable', 'Service momentanément injoignable.');
   }
 
+  // Le champ « message » est réservé par le journal structuré de Firebase :
+  // le détail de l'API est donc rangé sous « detail ».
   if (erreur instanceof Anthropic.APIError) {
-    logger.error('Erreur de l\'API Claude', { statut: erreur.status, message: erreur.message });
+    logger.error('Erreur de l\'API Claude', { statut: erreur.status, detail: erreur.message });
     return new HttpsError('internal', 'Service indisponible.');
   }
 
-  logger.error('Erreur inattendue pendant la génération', { message: String(erreur) });
+  logger.error('Erreur inattendue pendant la génération', { detail: String(erreur) });
   return new HttpsError('internal', 'Service indisponible.');
+}
+
+/**
+ * Recale la température de la mer du mois de voyage sur le tableau mensuel.
+ *
+ * Le champ s'appelle `moisChoisi` mais contient une température : le modèle y
+ * a déjà écrit le numéro du mois. Le tableau des douze moyennes fait foi, car
+ * il est explicitement demandé mois par mois.
+ *
+ * @param {object} fiche
+ * @param {number} mois 1 à 12
+ */
+function recalerTemperatureMer(fiche, mois) {
+  const mer = fiche.points?.temperatureMer;
+  if (!mer || !Array.isArray(mer.parMois) || mer.parMois.length !== 12) return;
+
+  const attendue = mer.parMois[mois - 1];
+  if (typeof attendue !== 'number' || mer.moisChoisi === attendue) return;
+
+  logger.warn('Température de la mer incohérente, recalée sur le tableau mensuel', {
+    annoncee: mer.moisChoisi,
+    retenue: attendue,
+    mois,
+  });
+  mer.moisChoisi = attendue;
 }
 
 /**
@@ -133,13 +160,9 @@ async function demanderFiche(parametres) {
     let reponse;
 
     try {
-      reponse = await client.beta.messages.create({
+      reponse = await client.messages.create({
         model: MODELE_CLAUDE,
         max_tokens: 16000,
-        // Repli automatique si le modèle décline la demande : la fiche reste
-        // produite par un modèle de secours plutôt que de renvoyer une erreur.
-        betas: ['server-side-fallback-2026-07-01'],
-        fallbacks: 'default',
         system: SYSTEME_FICHE,
         messages: [{ role: 'user', content: promptFiche(parametres) }],
         tools: [{ type: 'web_search_20260209', name: 'web_search', max_uses: 6 }],
@@ -179,7 +202,10 @@ async function demanderFiche(parametres) {
     }
 
     const controle = validerFiche(fiche);
-    if (controle.valide) return fiche;
+    if (controle.valide) {
+      recalerTemperatureMer(fiche, parametres.mois);
+      return fiche;
+    }
 
     erreursCumulees.push(`tentative ${tentative} : ${controle.erreurs.join(', ')}`);
   }

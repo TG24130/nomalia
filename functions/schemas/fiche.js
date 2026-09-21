@@ -9,7 +9,7 @@
  */
 
 /** Un résumé textuel, présent dans presque tous les points. */
-const resume = { type: 'string', minLength: 1 };
+const resume = { type: 'string' };
 
 /** Trio de prix économique / moyen / confort. */
 const trioPrix = {
@@ -27,8 +27,8 @@ const trioPrix = {
 export const SCHEMA_FICHE = {
   type: 'object',
   properties: {
-    destination: { type: 'string', minLength: 1 },
-    codePays: { type: 'string', minLength: 2, maxLength: 2 },
+    destination: { type: 'string' },
+    codePays: { type: 'string' },
     points: {
       type: 'object',
       properties: {
@@ -47,7 +47,7 @@ export const SCHEMA_FICHE = {
         meilleuresPeriodes: {
           type: 'object',
           properties: {
-            mois: { type: 'array', items: { type: 'integer', minimum: 1, maximum: 12 } },
+            mois: { type: 'array', items: { type: 'integer' } },
             resume,
           },
           required: ['mois', 'resume'],
@@ -62,7 +62,7 @@ export const SCHEMA_FICHE = {
         monnaie: {
           type: 'object',
           properties: {
-            code: { type: 'string', minLength: 3, maxLength: 3 },
+            code: { type: 'string' },
             nom: { type: 'string' },
             resume,
           },
@@ -100,7 +100,7 @@ export const SCHEMA_FICHE = {
           properties: {
             hotelNuit: trioPrix,
             repasJour: trioPrix,
-            devise: { type: 'string', minLength: 3, maxLength: 3 },
+            devise: { type: 'string' },
             resume,
           },
           required: ['hotelNuit', 'repasJour', 'devise', 'resume'],
@@ -109,8 +109,20 @@ export const SCHEMA_FICHE = {
         temperatureMer: {
           type: 'object',
           properties: {
-            moisChoisi: { type: ['number', 'null'] },
-            parMois: { type: ['array', 'null'], items: { type: 'number' } },
+            // Le nom du champ vient du modèle de données ; il désigne bien une
+            // température, pas un numéro de mois. La description est là pour
+            // lever cette ambiguïté auprès du modèle.
+            moisChoisi: {
+              type: ['number', 'null'],
+              description:
+                'Température de la mer en degrés Celsius pendant le mois du voyage. Jamais un numéro de mois. null si la destination n\'a pas de littoral.',
+            },
+            parMois: {
+              type: ['array', 'null'],
+              items: { type: 'number' },
+              description:
+                'Douze températures moyennes de la mer en degrés Celsius, de janvier à décembre. null si la destination n\'a pas de littoral.',
+            },
             resume,
           },
           required: ['moisChoisi', 'parMois', 'resume'],

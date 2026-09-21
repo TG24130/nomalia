@@ -14,8 +14,14 @@ import { defineSecret } from 'firebase-functions/params';
 import { HttpsError } from 'firebase-functions/v2/https';
 import { setGlobalOptions } from 'firebase-functions/v2';
 
-/** Modèle Claude utilisé par toutes les fonctions — un seul endroit à changer. */
-export const MODELE_CLAUDE = 'claude-opus-5';
+/**
+ * Modèle Claude utilisé par toutes les fonctions — un seul endroit à changer.
+ *
+ * Sonnet 5 suffit pour une fiche factuelle et coûte environ deux fois moins
+ * cher qu'Opus 5 ; la recherche web, elle, coûte le même prix quel que soit
+ * le modèle. Passer à 'claude-opus-5' si la qualité des fiches le justifie.
+ */
+export const MODELE_CLAUDE = 'claude-sonnet-5';
 
 /** Clé de l'API Claude, lue depuis Secret Manager. Jamais dans le code. */
 export const CLE_ANTHROPIC = defineSecret('ANTHROPIC_API_KEY');
