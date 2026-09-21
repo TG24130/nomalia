@@ -262,6 +262,40 @@ select {
   margin-top: 0;
 }
 
+/* — Groupes de cases à cocher — */
+
+.groupe-filtres {
+  margin: 0 0 var(--espace);
+  padding: 0;
+  border: 0;
+}
+
+.groupe-filtres legend {
+  padding: 0;
+  margin-bottom: 6px;
+  color: var(--couleur-texte-doux);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.case {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.case input {
+  width: 20px;
+  min-height: 20px;
+  flex: 0 0 auto;
+  margin: 0;
+}
+
 /* — Listes de liens partenaires — */
 
 .liens {
