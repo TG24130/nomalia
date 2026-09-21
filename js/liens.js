@@ -227,8 +227,28 @@ const PARTENAIRES = {
 
   /* — Activités (tiroir 4) — */
 
-  getyourguide: { nom: 'GetYourGuide', affiliateId: null, preremplissage: false, construire: () => 'https://www.getyourguide.fr/' },
-  viator: { nom: 'Viator', affiliateId: null, preremplissage: false, construire: () => 'https://www.viator.com/fr-FR/' },
+  getyourguide: {
+    nom: 'GetYourGuide',
+    affiliateId: null,
+    preremplissage: 'observe',
+    // Recherche par nom de lieu (CLAUDE.md §6, tiroir 4).
+    construire: ({ requete, destination }) => {
+      const termes = [requete, destination].filter(Boolean).join(' ');
+      if (!termes) return 'https://www.getyourguide.fr/';
+      return `https://www.getyourguide.fr/s/?q=${encoder(termes)}`;
+    },
+  },
+
+  viator: {
+    nom: 'Viator',
+    affiliateId: null,
+    preremplissage: 'observe',
+    construire: ({ requete, destination }) => {
+      const termes = [requete, destination].filter(Boolean).join(' ');
+      if (!termes) return 'https://www.viator.com/fr-FR/';
+      return `https://www.viator.com/fr-FR/searchResults/all?text=${encoder(termes)}`;
+    },
+  },
 
   /* — Randonnées (tiroir 5) — */
 

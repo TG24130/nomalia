@@ -1,15 +1,54 @@
 /**
- * tourisme.js — tiroir « Type de tourisme ».
+ * tourisme.js — tiroir 4 « Type de séjour ».
  *
- * Lit et écrit l'objet voyage via js/voyage.js uniquement (CLAUDE.md §3.3).
- * Contenu réel à implémenter à l'étape 9 du plan V0 ; en attendant,
- * le tiroir s'affiche et la navigation fonctionne.
+ * Trois types de séjour (CLAUDE.md §6, tiroir 4) :
+ *  - plage et repos : cinq plages proposées par l'IA ;
+ *  - repos total : conseils courts, aucun appel à l'IA ;
+ *  - incontournables : cinq lieux, avec prix d'entrée et liens d'activités.
+ *
+ * Les lieux cochés sont conservés dans `tourisme.lieuxRetenus` avec leur prix,
+ * qui servira au calcul du budget.
  */
 
-import { echapper, t } from '../i18n.js';
+import { echapper, langue, t } from '../i18n.js';
+import { genererLieux } from '../api.js';
+import { lienReservation, nomPartenaire } from '../liens.js';
+import { modifierVoyage } from '../voyage.js';
 
 /** Ce tiroir peut être passé (CLAUDE.md §7). */
 export const PEUT_ETRE_PASSE = true;
+
+/** Types de séjour (CLAUDE.md §4). */
+const TYPES = ['plage-repos', 'repos-total', 'incontournables'];
+
+/** Type de liste demandé à l'IA selon le type de séjour. */
+const LISTE_PAR_TYPE = {
+  'plage-repos': 'plages',
+  incontournables: 'incontournables',
+};
+
+/** Critères d'hébergement conseillés pour un repos total. */
+const FILTRES_CONSEILLES = ['piscine', 'spa', 'au-calme', 'vue-mer'];
+
+/**
+ * Met en forme un prix d'entrée.
+ * @param {number|null} prix
+ * @param {string|null} devise
+ * @returns {string}
+ */
+function formaterPrix(prix, devise) {
+  if (typeof prix !== 'number') return t('tourisme.entreeLibre');
+
+  try {
+    return new Intl.NumberFormat(langue(), {
+      style: 'currency',
+      currency: devise || 'EUR',
+      maximumFractionDigits: 0,
+    }).format(prix);
+  } catch {
+    return `${Math.round(prix)} ${devise ?? ''}`.trim();
+  }
+}
 
 /**
  * Affiche le tiroir.
@@ -18,16 +57,216 @@ export const PEUT_ETRE_PASSE = true;
  * @param {object} voyage
  * @param {object} actions navigation fournie par app.js
  */
-export function afficher(conteneur, voyage, actions) {
-  conteneur.innerHTML = `
-    <section class="carte">
-      <h2>${echapper(t('tourisme.titre'))}</h2>
-      <p class="avertissement">${echapper(t('commun.tiroirAVenir'))}</p>
-      <button class="bouton bouton--principal" type="button" id="tiroir-suivant">
+export async function afficher(conteneur, voyage, actions) {
+  /** Liste chargée pour le type courant, null tant qu'elle n'a pas été demandée. */
+  let liste = null;
+  let erreurListe = null;
+  let chargement = false;
+
+  /** Lieux retenus, indexés par nom pour retrouver l'état des cases. */
+  const retenus = new Map(
+    (voyage.tourisme?.lieuxRetenus ?? []).map((lieu) => [lieu.nom, lieu])
+  );
+
+  /** Enregistre la sélection dans le voyage. */
+  const enregistrerRetenus = () => {
+    const lieuxRetenus = [...retenus.values()];
+    voyage.tourisme = { ...voyage.tourisme, lieuxRetenus };
+    modifierVoyage({ tourisme: { lieuxRetenus } });
+  };
+
+  /** Demande la liste correspondant au type choisi. */
+  const chargerListe = async (type) => {
+    const typeListe = LISTE_PAR_TYPE[type];
+    if (!typeListe) {
+      liste = null;
+      return;
+    }
+
+    chargement = true;
+    erreurListe = null;
+    rendre();
+
+    try {
+      const resultat = await genererLieux({
+        destination: voyage.destination,
+        type: typeListe,
+        mois: voyage.mois,
+        langue: voyage.langue ?? 'fr',
+        voyageurs: voyage.voyageurs ?? { adultes: 2, enfants: 0 },
+      });
+      liste = resultat;
+    } catch (erreur) {
+      erreurListe = erreur.cleLibelle ?? 'erreurs.ia';
+      liste = null;
+    } finally {
+      chargement = false;
+      rendre();
+    }
+  };
+
+  /** Construit la carte d'un lieu. */
+  const carteLieu = (lieu) => {
+    const coche = retenus.has(lieu.nom);
+    const prix = formaterPrix(lieu.prixEntree, lieu.devise);
+
+    // Le lien d'activité est construit à partir du nom du lieu (CLAUDE.md §6).
+    const lienActivite = lienReservation('getyourguide', {
+      requete: lieu.nom,
+      destination: voyage.destination,
+    });
+
+    const lienOfficiel = lieu.lienOfficiel
+      ? `<p><a href="${echapper(lieu.lienOfficiel)}" target="_blank" rel="noopener noreferrer">
+           ${echapper(t('tourisme.lienOfficiel'))}</a>
+           <span class="a-verifier">${echapper(t('commun.aVerifier'))}</span></p>`
+      : '';
+
+    return `
+      <article class="carte carte--lieu">
+        <label class="case case--lieu">
+          <input type="checkbox" data-lieu="${echapper(lieu.nom)}" ${coche ? 'checked' : ''}>
+          <span class="lieu__nom">${echapper(lieu.nom)}</span>
+        </label>
+        <p class="note">${echapper(t('tourisme.prixEntree'))} : ${echapper(prix)}</p>
+        <p>${echapper(lieu.description)}</p>
+        <p class="lieu__conseils">${echapper(lieu.conseils)}</p>
+        ${lienOfficiel}
+        <a class="bouton bouton--lien" href="${echapper(lienActivite)}"
+           target="_blank" rel="noopener noreferrer">
+          ${echapper(t('tourisme.reserverChez', { partenaire: nomPartenaire('getyourguide') }))}
+        </a>
+      </article>
+    `;
+  };
+
+  function rendre() {
+    const type = voyage.tourisme?.type ?? null;
+
+    const boutons = TYPES.map(
+      (valeur) => `
+        <button class="bouton bouton--choix${valeur === type ? ' bouton--choisi' : ''}"
+                type="button" data-type="${valeur}" aria-pressed="${valeur === type}">
+          ${echapper(t(`tourisme.type.${valeur}`))}
+        </button>
+      `
+    ).join('');
+
+    let contenu = '';
+
+    if (type === 'repos-total') {
+      // Aucun appel à l'IA ici : un repos total se prépare dans le choix de
+      // l'hébergement, pas dans une liste de visites.
+      contenu = `
+        <section class="carte">
+          <h3>${echapper(t('tourisme.reposTitre'))}</h3>
+          <p>${echapper(t('tourisme.reposConseils'))}</p>
+          <p class="note">${echapper(
+            t('tourisme.reposFiltres', {
+              filtres: FILTRES_CONSEILLES.map((filtre) =>
+                t(`hebergement.filtre.${filtre}`)
+              ).join(', '),
+            })
+          )}</p>
+        </section>
+      `;
+    } else if (chargement) {
+      contenu = `<p class="chargement">${echapper(t('commun.chargementIA'))}</p>`;
+    } else if (erreurListe) {
+      contenu = `
+        <section class="carte">
+          <p class="avertissement">${echapper(t(erreurListe))}</p>
+          <button class="bouton bouton--principal" type="button" id="tourisme-reessayer">
+            ${echapper(t('commun.reessayer'))}
+          </button>
+        </section>
+      `;
+    } else if (liste?.lieux?.length) {
+      const total = [...retenus.values()].reduce(
+        (somme, lieu) => somme + (typeof lieu.prixEntree === 'number' ? lieu.prixEntree : 0),
+        0
+      );
+
+      const recapitulatif = retenus.size
+        ? `<p class="note">${echapper(
+            t('tourisme.retenusRecapitulatif', {
+              nombre: retenus.size,
+              total: formaterPrix(total, liste.lieux[0]?.devise ?? 'EUR'),
+            })
+          )}</p>`
+        : '';
+
+      contenu = `
+        ${recapitulatif}
+        ${liste.lieux.map(carteLieu).join('')}
+      `;
+    }
+
+    conteneur.innerHTML = `
+      <section class="carte">
+        <h2>${echapper(t('tourisme.titre'))}</h2>
+        <p>${echapper(t('tourisme.question'))}</p>
+        <div class="choix">${boutons}</div>
+      </section>
+
+      ${contenu}
+
+      <button class="bouton bouton--principal" type="button" id="tourisme-suivant">
         ${echapper(t('commun.suivant'))}
       </button>
-    </section>
-  `;
+    `;
 
-  conteneur.querySelector('#tiroir-suivant').addEventListener('click', actions.suivant);
+    conteneur.querySelectorAll('[data-type]').forEach((bouton) => {
+      bouton.addEventListener('click', () => {
+        const choisi = bouton.dataset.type;
+        // Un second clic sur le type déjà retenu l'annule.
+        const nouveau = choisi === voyage.tourisme?.type ? null : choisi;
+
+        voyage.tourisme = { ...voyage.tourisme, type: nouveau };
+        modifierVoyage({ tourisme: { type: nouveau } });
+
+        liste = null;
+        erreurListe = null;
+
+        if (nouveau && LISTE_PAR_TYPE[nouveau]) chargerListe(nouveau);
+        else rendre();
+      });
+    });
+
+    conteneur.querySelectorAll('[data-lieu]').forEach((caseACocher) => {
+      caseACocher.addEventListener('change', () => {
+        const nom = caseACocher.dataset.lieu;
+        const lieu = liste?.lieux?.find((candidat) => candidat.nom === nom);
+        if (!lieu) return;
+
+        if (caseACocher.checked) {
+          retenus.set(nom, {
+            nom: lieu.nom,
+            prixEntree: typeof lieu.prixEntree === 'number' ? lieu.prixEntree : null,
+            devise: lieu.devise ?? null,
+          });
+        } else {
+          retenus.delete(nom);
+        }
+
+        enregistrerRetenus();
+        rendre();
+      });
+    });
+
+    conteneur.querySelector('#tourisme-reessayer')?.addEventListener('click', () => {
+      chargerListe(voyage.tourisme?.type);
+    });
+
+    conteneur.querySelector('#tourisme-suivant').addEventListener('click', actions.suivant);
+  }
+
+  rendre();
+
+  // Une reprise sur ce tiroir recharge la liste correspondant au type déjà
+  // choisi : le cache serveur rend l'opération instantanée.
+  const typeInitial = voyage.tourisme?.type;
+  if (typeInitial && LISTE_PAR_TYPE[typeInitial]) {
+    await chargerListe(typeInitial);
+  }
 }

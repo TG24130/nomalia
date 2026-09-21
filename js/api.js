@@ -17,6 +17,16 @@ export const FONCTIONS = {
   genererRandos: 'genererRandos',
 };
 
+/**
+ * Délai d'attente côté client, en millisecondes.
+ *
+ * Le SDK abandonne au bout de soixante-dix secondes par défaut, alors qu'une
+ * génération avec recherche web dépasse régulièrement cette durée : la
+ * fonction terminait et mettait son résultat en cache, mais l'utilisateur
+ * voyait une erreur de connexion. La valeur suit le délai des fonctions.
+ */
+const DELAI_APPEL_MS = 300000;
+
 let servicesFonctions = null;
 
 /**
@@ -66,7 +76,7 @@ async function appeler(nom, donnees) {
   }
 
   try {
-    const fonction = httpsCallable(servicesFonctions, nom);
+    const fonction = httpsCallable(servicesFonctions, nom, { timeout: DELAI_APPEL_MS });
     const reponse = await fonction(donnees);
     return reponse.data;
   } catch (erreur) {
@@ -85,4 +95,15 @@ async function appeler(nom, donnees) {
  */
 export function genererFiche(parametres) {
   return appeler(FONCTIONS.genererFiche, parametres);
+}
+
+/**
+ * Demande une liste de lieux (plages ou incontournables).
+ *
+ * @param {{ destination: string, type: string, mois: number, langue: string,
+ *           voyageurs: { adultes: number, enfants: number } }} parametres
+ * @returns {Promise<{ cle: string, lieux: Array<object>, sources: string[], depuisCache: boolean }>}
+ */
+export function genererLieux(parametres) {
+  return appeler(FONCTIONS.genererLieux, parametres);
 }

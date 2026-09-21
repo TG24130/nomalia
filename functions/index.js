@@ -18,5 +18,5 @@ export {
 } from './commun.js';
 
 export { genererFiche } from './fiche.js';
-// export { genererLieux } from './lieux.js';   → étape 9
+export { genererLieux } from './lieux.js';
 // export { genererRandos } from './randos.js'; → étape 10

@@ -220,8 +220,14 @@
     },
     "lieuxRetenus": "Lieux retenus",
     "prixEntree": "Entrée estimée",
+    "entreeLibre": "accès libre ou tarif inconnu",
     "lienOfficiel": "Site officiel",
-    "reserver": "Voir les activités"
+    "reserver": "Voir les activités",
+    "reserverChez": "Voir les activités sur {partenaire}",
+    "retenusRecapitulatif": "{nombre} lieu(x) retenu(s) — {total} par personne.",
+    "reposTitre": "Un séjour sans programme",
+    "reposConseils": "Pour un repos total, le choix de l'hébergement compte plus que celui des visites. Privilégiez un logement où vous aurez envie de rester la journée, et gardez une ou deux sorties en réserve plutôt qu'un programme.",
+    "reposFiltres": "Critères d'hébergement conseillés : {filtres}."
   },
 
   "randos": {

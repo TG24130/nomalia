@@ -296,6 +296,29 @@ select {
   margin: 0;
 }
 
+/* — Cartes de lieux — */
+
+.case--lieu {
+  min-height: var(--hauteur-tactile);
+  margin-bottom: 4px;
+}
+
+.lieu__nom {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.carte--lieu .note {
+  margin-top: 0;
+}
+
+.lieu__conseils {
+  padding: 10px 12px;
+  border-radius: var(--rayon);
+  background: var(--couleur-fond);
+  font-size: 0.9rem;
+}
+
 /* — Listes de liens partenaires — */
 
 .liens {

@@ -4,31 +4,19 @@
  * Renvoie la fiche pratique en 10 points d'une destination, depuis le cache
  * Firestore si elle y est encore valide, sinon en interrogeant l'API Claude
  * avec l'outil de recherche web.
- *
- * La clé de l'API ne sort jamais de ce processus (CLAUDE.md §3.1).
  */
 
-import Anthropic from '@anthropic-ai/sdk';
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import { logger } from 'firebase-functions';
 import { FieldValue } from 'firebase-admin/firestore';
 
-import {
-  CLE_ANTHROPIC,
-  DUREE_CACHE_MS,
-  MODELE_CLAUDE,
-  cleFiche,
-  db,
-  verifierAcces,
-} from './commun.js';
+import { CLE_ANTHROPIC, DUREE_CACHE_MS, MODELE_CLAUDE, cleFiche, db, verifierAcces } from './commun.js';
+import { demanderJson } from './claude.js';
 import { SYSTEME_FICHE, promptFiche } from './prompts/fiche.js';
 import { SCHEMA_FICHE, validerFiche } from './schemas/fiche.js';
 
 /** Langues acceptées en entrée (seul `fr` est servi en V0). */
 const LANGUES = ['fr', 'en', 'es', 'zh'];
-
-/** Nombre de tentatives : un appel, puis une seule reprise (CLAUDE.md §3.7). */
-const TENTATIVES = 2;
 
 /**
  * Valide les paramètres reçus du front.
@@ -58,70 +46,6 @@ function lireParametres(donnees) {
 }
 
 /**
- * Extrait l'objet JSON de la réponse du modèle.
- *
- * La sortie est contrainte par un schéma, mais la recherche web peut ajouter
- * des blocs de texte intermédiaires : on lit donc du dernier bloc au premier
- * et on retient le premier qui s'analyse correctement.
- *
- * @param {Array<object>} contenu blocs de contenu de la réponse
- * @returns {object|null}
- */
-function extraireJson(contenu) {
-  const blocsTexte = contenu.filter((bloc) => bloc.type === 'text').map((bloc) => bloc.text);
-
-  for (const texte of blocsTexte.reverse()) {
-    // Tolère un bloc de code Markdown malgré la consigne.
-    const nettoye = texte.trim().replace(/^```(?:json)?\s*/i, '').replace(/```$/, '').trim();
-
-    try {
-      const analyse = JSON.parse(nettoye);
-      if (analyse !== null && typeof analyse === 'object') return analyse;
-    } catch {
-      // Bloc non analysable : on essaie le précédent.
-    }
-  }
-
-  return null;
-}
-
-/**
- * Traduit une erreur du SDK Anthropic en erreur exploitable par le front.
- *
- * Le détail technique reste dans les journaux : le front ne reçoit qu'un code
- * et un message neutre (CLAUDE.md §7).
- *
- * @param {unknown} erreur
- * @returns {HttpsError}
- */
-function traduireErreurApi(erreur) {
-  if (erreur instanceof Anthropic.AuthenticationError) {
-    logger.error('Clé ANTHROPIC_API_KEY refusée par l\'API.');
-    return new HttpsError('internal', 'Service indisponible.');
-  }
-
-  if (erreur instanceof Anthropic.RateLimitError) {
-    logger.warn('Limite de débit atteinte côté API Claude.');
-    return new HttpsError('resource-exhausted', 'Service momentanément saturé.');
-  }
-
-  if (erreur instanceof Anthropic.APIConnectionError) {
-    logger.warn('Connexion à l\'API Claude impossible.');
-    return new HttpsError('unavailable', 'Service momentanément injoignable.');
-  }
-
-  // Le champ « message » est réservé par le journal structuré de Firebase :
-  // le détail de l'API est donc rangé sous « detail ».
-  if (erreur instanceof Anthropic.APIError) {
-    logger.error('Erreur de l\'API Claude', { statut: erreur.status, detail: erreur.message });
-    return new HttpsError('internal', 'Service indisponible.');
-  }
-
-  logger.error('Erreur inattendue pendant la génération', { detail: String(erreur) });
-  return new HttpsError('internal', 'Service indisponible.');
-}
-
-/**
  * Recale la température de la mer du mois de voyage sur le tableau mensuel.
  *
  * Le champ s'appelle `moisChoisi` mais contient une température : le modèle y
@@ -144,74 +68,6 @@ function recalerTemperatureMer(fiche, mois) {
     mois,
   });
   mer.moisChoisi = attendue;
-}
-
-/**
- * Interroge Claude et renvoie une fiche validée.
- *
- * @param {object} parametres
- * @returns {Promise<object>} la fiche
- */
-async function demanderFiche(parametres) {
-  const client = new Anthropic({ apiKey: CLE_ANTHROPIC.value() });
-  const erreursCumulees = [];
-
-  for (let tentative = 1; tentative <= TENTATIVES; tentative += 1) {
-    let reponse;
-
-    try {
-      reponse = await client.messages.create({
-        model: MODELE_CLAUDE,
-        max_tokens: 16000,
-        system: SYSTEME_FICHE,
-        messages: [{ role: 'user', content: promptFiche(parametres) }],
-        tools: [{ type: 'web_search_20260209', name: 'web_search', max_uses: 6 }],
-        output_config: {
-          effort: 'medium',
-          format: { type: 'json_schema', schema: SCHEMA_FICHE },
-        },
-      });
-    } catch (erreur) {
-      throw traduireErreurApi(erreur);
-    }
-
-    // Suivi du coût (CLAUDE.md §9).
-    logger.info('Appel Claude — genererFiche', {
-      destination: parametres.destination,
-      tentative,
-      modele: reponse.model,
-      tokensEntree: reponse.usage?.input_tokens,
-      tokensSortie: reponse.usage?.output_tokens,
-      tokensCacheLus: reponse.usage?.cache_read_input_tokens,
-      recherchesWeb: reponse.usage?.server_tool_use?.web_search_requests,
-      arret: reponse.stop_reason,
-    });
-
-    if (reponse.stop_reason === 'refusal') {
-      logger.warn('Demande déclinée par le modèle', {
-        categorie: reponse.stop_details?.category,
-      });
-      throw new HttpsError('failed-precondition', 'Destination non traitable.');
-    }
-
-    const fiche = extraireJson(reponse.content);
-
-    if (fiche === null) {
-      erreursCumulees.push(`tentative ${tentative} : réponse non analysable`);
-      continue;
-    }
-
-    const controle = validerFiche(fiche);
-    if (controle.valide) {
-      recalerTemperatureMer(fiche, parametres.mois);
-      return fiche;
-    }
-
-    erreursCumulees.push(`tentative ${tentative} : ${controle.erreurs.join(', ')}`);
-  }
-
-  logger.error('Fiche invalide après reprise', { erreurs: erreursCumulees });
-  throw new HttpsError('internal', 'La fiche n\'a pas pu être produite.');
 }
 
 /**
@@ -240,7 +96,16 @@ export const genererFiche = onCall(
       }
     }
 
-    const fiche = await demanderFiche(parametres);
+    const fiche = await demanderJson({
+      systeme: SYSTEME_FICHE,
+      prompt: promptFiche(parametres),
+      schema: SCHEMA_FICHE,
+      valider: validerFiche,
+      journal: { fonction: 'genererFiche', destination: parametres.destination },
+    });
+
+    recalerTemperatureMer(fiche, parametres.mois);
+
     const maintenant = Date.now();
 
     await db.collection('fiches').doc(ficheId).set({
