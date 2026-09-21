@@ -138,12 +138,6 @@ function contenu(nom, point, fiche, moisVoyage) {
       morceaux.push(`<p class="avertissement">${echapper(t('fiche.avertissementVisa'))}</p>`);
       break;
 
-    case 'meilleuresPeriodes':
-      if (!point.mois.includes(moisVoyage)) {
-        morceaux.push(`<p class="avertissement">${echapper(t('fiche.alerteMois'))}</p>`);
-      }
-      break;
-
     case 'prises':
       morceaux.push(`
         <p>${echapper(
@@ -289,9 +283,22 @@ export async function afficher(conteneur, voyage, actions) {
   const fiche = resultat.fiche;
   const cartes = POINTS.map((nom) => carte(nom, fiche, voyage.mois)).join('');
 
+  // L'alerte sur la saison est affichée avant les cartes : repliée dans la
+  // carte « Meilleures périodes », elle serait passée inaperçue.
+  const moisFavorables = fiche.points.meilleuresPeriodes?.mois ?? [];
+  const alerteSaison = moisFavorables.length && !moisFavorables.includes(voyage.mois)
+    ? `<p class="avertissement avertissement--saison">${echapper(
+        t('fiche.alerteMoisDetail', {
+          mois: t(`mois.${voyage.mois}`),
+          favorables: moisFavorables.map((mois) => t(`mois.${mois}`)).join(', '),
+        })
+      )}</p>`
+    : '';
+
   conteneur.innerHTML = `
     <h2>${echapper(t('fiche.titre'))}</h2>
     <p class="note">${echapper(fiche.destination)}</p>
+    ${alerteSaison}
     ${cartes}
     ${
       fiche.sources.length

@@ -238,6 +238,58 @@ select {
   flex: 1 1 0;
 }
 
+/* — Choix (modes de transport, types d'hébergement…) — */
+
+.choix {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.bouton--choix {
+  flex: 1 1 calc(50% - 4px);
+  width: auto;
+  font-size: 0.95rem;
+}
+
+.bouton--choix.bouton--choisi {
+  border-color: var(--couleur-accent);
+  background: var(--couleur-accent-clair);
+  font-weight: 600;
+}
+
+.bouton--choix + .bouton--choix {
+  margin-top: 0;
+}
+
+/* — Listes de liens partenaires — */
+
+.liens {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.liens li + li {
+  margin-top: 12px;
+}
+
+.bouton--lien {
+  text-decoration: none;
+}
+
+.lien__mention {
+  display: block;
+  margin-top: 4px;
+  color: var(--couleur-texte-doux);
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.avertissement--saison {
+  margin-bottom: var(--espace);
+}
+
 /* — Cartes dépliables de la fiche — */
 
 .carte--point,

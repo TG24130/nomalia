@@ -106,6 +106,7 @@
     "avertissementVisa": "Vérifiez sur France Diplomatie avant de partir.",
     "avertissementVaccins": "Informations indicatives, à confirmer avec votre médecin ou un centre de vaccinations internationales.",
     "alerteMois": "Le mois choisi ne fait pas partie des meilleures périodes pour cette destination.",
+    "alerteMoisDetail": "{mois} ne fait pas partie des meilleures périodes ici. Les plus favorables : {favorables}.",
     "adaptateurOui": "Adaptateur nécessaire depuis la France.",
     "adaptateurNon": "Pas d'adaptateur nécessaire depuis la France.",
     "lienFranceDiplomatie": "Conseils aux voyageurs (France Diplomatie)",
@@ -135,6 +136,15 @@
       "train+voiture": "Train puis voiture",
       "bateau+voiture": "Bateau puis voiture"
     },
+    "bloc": {
+      "avion": "Chercher un vol",
+      "train": "Chercher un train",
+      "bateau": "Chercher une traversée",
+      "voiture": "Voir l'itinéraire",
+      "location": "Louer une voiture sur place"
+    },
+    "aSaisir": "recherche à saisir sur le site",
+    "rappel": "À saisir sur le site : {destination}, {mois}, {jours} jours, {voyageurs} voyageurs.",
     "prixEstime": "Prix estimé du transport (€, total)",
     "prixEstimeAide": "Facultatif — affine le budget."
   },
