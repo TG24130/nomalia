@@ -8,6 +8,7 @@
 
 import { echapper, langue, t } from '../i18n.js';
 import { chercherAeroport } from '../aeroports.js';
+import { chercherGare } from '../gares.js';
 import { estPrerempli, lienReservation, nomPartenaire } from '../liens.js';
 import { datesVoyage, modifierVoyage } from '../voyage.js';
 
@@ -122,15 +123,20 @@ export async function afficher(conteneur, voyage, actions) {
     enfants: voyage?.voyageurs?.enfants,
   };
 
-  // Les comparateurs de vols attendent des codes d'aéroport. La résolution
-  // échoue silencieusement : les liens restent alors non préremplis.
-  const [origine, destination] = await Promise.all([
+  // Les comparateurs de vols attendent des codes d'aéroport, et les sites de
+  // train des noms de gare. Les résolutions échouent silencieusement : les
+  // liens restent alors non préremplis.
+  const [origine, destination, gareOrigine, gareDestination] = await Promise.all([
     chercherAeroport(voyage?.depart),
     chercherAeroport(voyage?.destination),
+    chercherGare(voyage?.depart),
+    chercherGare(voyage?.destination),
   ]);
 
   params.iataOrigine = origine?.code ?? null;
   params.iataDestination = destination?.code ?? null;
+  params.gareOrigine = gareOrigine?.nom ?? null;
+  params.gareDestination = gareDestination?.nom ?? null;
 
   const rendre = () => {
     const mode = voyage.transport?.mode ?? null;
@@ -177,6 +183,19 @@ export async function afficher(conteneur, voyage, actions) {
           )}</p>`
         : '';
 
+    // Même intention côté train : montrer la gare visée, que l'utilisateur
+    // devra saisir puisque aucun des deux sites n'accepte de recherche par URL.
+    const concerneTrain = Boolean(mode?.startsWith('train'));
+    const gares =
+      concerneTrain && (gareOrigine || gareDestination)
+        ? `<p class="note">${echapper(
+            t('transport.gares', {
+              origine: gareOrigine ? gareOrigine.nom : t('transport.gareInconnue'),
+              destination: gareDestination ? gareDestination.nom : t('transport.gareInconnue'),
+            })
+          )}</p>`
+        : '';
+
     const manqueDate = mode && !dateDebut
       ? `<p class="note">${echapper(t('transport.sansDate'))}</p>`
       : '';
@@ -190,6 +209,7 @@ export async function afficher(conteneur, voyage, actions) {
 
       ${rappel}
       ${aeroports}
+      ${gares}
       ${manqueDate}
       ${blocs}
 

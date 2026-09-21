@@ -22,6 +22,8 @@ const FICHIERS_STATIQUES = [
   './js/liens.js',
   './js/api.js',
   './js/aeroports.js',
+  './js/gares.js',
+  './js/recherche-lieux.js',
   './js/tiroirs/saisie.js',
   './js/tiroirs/fiche.js',
   './js/tiroirs/transport.js',

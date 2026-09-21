@@ -149,6 +149,8 @@
     "rappel": "Votre voyage : {destination}, {mois}, {jours} jours, {voyageurs} voyageurs.",
     "aeroports": "Aéroports retenus : {origine} vers {destination}.",
     "aeroportInconnu": "non trouvé",
+    "gares": "Gares retenues : {origine} vers {destination}.",
+    "gareInconnue": "non trouvée",
     "sansDate": "Indiquez une date de départ à l'étape précédente pour que les recherches arrivent préremplies.",
     "prixEstime": "Prix estimé du transport (€, total)",
     "prixEstimeAide": "Facultatif — affine le budget."

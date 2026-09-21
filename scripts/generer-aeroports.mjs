@@ -15,6 +15,16 @@
 import fs from 'node:fs/promises';
 
 const SOURCE = 'https://davidmegginson.github.io/ourairports-data/airports.csv';
+
+/**
+ * Liaisons aériennes régulières, publiées par OpenFlights (licence ODbL).
+ * Sert uniquement à classer les aéroports d'une même ville : le nombre de
+ * destinations, et surtout de pays desservis, distingue l'aéroport principal
+ * de l'aérodrome secondaire. Les données datent, mais la hiérarchie entre
+ * Roissy et Orly, ou entre Fiumicino et Ciampino, n'a pas bougé.
+ */
+const SOURCE_ROUTES = 'https://raw.githubusercontent.com/jpatokal/openflights/master/data/routes.dat';
+
 const SORTIE = new URL('../data/aeroports.json', import.meta.url);
 
 /** Types d'aéroports retenus, du plus grand au plus petit. */
@@ -117,8 +127,63 @@ for (const ligne of lignes.slice(1)) {
   });
 }
 
-// Les grands aéroports d'abord : à égalité de nom, c'est celui qu'on veut.
-aeroports.sort((a, b) => b.t - a.t || a.c.localeCompare(b.c));
+/* — Dessertes : combien de destinations, dans combien de pays — */
+
+console.log('Téléchargement des liaisons aériennes…');
+const reponseRoutes = await fetch(SOURCE_ROUTES);
+
+if (reponseRoutes.ok) {
+  const paysParCode = new Map(aeroports.map((aeroport) => [aeroport.c, aeroport.p]));
+
+  /** @type {Map<string, { destinations: Set<string>, pays: Set<string> }>} */
+  const dessertes = new Map();
+
+  const noter = (depuis, vers) => {
+    if (!paysParCode.has(depuis)) return;
+
+    if (!dessertes.has(depuis)) {
+      dessertes.set(depuis, { destinations: new Set(), pays: new Set() });
+    }
+
+    const entree = dessertes.get(depuis);
+    entree.destinations.add(vers);
+
+    const pays = paysParCode.get(vers);
+    if (pays && pays !== paysParCode.get(depuis)) entree.pays.add(pays);
+  };
+
+  for (const ligne of (await reponseRoutes.text()).split(/\r?\n/)) {
+    if (!ligne.trim()) continue;
+
+    // airline,airlineID,source,sourceID,destination,destID,codeshare,stops,equipment
+    const champs = ligne.split(',');
+    const depuis = champs[2]?.trim().toUpperCase();
+    const vers = champs[4]?.trim().toUpperCase();
+    if (depuis?.length !== 3 || vers?.length !== 3) continue;
+
+    noter(depuis, vers);
+    noter(vers, depuis);
+  }
+
+  for (const aeroport of aeroports) {
+    const entree = dessertes.get(aeroport.c);
+    if (!entree) continue;
+
+    // Un pays desservi pèse plus qu'une destination de plus dans le même
+    // pays : c'est ce qui sépare un hub international d'un aéroport régional.
+    aeroport.d = entree.destinations.size;
+    aeroport.i = entree.pays.size;
+  }
+
+  console.log(`Dessertes relevées pour ${dessertes.size} aéroports.`);
+} else {
+  console.warn(`Liaisons indisponibles (HTTP ${reponseRoutes.status}) : classement par taille seule.`);
+}
+
+// Les mieux desservis d'abord : à égalité de nom, c'est celui qu'on veut.
+aeroports.sort(
+  (a, b) => (b.i ?? 0) - (a.i ?? 0) || (b.d ?? 0) - (a.d ?? 0) || b.t - a.t || a.c.localeCompare(b.c)
+);
 
 await fs.writeFile(
   SORTIE,
