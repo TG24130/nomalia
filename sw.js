@@ -18,6 +18,7 @@ const FICHIERS_STATIQUES = [
   './js/app.js',
   './js/i18n.js',
   './js/firebase-config.js',
+  './js/voyage.js',
   './lang/fr.json',
 ];
 

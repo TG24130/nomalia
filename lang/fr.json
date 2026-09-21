@@ -14,6 +14,7 @@
     "enregistrer": "Enregistrer",
     "annuler": "Annuler",
     "supprimer": "Supprimer",
+    "confirmerSupprimer": "Oui, supprimer",
     "dupliquer": "Dupliquer",
     "reprendre": "Reprendre",
     "oui": "Oui",
@@ -47,7 +48,17 @@
     "titre": "Mes voyages",
     "aucunVoyage": "Aucun voyage pour le moment.",
     "nouveauVoyage": "Nouveau voyage",
-    "confirmerSuppression": "Supprimer définitivement ce voyage ?"
+    "voyageSansTitre": "Voyage sans destination",
+    "duree": "{jours} jours",
+    "modifieLe": "Modifié le {date}",
+    "confirmerSuppression": "Supprimer définitivement « {titre} » ?"
+  },
+
+  "detail": {
+    "titre": "Votre voyage",
+    "provisoire": "Écran provisoire : les tiroirs arrivent à l'étape suivante.",
+    "enregistrement": "Enregistrement…",
+    "enregistre": "Enregistré"
   },
 
   "saisie": {

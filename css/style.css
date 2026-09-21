@@ -115,6 +115,46 @@ body {
   font-size: 0.85rem;
 }
 
+.carte--voyage .carte__titre {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.carte--voyage .note {
+  margin: 4px 0 12px;
+}
+
+/* Les actions d'une carte passent sur une ligne dès que la place le permet. */
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.actions .bouton {
+  flex: 1 1 100%;
+}
+
+.actions .bouton + .bouton {
+  margin-top: 0;
+}
+
+@media (min-width: 420px) {
+  .actions .bouton {
+    flex: 1 1 0;
+  }
+}
+
+.confirmation .avertissement {
+  margin: 0 0 8px;
+}
+
+.bouton--danger {
+  color: var(--couleur-erreur);
+  border-color: var(--couleur-erreur);
+  background: var(--couleur-erreur-fond);
+}
+
 .chargement {
   text-align: center;
   color: var(--couleur-texte-doux);
