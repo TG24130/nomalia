@@ -19,6 +19,13 @@ const FICHIERS_STATIQUES = [
   './js/i18n.js',
   './js/firebase-config.js',
   './js/voyage.js',
+  './js/tiroirs/saisie.js',
+  './js/tiroirs/fiche.js',
+  './js/tiroirs/transport.js',
+  './js/tiroirs/hebergement.js',
+  './js/tiroirs/tourisme.js',
+  './js/tiroirs/randos.js',
+  './js/tiroirs/budget-vue.js',
   './lang/fr.json',
 ];
 

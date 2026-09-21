@@ -80,6 +80,23 @@ export function t(cle, variables) {
 }
 
 /**
+ * Échappe une chaîne avant insertion dans du HTML.
+ *
+ * Vit ici parce que tout texte inséré dans la page passe par les libellés ou
+ * par des données saisies par l'utilisateur : les deux doivent être échappés.
+ *
+ * @param {string} texte
+ * @returns {string}
+ */
+export function echapper(texte) {
+  return String(texte ?? '').replace(
+    /[&<>"']/g,
+    (caractere) =>
+      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[caractere]
+  );
+}
+
+/**
  * Remplace le contenu des éléments porteurs d'un attribut `data-i18n`
  * par le libellé correspondant.
  *

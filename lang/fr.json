@@ -10,7 +10,9 @@
     "chargementIA": "Recherche en cours, cela peut prendre quelques secondes…",
     "suivant": "Suivant",
     "precedent": "Retour",
+    "retourAccueil": "Retour à mes voyages",
     "passer": "Passer cette étape",
+    "tiroirAVenir": "Cette étape sera disponible prochainement.",
     "enregistrer": "Enregistrer",
     "annuler": "Annuler",
     "supprimer": "Supprimer",
@@ -54,23 +56,21 @@
     "confirmerSuppression": "Supprimer définitivement « {titre} » ?"
   },
 
-  "detail": {
-    "titre": "Votre voyage",
-    "provisoire": "Écran provisoire : les tiroirs arrivent à l'étape suivante.",
-    "enregistrement": "Enregistrement…",
-    "enregistre": "Enregistré"
-  },
-
   "saisie": {
     "titre": "Votre voyage",
     "destination": "Destination",
     "destinationAide": "Ville, île, région ou pays",
     "jours": "Nombre de jours",
     "mois": "Mois de départ",
+    "choisirMois": "Choisir un mois",
     "adultes": "Adultes",
     "enfants": "Enfants",
     "depart": "Ville de départ",
-    "valider": "Préparer mon voyage"
+    "departAide": "Facultatif — sert à estimer le transport.",
+    "valider": "Préparer mon voyage",
+    "erreurDestination": "Indiquez une destination.",
+    "erreurJours": "Indiquez un nombre de jours.",
+    "erreurMois": "Choisissez un mois de départ."
   },
 
   "mois": {

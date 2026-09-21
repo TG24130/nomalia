@@ -1,9 +1,10 @@
 /**
  * app.js — point d'entrée : démarrage, authentification, navigation.
  *
- * Étape 3 (objet voyage) : écran d'accueil listant les voyages de
- * l'utilisateur, création, reprise, duplication et suppression.
- * Les tiroirs et la barre de progression arrivent à l'étape 4.
+ * Étape 4 : enchaînement des tiroirs, barre de progression et retour arrière.
+ * Chaque tiroir expose `afficher(conteneur, voyage, actions)` et reçoit sa
+ * navigation par `actions` : aucun tiroir n'importe app.js, ce qui évite un
+ * cycle entre les modules.
  */
 
 import {
@@ -15,7 +16,7 @@ import {
 } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js';
 import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js';
 
-import { chargerLangue, t, traduireDom, langue } from './i18n.js';
+import { chargerLangue, echapper, t, traduireDom, langue } from './i18n.js';
 import {
   ENVIRONNEMENT,
   EST_LOCAL,
@@ -23,6 +24,7 @@ import {
   initialiserFirebase,
 } from './firebase-config.js';
 import {
+  ETAPES,
   configurerVoyages,
   creerVoyage,
   dupliquerVoyage,
@@ -35,7 +37,26 @@ import {
   voyageCourant,
 } from './voyage.js';
 
-/** Élément principal dans lequel les tiroirs injectent leur contenu. */
+import * as tiroirSaisie from './tiroirs/saisie.js';
+import * as tiroirFiche from './tiroirs/fiche.js';
+import * as tiroirTransport from './tiroirs/transport.js';
+import * as tiroirHebergement from './tiroirs/hebergement.js';
+import * as tiroirTourisme from './tiroirs/tourisme.js';
+import * as tiroirRandos from './tiroirs/randos.js';
+import * as tiroirBudget from './tiroirs/budget-vue.js';
+
+/** Tiroirs, dans l'ordre défini par ETAPES. */
+const TIROIRS = {
+  saisie: tiroirSaisie,
+  fiche: tiroirFiche,
+  transport: tiroirTransport,
+  hebergement: tiroirHebergement,
+  tourisme: tiroirTourisme,
+  randos: tiroirRandos,
+  budget: tiroirBudget,
+};
+
+/** Élément principal dans lequel les écrans et les tiroirs s'affichent. */
 const vue = document.getElementById('vue');
 
 /** Zone de messages (erreurs, informations). */
@@ -44,21 +65,12 @@ const zoneMessage = document.getElementById('message');
 /** Bouton de déconnexion de l'en-tête. */
 const boutonDeconnexion = document.getElementById('deconnexion');
 
+/** Barre de progression des tiroirs. */
+const progression = document.getElementById('progression');
+const barreProgression = document.getElementById('progression-barre');
+
 /** Services Firebase, renseignés au démarrage. */
 let firebase = null;
-
-/**
- * Échappe une chaîne avant insertion dans du HTML.
- * @param {string} texte
- * @returns {string}
- */
-function echapper(texte) {
-  return String(texte).replace(
-    /[&<>"']/g,
-    (caractere) =>
-      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[caractere]
-  );
-}
 
 /**
  * Affiche un message à l'utilisateur.
@@ -101,6 +113,7 @@ function formaterDate(horodatage) {
 /** Écran de connexion : seul point d'entrée non authentifié. */
 function afficherEcranConnexion() {
   boutonDeconnexion.hidden = true;
+  masquerProgression();
 
   vue.innerHTML = `
     <section class="carte">
@@ -121,6 +134,7 @@ function afficherEcranConnexion() {
  */
 function afficherEcranRefus(email) {
   boutonDeconnexion.hidden = true;
+  masquerProgression();
 
   vue.innerHTML = `
     <section class="carte">
@@ -139,6 +153,7 @@ function afficherEcranRefus(email) {
 /** Écran bloquant quand la configuration Firebase de production est absente. */
 function afficherEcranConfiguration() {
   boutonDeconnexion.hidden = true;
+  masquerProgression();
   vue.innerHTML = `
     <section class="carte">
       <h2>${echapper(t('erreurs.configurationTitre'))}</h2>
@@ -202,6 +217,7 @@ function carteVoyage(voyage) {
 /** Affiche la liste des voyages de l'utilisateur. */
 async function afficherEcranAccueil() {
   boutonDeconnexion.hidden = false;
+  masquerProgression();
   afficherChargement();
 
   let voyages;
@@ -232,19 +248,14 @@ async function afficherEcranAccueil() {
   });
 }
 
-/** Crée un voyage vide et l'ouvre. */
+/**
+ * Ouvre le tiroir Saisie sans créer de document : le voyage ne sera écrit
+ * qu'à la validation (CLAUDE.md §6, tiroir 0).
+ */
 async function nouveauVoyage() {
   masquerMessage();
-  afficherChargement();
-
-  try {
-    await creerVoyage();
-    afficherEcranDetail();
-  } catch (erreur) {
-    console.error(erreur);
-    await afficherEcranAccueil();
-    afficherMessage(t('erreurs.generique'), 'erreur');
-  }
+  await fermerVoyage();
+  afficherTiroir('saisie');
 }
 
 /**
@@ -269,8 +280,8 @@ async function gererActionVoyage(evenement) {
   try {
     if (action === 'reprendre') {
       afficherChargement();
-      await ouvrirVoyage(id);
-      afficherEcranDetail();
+      const voyage = await ouvrirVoyage(id);
+      afficherTiroir(etapeValide(voyage.etapeCourante));
       return;
     }
 
@@ -290,85 +301,162 @@ async function gererActionVoyage(evenement) {
     console.error(erreur);
     await afficherEcranAccueil();
     afficherMessage(
-      erreur.message === 'voyage-introuvable' ? t('erreurs.voyageIntrouvable') : t('erreurs.generique'),
+      erreur.message === 'voyage-introuvable'
+        ? t('erreurs.voyageIntrouvable')
+        : t('erreurs.generique'),
       'erreur'
     );
   }
 }
 
-/* — Écran de détail (provisoire) — */
+/* — Navigation entre tiroirs — */
 
 /**
- * Écran provisoire du voyage ouvert.
- * Remplacé à l'étape 4 par le tiroir Saisie et la navigation entre tiroirs ;
- * il sert ici à vérifier la sauvegarde automatique.
+ * Renvoie une étape connue, ou la première par défaut.
+ * @param {string} etape
+ * @returns {string}
  */
-function afficherEcranDetail() {
+function etapeValide(etape) {
+  return ETAPES.includes(etape) ? etape : ETAPES[0];
+}
+
+/** Met à jour la barre de progression. */
+function afficherProgression(etape) {
+  const position = ETAPES.indexOf(etape) + 1;
+  progression.hidden = false;
+  barreProgression.style.width = `${(position / ETAPES.length) * 100}%`;
+}
+
+/** Masque la barre de progression (écrans hors parcours). */
+function masquerProgression() {
+  progression.hidden = true;
+  barreProgression.style.width = '0';
+}
+
+/**
+ * Affiche un tiroir et sa barre de navigation.
+ * @param {string} etape
+ */
+function afficherTiroir(etape) {
+  const nom = etapeValide(etape);
+  const tiroir = TIROIRS[nom];
   const voyage = voyageCourant();
-  if (!voyage) {
-    afficherEcranAccueil();
+  const position = ETAPES.indexOf(nom);
+
+  boutonDeconnexion.hidden = false;
+  afficherProgression(nom);
+
+  vue.innerHTML = `
+    <p class="note note--etape">${echapper(
+      t('commun.etape', { courante: position + 1, total: ETAPES.length })
+    )}</p>
+    <div id="tiroir"></div>
+    <nav class="navigation" id="navigation"></nav>
+  `;
+
+  const actions = {
+    suivant: () => allerA(position + 1),
+    precedent: () => allerA(position - 1),
+    accueil: retourAccueil,
+    valider: validerSaisie,
+    message: afficherMessage,
+  };
+
+  try {
+    tiroir.afficher(document.getElementById('tiroir'), voyage, actions);
+  } catch (erreur) {
+    console.error(erreur);
+    afficherMessage(t('erreurs.generique'), 'erreur');
+  }
+
+  afficherNavigation(nom, position, tiroir, actions);
+}
+
+/**
+ * Construit la barre de navigation commune à tous les tiroirs.
+ * @param {string} nom
+ * @param {number} position
+ * @param {object} tiroir module du tiroir
+ * @param {object} actions
+ */
+function afficherNavigation(nom, position, tiroir, actions) {
+  const navigation = document.getElementById('navigation');
+  const enCreation = voyageCourant() === null;
+
+  // On ne peut ni passer ni reculer tant que le voyage n'existe pas.
+  const peutPasser = tiroir.PEUT_ETRE_PASSE && !enCreation;
+  const libellePrecedent = position === 0 ? t('commun.retourAccueil') : t('commun.precedent');
+
+  navigation.innerHTML = `
+    <button class="bouton" type="button" id="navigation-precedent">
+      ${echapper(libellePrecedent)}
+    </button>
+    ${
+      peutPasser
+        ? `<button class="bouton" type="button" id="navigation-passer">
+             ${echapper(t('commun.passer'))}
+           </button>`
+        : ''
+    }
+  `;
+
+  document
+    .getElementById('navigation-precedent')
+    .addEventListener('click', position === 0 ? retourAccueil : actions.precedent);
+
+  if (peutPasser) {
+    document.getElementById('navigation-passer').addEventListener('click', actions.suivant);
+  }
+}
+
+/**
+ * Va à l'étape située à `position`. Sort vers l'accueil aux deux extrémités.
+ * @param {number} position
+ */
+async function allerA(position) {
+  masquerMessage();
+
+  if (position < 0 || position >= ETAPES.length) {
+    await retourAccueil();
     return;
   }
 
-  vue.innerHTML = `
-    <section class="carte">
-      <h2>${echapper(t('detail.titre'))}</h2>
+  const etape = ETAPES[position];
+  if (voyageCourant()) modifierVoyage({ etapeCourante: etape });
+  afficherTiroir(etape);
+}
 
-      <div class="champ">
-        <label for="champ-destination">${echapper(t('saisie.destination'))}</label>
-        <input type="text" id="champ-destination"
-               value="${echapper(voyage.destination ?? '')}"
-               data-i18n-placeholder="saisie.destinationAide">
-      </div>
+/** Enregistre puis revient à la liste des voyages. */
+async function retourAccueil() {
+  afficherChargement();
+  await fermerVoyage();
+  await afficherEcranAccueil();
+}
 
-      <div class="champ">
-        <label for="champ-jours">${echapper(t('saisie.jours'))}</label>
-        <input type="number" id="champ-jours" min="1" max="365"
-               value="${voyage.jours ?? ''}">
-      </div>
+/**
+ * Crée le voyage à partir de la saisie, puis ouvre le tiroir suivant.
+ * @param {object} valeurs champs du tiroir Saisie
+ */
+async function validerSaisie(valeurs) {
+  masquerMessage();
 
-      <p class="note" id="etat-sauvegarde"></p>
-      <p class="avertissement">${echapper(t('detail.provisoire'))}</p>
+  // En reprise, le voyage existe déjà : la saisie a été enregistrée au fil de
+  // l'eau, il ne reste qu'à avancer.
+  if (voyageCourant()) {
+    await allerA(ETAPES.indexOf('saisie') + 1);
+    return;
+  }
 
-      <button class="bouton" type="button" id="bouton-retour">
-        ${echapper(t('commun.precedent'))}
-      </button>
-    </section>
-  `;
+  afficherChargement();
 
-  traduireDom(vue);
-
-  const etat = document.getElementById('etat-sauvegarde');
-
-  /** Applique une modification et signale la sauvegarde. */
-  const modifier = (modifications) => {
-    modifierVoyage(modifications);
-    etat.textContent = t('detail.enregistrement');
-    sauvegarderMaintenant()
-      .then(() => {
-        etat.textContent = t('detail.enregistre');
-      })
-      .catch((erreur) => {
-        console.error(erreur);
-        etat.textContent = '';
-        afficherMessage(t('erreurs.reseau'), 'erreur');
-      });
-  };
-
-  document.getElementById('champ-destination').addEventListener('input', (evenement) => {
-    modifier({ destination: evenement.target.value });
-  });
-
-  document.getElementById('champ-jours').addEventListener('input', (evenement) => {
-    const valeur = Number.parseInt(evenement.target.value, 10);
-    modifier({ jours: Number.isNaN(valeur) ? null : valeur });
-  });
-
-  document.getElementById('bouton-retour').addEventListener('click', async () => {
-    afficherChargement();
-    await fermerVoyage();
-    await afficherEcranAccueil();
-  });
+  try {
+    await creerVoyage({ ...valeurs, etapeCourante: 'fiche' });
+    afficherTiroir('fiche');
+  } catch (erreur) {
+    console.error(erreur);
+    afficherTiroir('saisie');
+    afficherMessage(t('erreurs.generique'), 'erreur');
+  }
 }
 
 /* — Authentification — */
@@ -409,7 +497,7 @@ async function connecter() {
 async function deconnecter() {
   masquerMessage();
   try {
-    await sauvegarderMaintenant();
+    await fermerVoyage();
     await signOut(firebase.auth);
   } catch (erreur) {
     console.error(erreur);

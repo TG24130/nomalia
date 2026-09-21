@@ -222,6 +222,40 @@ select {
   font-size: 0.85rem;
 }
 
+.champ__erreur {
+  margin: 4px 0 0;
+  color: var(--couleur-erreur);
+  font-size: 0.85rem;
+}
+
+/* Deux champs courts partagent une ligne dès que la largeur le permet. */
+.champs-cote-a-cote {
+  display: flex;
+  gap: 12px;
+}
+
+.champs-cote-a-cote .champ {
+  flex: 1 1 0;
+}
+
+/* — Navigation entre tiroirs — */
+
+.note--etape {
+  margin: 0 0 8px;
+  text-align: center;
+}
+
+.navigation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.navigation .bouton {
+  flex: 1 1 0;
+  margin-top: 0;
+}
+
 /* — Messages — */
 
 .message {
