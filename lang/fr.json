@@ -27,14 +27,20 @@
     "reseau": "Connexion impossible. Vérifiez votre connexion internet.",
     "nonAutorise": "Cette adresse e-mail n'a pas accès à l'application.",
     "connexion": "La connexion a échoué. Réessayez.",
+    "configurationTitre": "Application non configurée",
+    "configuration": "La configuration Firebase est incomplète. L'application ne peut pas démarrer.",
     "ia": "La recherche n'a pas abouti. Réessayez dans un instant.",
     "voyageIntrouvable": "Ce voyage est introuvable."
   },
 
   "auth": {
+    "titre": "Bienvenue",
     "connexionGoogle": "Se connecter avec Google",
     "deconnexion": "Se déconnecter",
-    "invite": "Connectez-vous pour retrouver vos voyages."
+    "invite": "Connectez-vous pour retrouver vos voyages.",
+    "refusTitre": "Accès refusé",
+    "connecteEnTant": "Connecté en tant que {email}",
+    "essayerAutreCompte": "Essayer un autre compte"
   },
 
   "accueil": {

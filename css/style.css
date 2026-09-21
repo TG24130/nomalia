@@ -60,6 +60,19 @@ body {
   font-size: 0.95rem;
 }
 
+.entete__deconnexion {
+  margin-top: 8px;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--rayon);
+  background: transparent;
+  color: var(--couleur-texte-doux);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
 /* — Barre de progression — */
 
 .progression {

@@ -1,0 +1,7 @@
+{
+  "projects": {
+    "default": "demo-mytrip",
+    "test": "demo-mytrip",
+    "prod": "mytrip-prod"
+  }
+}
