@@ -9,7 +9,7 @@
     "node": "20"
   },
   "scripts": {
-    "emulateurs": "firebase emulators:start --only auth,firestore,functions,hosting",
+    "emulateurs": "node ../scripts/emulateurs.mjs",
     "journaux": "firebase functions:log",
     "deployer": "firebase deploy --only functions"
   },
