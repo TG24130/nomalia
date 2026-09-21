@@ -37,6 +37,8 @@ import {
   voyageCourant,
 } from './voyage.js';
 
+import { configurerApi } from './api.js';
+
 import * as tiroirSaisie from './tiroirs/saisie.js';
 import * as tiroirFiche from './tiroirs/fiche.js';
 import * as tiroirTransport from './tiroirs/transport.js';
@@ -543,6 +545,7 @@ async function gererUtilisateur(utilisateur) {
 
     masquerMessage();
     configurerVoyages(firebase.db, utilisateur);
+    configurerApi(firebase.fonctions);
     await afficherEcranAccueil();
   } catch (erreur) {
     // Un refus des règles Firestore se traite comme une absence d'autorisation.

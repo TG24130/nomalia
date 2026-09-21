@@ -33,6 +33,8 @@
     "configurationTitre": "Application non configurée",
     "configuration": "La configuration Firebase est incomplète. L'application ne peut pas démarrer.",
     "ia": "La recherche n'a pas abouti. Réessayez dans un instant.",
+    "destinationNonTraitable": "Cette destination n'a pas pu être traitée. Essayez une formulation différente.",
+    "parametres": "Les informations du voyage sont incomplètes. Revenez à l'étape de saisie.",
     "voyageIntrouvable": "Ce voyage est introuvable."
   },
 

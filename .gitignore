@@ -19,3 +19,6 @@ firebase-export-*/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Secrets lus par les émulateurs Firebase
+functions/.secret.local
