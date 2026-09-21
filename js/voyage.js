@@ -34,6 +34,10 @@ export const VOYAGE_VIDE = {
   destinationNormalisee: '',
   jours: null,
   mois: null,
+  // Date de départ au format AAAA-MM-JJ, facultative : le mois seul suffit à
+  // préparer le voyage, mais les comparateurs de vols et d'hébergement
+  // attendent des dates précises pour une recherche préremplie.
+  dateDepart: null,
   voyageurs: { adultes: 2, enfants: 0 },
   depart: '',
   ficheId: null,
@@ -106,6 +110,31 @@ export function normaliser(texte) {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
+}
+
+/**
+ * Renvoie les dates de début et de fin du voyage, si elles sont connues.
+ *
+ * Seule la date de départ est saisie ; la date de retour s'en déduit par le
+ * nombre de jours. Sans date de départ, les deux valent null et les liens
+ * partenaires restent non préremplis.
+ *
+ * @param {object} voyage
+ * @returns {{ dateDebut: string|null, dateFin: string|null }} dates ISO
+ */
+export function datesVoyage(voyage) {
+  const depart = voyage?.dateDepart;
+  if (!depart || !/^\d{4}-\d{2}-\d{2}$/.test(depart)) {
+    return { dateDebut: null, dateFin: null };
+  }
+
+  const jours = Number.isInteger(voyage.jours) && voyage.jours > 0 ? voyage.jours : 1;
+
+  // Midi UTC : évite qu'un décalage horaire fasse changer la date de retour.
+  const retour = new Date(`${depart}T12:00:00Z`);
+  retour.setUTCDate(retour.getUTCDate() + jours);
+
+  return { dateDebut: depart, dateFin: retour.toISOString().slice(0, 10) };
 }
 
 /**

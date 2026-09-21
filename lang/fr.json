@@ -66,6 +66,8 @@
     "jours": "Nombre de jours",
     "mois": "Mois de départ",
     "choisirMois": "Choisir un mois",
+    "dateDepart": "Date de départ",
+    "dateDepartAide": "Facultatif — permet de préremplir les recherches de vols et d'hébergement.",
     "adultes": "Adultes",
     "enfants": "Enfants",
     "depart": "Ville de départ",
@@ -144,7 +146,10 @@
       "location": "Louer une voiture sur place"
     },
     "aSaisir": "recherche à saisir sur le site",
-    "rappel": "À saisir sur le site : {destination}, {mois}, {jours} jours, {voyageurs} voyageurs.",
+    "rappel": "Votre voyage : {destination}, {mois}, {jours} jours, {voyageurs} voyageurs.",
+    "aeroports": "Aéroports retenus : {origine} vers {destination}.",
+    "aeroportInconnu": "non trouvé",
+    "sansDate": "Indiquez une date de départ à l'étape précédente pour que les recherches arrivent préremplies.",
     "prixEstime": "Prix estimé du transport (€, total)",
     "prixEstimeAide": "Facultatif — affine le budget."
   },

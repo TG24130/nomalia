@@ -3,16 +3,22 @@
  *
  * Aucun autre fichier ne construit d'URL de réservation (CLAUDE.md §3.4).
  *
- * Deux niveaux de lien, distingués par `preremplissage` :
- *  - `true`  : le format d'URL est documenté par le partenaire, la recherche
- *              arrive préremplie ;
- *  - `false` : le partenaire n'expose pas de format d'URL de recherche public,
- *              ou celui-ci repose sur des identifiants internes (codes IATA,
- *              identifiants de gare). Le lien ouvre alors la page de recherche
- *              du site, et l'interface rappelle les critères à saisir.
+ * Trois niveaux de lien, distingués par `preremplissage` :
+ *  - `'documente'` : le partenaire publie le format de ses URL de recherche ;
+ *  - `'observe'`   : le format est celui que le site produit lui-même dans la
+ *                    barre d'adresse lors d'une recherche. Il fonctionne, mais
+ *                    rien n'engage le partenaire à le maintenir : si un jour il
+ *                    change, le lien retombera sur la page d'accueil du site ;
+ *  - `false`       : aucun format exploitable, ou identifiants internes hors de
+ *                    portée (identifiants de gare). Le lien ouvre la page de
+ *                    recherche et l'interface rappelle les critères à saisir.
  *
  * Aucune URL n'est devinée : mieux vaut une page de recherche vide qu'un lien
  * fabriqué qui tombe en erreur (CLAUDE.md §3.6).
+ *
+ * Le préremplissage n'est possible que si la date de départ est renseignée et,
+ * pour les vols, si les codes d'aéroport ont pu être résolus. Sinon chaque
+ * constructeur se rabat de lui-même sur la page de recherche.
  *
  * `affiliateId` est à null partout : la monétisation n'est pas au programme de
  * la V0, mais le paramètre sera ajouté ici, sans toucher aux appelants.
@@ -34,6 +40,29 @@ function encoder(valeur) {
   return encodeURIComponent(String(valeur ?? '').trim());
 }
 
+/**
+ * Convertit une date ISO en AAMMJJ, format attendu par certains comparateurs.
+ * @param {string} date AAAA-MM-JJ
+ * @returns {string|null}
+ */
+function enAaMmJj(date) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date ?? '')) return null;
+  return date.slice(2).replace(/-/g, '');
+}
+
+/**
+ * Construit une chaîne de requête à partir des paires renseignées.
+ * @param {Array<[string, string|number|undefined|null]>} paires
+ * @returns {string}
+ */
+function requete(paires) {
+  const retenues = paires
+    .filter(([, valeur]) => valeur !== undefined && valeur !== null && valeur !== '')
+    .map(([cle, valeur]) => `${cle}=${encoder(valeur)}`);
+
+  return retenues.length ? `?${retenues.join('&')}` : '';
+}
+
 const PARTENAIRES = {
   /* — Transport aérien — */
 
@@ -49,10 +78,30 @@ const PARTENAIRES = {
   skyscanner: {
     nom: 'Skyscanner',
     affiliateId: null,
-    preremplissage: false,
-    // Le format /transport/vols/{origine}/{destination}/ attend des codes
-    // d'aéroport, que l'application ne connaît pas (hors périmètre V0).
-    construire: () => 'https://www.skyscanner.fr/',
+    preremplissage: 'observe',
+    // Format produit par le site lui-même :
+    // /transport/vols/{origine}/{destination}/{AAMMJJ}/{AAMMJJ}/
+    // Les codes d'aéroport viennent de js/aeroports.js ; sans eux, ou sans
+    // date, on ouvre la page de recherche.
+    construire: ({ iataOrigine, iataDestination, dateDebut, dateFin, adultes, enfants }) => {
+      if (!iataOrigine || !iataDestination) return 'https://www.skyscanner.fr/';
+
+      const aller = enAaMmJj(dateDebut);
+      const retour = enAaMmJj(dateFin);
+      if (!aller) return 'https://www.skyscanner.fr/';
+
+      // Le site termine toujours le chemin par une barre oblique ; un aller
+      // simple se note en omettant la date de retour.
+      const trajet = [iataOrigine, iataDestination, aller, retour]
+        .filter(Boolean)
+        .join('/')
+        .toLowerCase();
+
+      return `https://www.skyscanner.fr/transport/vols/${trajet}/${requete([
+        ['adults', adultes],
+        ['children', enfants],
+      ])}`;
+    },
   },
 
   /* — Train — */
@@ -108,7 +157,7 @@ const PARTENAIRES = {
   googlemaps: {
     nom: 'Google Maps',
     affiliateId: null,
-    preremplissage: true,
+    preremplissage: 'documente',
     // Format documenté : Google Maps URLs, paramètre api=1.
     construire: ({ origine, destination }) => {
       const parametres = ['api=1', `destination=${encoder(destination)}`, 'travelmode=driving'];
@@ -126,7 +175,24 @@ const PARTENAIRES = {
 
   /* — Hébergement (tiroir 3) — */
 
-  booking: { nom: 'Booking.com', affiliateId: null, preremplissage: false, construire: () => 'https://www.booking.com/index.fr.html' },
+  booking: {
+    nom: 'Booking.com',
+    affiliateId: null,
+    preremplissage: 'observe',
+    // Format produit par le site : searchresults.fr.html?ss=…&checkin=…
+    construire: ({ destination, dateDebut, dateFin, adultes, enfants }) => {
+      if (!destination || !dateDebut) return 'https://www.booking.com/index.fr.html';
+
+      return `https://www.booking.com/searchresults.fr.html${requete([
+        ['ss', destination],
+        ['checkin', dateDebut],
+        ['checkout', dateFin],
+        ['group_adults', adultes],
+        ['group_children', enfants],
+        ['no_rooms', 1],
+      ])}`;
+    },
+  },
   hotels: { nom: 'Hotels.com', affiliateId: null, preremplissage: false, construire: () => 'https://fr.hotels.com/' },
   abritel: { nom: 'Abritel', affiliateId: null, preremplissage: false, construire: () => 'https://www.abritel.fr/' },
   gitesdefrance: { nom: 'Gîtes de France', affiliateId: null, preremplissage: false, construire: () => 'https://www.gites-de-france.com/fr' },
@@ -149,7 +215,7 @@ const PARTENAIRES = {
   googlemapslieu: {
     nom: 'Google Maps',
     affiliateId: null,
-    preremplissage: true,
+    preremplissage: 'documente',
     // Format documenté : Google Maps URLs, recherche par requête.
     construire: ({ requete, destination }) =>
       `https://www.google.com/maps/search/?api=1&query=${encoder([requete, destination].filter(Boolean).join(' '))}`,
@@ -166,12 +232,25 @@ export function nomPartenaire(cle) {
 }
 
 /**
- * Indique si le lien arrive prérempli chez le partenaire.
+ * Indique si le lien peut arriver prérempli chez le partenaire.
+ *
+ * Répond sur la capacité du partenaire, pas sur le lien construit : un
+ * partenaire capable de préremplissage ouvrira quand même sa page de recherche
+ * si la date de départ manque. Passer `params` permet de trancher sur le lien
+ * réellement produit.
+ *
  * @param {string} cle
+ * @param {ParamsLien} [params]
  * @returns {boolean}
  */
-export function estPrerempli(cle) {
-  return PARTENAIRES[cle]?.preremplissage === true;
+export function estPrerempli(cle, params) {
+  const entree = PARTENAIRES[cle];
+  if (!entree || entree.preremplissage === false) return false;
+  if (!params) return true;
+
+  // Un lien prérempli porte toujours des paramètres ou un chemin de recherche.
+  const url = entree.construire(params, entree.affiliateId);
+  return url.includes('?') || /\/\w{3}\/\w{3}\//.test(url);
 }
 
 /**

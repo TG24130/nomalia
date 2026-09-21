@@ -51,6 +51,7 @@ export function afficher(conteneur, voyage, actions) {
     destination: voyage?.destination ?? '',
     jours: voyage?.jours ?? null,
     mois: voyage?.mois ?? null,
+    dateDepart: voyage?.dateDepart ?? null,
     depart: voyage?.depart ?? '',
     voyageurs: {
       adultes: voyage?.voyageurs?.adultes ?? 2,
@@ -83,6 +84,12 @@ export function afficher(conteneur, voyage, actions) {
         <label for="saisie-mois">${echapper(t('saisie.mois'))}</label>
         <select id="saisie-mois">${optionsMois(valeurs.mois)}</select>
         <p class="champ__erreur" id="erreur-mois" hidden></p>
+      </div>
+
+      <div class="champ">
+        <label for="saisie-date">${echapper(t('saisie.dateDepart'))}</label>
+        <input type="date" id="saisie-date" value="${echapper(valeurs.dateDepart ?? '')}">
+        <p class="champ__aide">${echapper(t('saisie.dateDepartAide'))}</p>
       </div>
 
       <div class="champs-cote-a-cote">
@@ -139,9 +146,32 @@ export function afficher(conteneur, voyage, actions) {
     retenir({ jours: lireNombre(evenement.target, BORNES.jours) });
   });
 
-  conteneur.querySelector('#saisie-mois').addEventListener('change', (evenement) => {
+  const champMois = conteneur.querySelector('#saisie-mois');
+  const champDate = conteneur.querySelector('#saisie-date');
+
+  champMois.addEventListener('change', (evenement) => {
     const mois = Number.parseInt(evenement.target.value, 10);
     retenir({ mois: Number.isNaN(mois) ? null : mois });
+
+    // Une date déjà saisie dans un autre mois deviendrait contradictoire.
+    if (valeurs.dateDepart && Number(valeurs.dateDepart.slice(5, 7)) !== valeurs.mois) {
+      champDate.value = '';
+      retenir({ dateDepart: null });
+    }
+  });
+
+  champDate.addEventListener('change', (evenement) => {
+    const date = evenement.target.value;
+
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      retenir({ dateDepart: null });
+      return;
+    }
+
+    // La date fait foi : le mois s'aligne sur elle.
+    const mois = Number(date.slice(5, 7));
+    retenir({ dateDepart: date, mois });
+    champMois.value = String(mois);
   });
 
   conteneur.querySelector('#saisie-adultes').addEventListener('input', (evenement) => {

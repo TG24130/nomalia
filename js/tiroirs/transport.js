@@ -6,9 +6,10 @@
  * prix estimé facultatif qui affinera le budget.
  */
 
-import { echapper, t } from '../i18n.js';
+import { echapper, langue, t } from '../i18n.js';
+import { chercherAeroport } from '../aeroports.js';
 import { estPrerempli, lienReservation, nomPartenaire } from '../liens.js';
-import { modifierVoyage } from '../voyage.js';
+import { datesVoyage, modifierVoyage } from '../voyage.js';
 
 /** Ce tiroir peut être passé (CLAUDE.md §7). */
 export const PEUT_ETRE_PASSE = true;
@@ -34,6 +35,21 @@ const PARTENAIRES_PAR_MOYEN = {
   // Le « +voiture » des combinés désigne une voiture de location sur place.
   location: ['discovercars', 'rentalcars'],
 };
+
+/**
+ * Met en forme une date ISO selon la langue courante.
+ * @param {string} date AAAA-MM-JJ
+ * @returns {string}
+ */
+function formaterDate(date) {
+  try {
+    return new Intl.DateTimeFormat(langue(), { dateStyle: 'long' }).format(
+      new Date(`${date}T12:00:00Z`)
+    );
+  } catch {
+    return date;
+  }
+}
 
 /**
  * Traduit un mode en liste de blocs de liens.
@@ -63,7 +79,7 @@ function blocLiens(bloc, params) {
   const liens = bloc.partenaires
     .map((partenaire) => {
       const url = lienReservation(partenaire, params);
-      const mention = estPrerempli(partenaire)
+      const mention = estPrerempli(partenaire, params)
         ? ''
         : `<span class="lien__mention">${echapper(t('transport.aSaisir'))}</span>`;
 
@@ -94,13 +110,27 @@ function blocLiens(bloc, params) {
  * @param {object} voyage
  * @param {object} actions navigation fournie par app.js
  */
-export function afficher(conteneur, voyage, actions) {
+export async function afficher(conteneur, voyage, actions) {
+  const { dateDebut, dateFin } = datesVoyage(voyage);
+
   const params = {
     destination: voyage?.destination ?? '',
     origine: voyage?.depart ?? '',
+    dateDebut,
+    dateFin,
     adultes: voyage?.voyageurs?.adultes,
     enfants: voyage?.voyageurs?.enfants,
   };
+
+  // Les comparateurs de vols attendent des codes d'aéroport. La résolution
+  // échoue silencieusement : les liens restent alors non préremplis.
+  const [origine, destination] = await Promise.all([
+    chercherAeroport(voyage?.depart),
+    chercherAeroport(voyage?.destination),
+  ]);
+
+  params.iataOrigine = origine?.code ?? null;
+  params.iataDestination = destination?.code ?? null;
 
   const rendre = () => {
     const mode = voyage.transport?.mode ?? null;
@@ -125,12 +155,31 @@ export function afficher(conteneur, voyage, actions) {
         ? `<p class="note">${echapper(
             t('transport.rappel', {
               destination: params.destination,
-              mois: t(`mois.${voyage.mois}`),
+              mois: dateDebut ? formaterDate(dateDebut) : t(`mois.${voyage.mois}`),
               jours: voyage.jours ?? '?',
               voyageurs: (params.adultes ?? 0) + (params.enfants ?? 0),
             })
           )}</p>`
         : '';
+
+    // Quand un vol est concerné, on indique ce qui a été résolu, pour que
+    // l'utilisateur comprenne pourquoi un lien est prérempli ou non.
+    const concerneAvion = Boolean(mode?.startsWith('avion'));
+    const aeroports =
+      concerneAvion && (origine || destination)
+        ? `<p class="note">${echapper(
+            t('transport.aeroports', {
+              origine: origine ? `${origine.ville} (${origine.code})` : t('transport.aeroportInconnu'),
+              destination: destination
+                ? `${destination.ville} (${destination.code})`
+                : t('transport.aeroportInconnu'),
+            })
+          )}</p>`
+        : '';
+
+    const manqueDate = mode && !dateDebut
+      ? `<p class="note">${echapper(t('transport.sansDate'))}</p>`
+      : '';
 
     conteneur.innerHTML = `
       <section class="carte">
@@ -140,6 +189,8 @@ export function afficher(conteneur, voyage, actions) {
       </section>
 
       ${rappel}
+      ${aeroports}
+      ${manqueDate}
       ${blocs}
 
       <section class="carte">
