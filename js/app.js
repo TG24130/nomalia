@@ -364,8 +364,14 @@ function afficherTiroir(etape) {
     message: afficherMessage,
   };
 
+  // Un tiroir peut être asynchrone (appel à une Cloud Function) : on attrape
+  // aussi bien une erreur immédiate qu'une promesse rejetée.
   try {
-    tiroir.afficher(document.getElementById('tiroir'), voyage, actions);
+    const rendu = tiroir.afficher(document.getElementById('tiroir'), voyage, actions);
+    Promise.resolve(rendu).catch((erreur) => {
+      console.error(erreur);
+      afficherMessage(t('erreurs.generique'), 'erreur');
+    });
   } catch (erreur) {
     console.error(erreur);
     afficherMessage(t('erreurs.generique'), 'erreur');

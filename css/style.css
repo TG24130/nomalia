@@ -238,6 +238,135 @@ select {
   flex: 1 1 0;
 }
 
+/* — Cartes dépliables de la fiche — */
+
+.carte--point,
+.carte--sources {
+  padding: 0;
+}
+
+.point__entete,
+.carte--sources > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: var(--hauteur-tactile);
+  padding: 10px var(--espace);
+  cursor: pointer;
+  list-style: none;
+}
+
+/* Masque le chevron natif pour garder la même flèche partout. */
+.point__entete::-webkit-details-marker,
+.carte--sources > summary::-webkit-details-marker {
+  display: none;
+}
+
+.point__titre {
+  font-weight: 600;
+}
+
+.point__apercu {
+  color: var(--couleur-texte-doux);
+  font-size: 0.9rem;
+  text-align: right;
+}
+
+.point__entete::after,
+.carte--sources > summary::after {
+  content: '▾';
+  flex: 0 0 auto;
+  color: var(--couleur-texte-doux);
+  transition: transform 0.15s ease;
+}
+
+details[open] > .point__entete::after,
+.carte--sources[open] > summary::after {
+  transform: rotate(180deg);
+}
+
+.point__contenu {
+  padding: 0 var(--espace) var(--espace);
+  border-top: 1px solid var(--couleur-bordure);
+}
+
+.point__contenu p:first-child {
+  margin-top: 12px;
+}
+
+.point__contenu h4 {
+  margin: 12px 0 4px;
+  font-size: 0.9rem;
+}
+
+.point__contenu ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.a-verifier {
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: 10px;
+  background: var(--couleur-alerte-fond);
+  color: var(--couleur-alerte);
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.tableau {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.tableau th,
+.tableau td {
+  padding: 6px 4px;
+  text-align: right;
+  border-bottom: 1px solid var(--couleur-bordure);
+}
+
+.tableau th[scope='row'] {
+  text-align: left;
+  font-weight: 600;
+}
+
+/* Températures de la mer : douze cases qui passent à la ligne sur mobile. */
+.mer {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 4px;
+  margin-top: 12px;
+}
+
+.mer__mois {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 2px;
+  border-radius: 8px;
+  background: var(--couleur-fond);
+  font-size: 0.8rem;
+}
+
+.mer__mois--choisi {
+  background: var(--couleur-accent-clair);
+  font-weight: 700;
+}
+
+.mer__libelle {
+  color: var(--couleur-texte-doux);
+}
+
+.carte--sources ul {
+  margin: 0;
+  padding: 0 var(--espace) var(--espace) 36px;
+  word-break: break-all;
+  font-size: 0.85rem;
+}
+
 /* — Navigation entre tiroirs — */
 
 .note--etape {

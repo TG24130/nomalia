@@ -19,6 +19,7 @@
     "confirmerSupprimer": "Oui, supprimer",
     "dupliquer": "Dupliquer",
     "reprendre": "Reprendre",
+    "reessayer": "Réessayer",
     "oui": "Oui",
     "non": "Non",
     "aVerifier": "à vérifier",
@@ -105,9 +106,21 @@
     "avertissementVisa": "Vérifiez sur France Diplomatie avant de partir.",
     "avertissementVaccins": "Informations indicatives, à confirmer avec votre médecin ou un centre de vaccinations internationales.",
     "alerteMois": "Le mois choisi ne fait pas partie des meilleures périodes pour cette destination.",
-    "adaptateurOui": "Adaptateur nécessaire",
-    "adaptateurNon": "Pas d'adaptateur nécessaire",
-    "sources": "Sources"
+    "adaptateurOui": "Adaptateur nécessaire depuis la France.",
+    "adaptateurNon": "Pas d'adaptateur nécessaire depuis la France.",
+    "lienFranceDiplomatie": "Conseils aux voyageurs (France Diplomatie)",
+    "decalageAucun": "Aucun",
+    "decalageHeures": "{heures} h",
+    "vaccinsAucunObligatoire": "Aucun obligatoire",
+    "vaccinsObligatoiresNombre": "{nombre} obligatoire(s)",
+    "vaccinsObligatoires": "Obligatoires",
+    "vaccinsRecommandes": "Recommandés",
+    "aucun": "Aucun",
+    "parNuit": "{montant} / nuit",
+    "hotelNuit": "Hôtel par nuit",
+    "repasJour": "Repas par jour",
+    "budgetParPersonne": "Par personne. Ordres de grandeur, à confirmer sur place.",
+    "sources": "Sources consultées"
   },
 
   "transport": {
