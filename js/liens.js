@@ -252,9 +252,34 @@ const PARTENAIRES = {
 
   /* — Randonnées (tiroir 5) — */
 
-  visorando: { nom: 'Visorando', affiliateId: null, preremplissage: false, construire: () => 'https://www.visorando.com/' },
-  komoot: { nom: 'Komoot', affiliateId: null, preremplissage: false, construire: () => 'https://www.komoot.fr/' },
-  alltrails: { nom: 'AllTrails', affiliateId: null, preremplissage: false, construire: () => 'https://www.alltrails.com/fr' },
+  // Visorando n'expose aucun format de recherche exploitable : quatre formats
+  // testés, aucun ne reflète le terme demandé.
+  visorando: {
+    nom: 'Visorando',
+    affiliateId: null,
+    preremplissage: false,
+    construire: () => 'https://www.visorando.com/',
+  },
+
+  komoot: {
+    nom: 'Komoot',
+    affiliateId: null,
+    preremplissage: 'observe',
+    // Format produit par le site : /discover?q=…
+    // Vérifié le 22/09/2026 par comparaison croisée sur deux itinéraires.
+    construire: ({ requete, destination }) => {
+      const termes = [requete, destination].filter(Boolean).join(' ');
+      if (!termes) return 'https://www.komoot.fr/';
+      return `https://www.komoot.fr/discover?q=${encoder(termes)}`;
+    },
+  },
+
+  alltrails: {
+    nom: 'AllTrails',
+    affiliateId: null,
+    preremplissage: false,
+    construire: () => 'https://www.alltrails.com/fr',
+  },
 
   /* — Repérage d'un lieu sur une carte — */
 

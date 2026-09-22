@@ -237,18 +237,29 @@
     "niveaux": {
       "facile": "Facile",
       "moyen": "Moyen",
-      "difficile": "Difficile"
+      "difficile": "Difficile",
+      "tres-difficile": "Très difficile"
     },
-    "dureeMax": "Durée maximale",
-    "denivelemax": "Dénivelé maximal (m)",
-    "boucle": "Boucle uniquement",
+    "dureeMax": "Durée de marche maximale",
+    "deniveleMax": "Dénivelé maximal",
+    "boucle": "Forme du parcours",
+    "estBoucle": "Boucle",
+    "estAllerRetour": "Aller-retour",
+    "estEnfants": "Avec enfants",
     "enfants": "Adaptée aux enfants",
     "distance": "Distance",
     "duree": "Durée",
     "denivele": "Dénivelé",
+    "distanceValeur": "{km} km",
+    "deniveleValeur": "{m} m D+",
     "depart": "Départ",
     "meilleureSaison": "Meilleure saison",
-    "voirTrace": "Chercher le tracé"
+    "voirTrace": "Chercher le tracé",
+    "voirTraceChez": "Chercher le tracé sur {partenaire}",
+    "chercher": "Chercher des randonnées",
+    "relancer": "Relancer la recherche",
+    "aucuneTrouvee": "Aucune randonnée ne correspond à ces critères. Essayez d'élargir le niveau ou la durée.",
+    "retenuesRecapitulatif": "{nombre} randonnée(s) retenue(s)."
   },
 
   "budget": {

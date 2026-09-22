@@ -70,15 +70,19 @@ function lireParametres(donnees) {
     throw new HttpsError('invalid-argument', 'Niveau invalide.');
   }
 
+  // `boucle` a trois états : uniquement des boucles, uniquement des
+  // aller-retours, ou indifférent.
+  const boucle = ['oui', 'non'].includes(donnees?.boucle) ? donnees.boucle : null;
+
   return {
     destination,
     mois,
     langue,
     niveau,
+    boucle,
     nombre: NOMBRE_RANDOS,
     dureeMax: lireNombreFacultatif(donnees?.dureeMax, BORNES.dureeMax),
     deniveleMax: lireNombreFacultatif(donnees?.deniveleMax, BORNES.deniveleMax),
-    boucleUniquement: donnees?.boucleUniquement === true,
     adapteeEnfants: donnees?.adapteeEnfants === true,
   };
 }
@@ -92,21 +96,12 @@ function lireParametres(donnees) {
  * @param {object} parametres
  * @returns {string}
  */
-function cleRandos({
-  destination,
-  mois,
-  langue,
-  niveau,
-  dureeMax,
-  deniveleMax,
-  boucleUniquement,
-  adapteeEnfants,
-}) {
+function cleRandos({ destination, mois, langue, niveau, dureeMax, deniveleMax, boucle, adapteeEnfants }) {
   const criteres = [
     niveau ?? 'tous',
     dureeMax ? `${dureeMax}h` : 'sansduree',
     deniveleMax ? `${deniveleMax}m` : 'sansdenivele',
-    boucleUniquement ? 'boucle' : 'libre',
+    boucle === 'oui' ? 'boucle' : boucle === 'non' ? 'allerretour' : 'libre',
     adapteeEnfants ? 'enfants' : 'adultes',
   ].join('-');
 
@@ -120,7 +115,9 @@ function cleRandos({
  * @returns {Promise<{ cle: string, randos: Array<object>, sources: string[], depuisCache: boolean }>}
  */
 export const genererRandos = onCall(
-  { secrets: [CLE_ANTHROPIC], timeoutSeconds: 300 },
+  // Vérifier des itinéraires demande plus de recherches qu'une fiche : la
+  // génération dépasse régulièrement cinq minutes.
+  { secrets: [CLE_ANTHROPIC], timeoutSeconds: 540 },
   async (requete) => {
     await verifierAcces(requete);
 
@@ -145,6 +142,9 @@ export const genererRandos = onCall(
       prompt: promptRandos(parametres),
       schema: SCHEMA_RANDOS,
       valider: validerRandos,
+      // Moins de recherches que pour une fiche : au-delà, le modèle vérifie
+      // chaque itinéraire sur plusieurs sites et la génération s'éternise.
+      maxRecherches: 4,
       journal: {
         fonction: 'genererRandos',
         destination: parametres.destination,

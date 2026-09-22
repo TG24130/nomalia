@@ -116,7 +116,10 @@ export async function demanderJson({
     let reponse;
 
     try {
-      reponse = await client.messages.create({
+      // En flux plutôt qu'en un bloc : une génération avec recherche web dure
+      // souvent plusieurs minutes, et une requête simple finit par expirer
+      // avant que le modèle ait répondu.
+      const flux = client.messages.stream({
         model: MODELE_CLAUDE,
         max_tokens: 16000,
         system: systeme,
@@ -124,6 +127,8 @@ export async function demanderJson({
         tools: [{ type: 'web_search_20260209', name: 'web_search', max_uses: maxRecherches }],
         output_config: { effort, format: { type: 'json_schema', schema } },
       });
+
+      reponse = await flux.finalMessage();
     } catch (erreur) {
       throw traduireErreurApi(erreur);
     }

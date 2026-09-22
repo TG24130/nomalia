@@ -41,16 +41,28 @@ export function promptRandos({
   niveau,
   dureeMax,
   deniveleMax,
-  boucleUniquement,
+  boucle,
   adapteeEnfants,
 }) {
   const nomMois = (MOIS[langue] ?? MOIS.fr)[mois - 1];
 
+  /** Formulation attendue pour chaque niveau, l'intitulé seul étant ambigu. */
+  const DESCRIPTION_NIVEAU = {
+    facile: 'facile : terrain roulant, faible dénivelé, accessible à tous',
+    moyen: 'moyen : quelques montées soutenues, bonne condition physique souhaitable',
+    difficile: 'difficile : longue, dénivelé important, terrain parfois technique',
+    'tres-difficile':
+      'très difficile : course engagée, terrain technique ou exposé, expérience de la montagne nécessaire',
+  };
+
   const criteres = [];
-  if (niveau) criteres.push(`- niveau de difficulté : ${niveau}`);
+  if (niveau) criteres.push(`- niveau de difficulté ${DESCRIPTION_NIVEAU[niveau] ?? niveau}`);
   if (dureeMax) criteres.push(`- durée de marche maximale : ${dureeMax} heures`);
   if (deniveleMax) criteres.push(`- dénivelé positif maximal : ${deniveleMax} mètres`);
-  if (boucleUniquement) criteres.push('- uniquement des boucles revenant au point de départ');
+  if (boucle === 'oui') criteres.push('- uniquement des boucles revenant au point de départ');
+  if (boucle === 'non') {
+    criteres.push("- uniquement des aller-retours ou des traversées, pas de boucle");
+  }
   if (adapteeEnfants) {
     criteres.push('- adaptées à des enfants : sans passage exposé ni difficulté technique');
   }

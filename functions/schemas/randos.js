@@ -9,8 +9,13 @@
 /** Nombre de randonnées attendues (CLAUDE.md §6, tiroir 5). */
 export const NOMBRE_RANDOS = 5;
 
-/** Niveaux de difficulté acceptés. */
-export const NIVEAUX = ['facile', 'moyen', 'difficile'];
+/**
+ * Niveaux de difficulté acceptés.
+ *
+ * Le plan V0 en prévoyait trois ; « très difficile » a été ajouté pour
+ * distinguer une longue course engagée d'une randonnée simplement sportive.
+ */
+export const NIVEAUX = ['facile', 'moyen', 'difficile', 'tres-difficile'];
 
 /** Durées maximales proposées, en heures. */
 export const DUREES_MAX = [2, 3, 4, 6, 8];
