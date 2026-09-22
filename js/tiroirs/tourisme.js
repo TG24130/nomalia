@@ -204,6 +204,14 @@ export async function afficher(conteneur, voyage, actions) {
         ${recapitulatif}
         ${liste.lieux.map(carteLieu).join('')}
       `;
+    } else if (liste) {
+      // Réponse reçue, mais vide : le prompt demande d'en proposer moins
+      // plutôt que d'en inventer. Ce n'est pas une panne, et le message le dit.
+      contenu = `
+        <section class="carte">
+          <p class="avertissement">${echapper(t('tourisme.aucunTrouve'))}</p>
+        </section>
+      `;
     }
 
     conteneur.innerHTML = `

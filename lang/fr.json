@@ -23,6 +23,7 @@
     "budgetFourchette": "Entre {bas} et {haut} selon vos choix",
     "retour": "Retour à mes voyages"
   },
+
   "attente": {
     "fiche": [
       "On rassemble les informations pratiques…",
@@ -49,6 +50,7 @@
       "On met les conseils en forme…"
     ]
   },
+
   "commun": {
     "chargement": "Chargement…",
     "chargementIA": "Recherche en cours, cela peut prendre quelques secondes…",
@@ -282,7 +284,8 @@
     "retenusRecapitulatif": "{nombre} lieu(x) retenu(s) — {total} par personne.",
     "reposTitre": "Un séjour sans programme",
     "reposConseils": "Pour un repos total, le choix de l'hébergement compte plus que celui des visites. Privilégiez un logement où vous aurez envie de rester la journée, et gardez une ou deux sorties en réserve plutôt qu'un programme.",
-    "reposFiltres": "Critères d'hébergement conseillés : {filtres}."
+    "reposFiltres": "Critères d'hébergement conseillés : {filtres}.",
+    "aucunTrouve": "Aucun lieu n'a pu être proposé pour cette destination. Réessayez dans un instant ou passez cette étape."
   },
 
   "randos": {
@@ -313,7 +316,7 @@
     "voirTraceChez": "Chercher le tracé sur {partenaire}",
     "chercher": "Chercher des randonnées",
     "relancer": "Relancer la recherche",
-    "aucuneTrouvee": "Aucune randonnée ne correspond à ces critères. Essayez d'élargir le niveau ou la durée.",
+    "aucuneTrouvee": "Aucune randonnée ne correspond à ces critères. Un niveau difficile demande souvent plus de dénivelé : essayez de l'augmenter, ou d'allonger la durée.",
     "retenuesRecapitulatif": "{nombre} randonnée(s) retenue(s)."
   },
 

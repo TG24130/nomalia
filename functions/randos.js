@@ -155,6 +155,14 @@ export const genererRandos = onCall(
     const randos = resultat.randos.slice(0, NOMBRE_RANDOS);
     const sources = Array.isArray(resultat.sources) ? resultat.sources : [];
 
+    // Une recherche restée vide n'est pas mise en cache : elle tient souvent à
+    // des critères trop serrés, et la figer trente jours interdirait de
+    // retrouver quoi que ce soit avec les mêmes critères élargis entre-temps.
+    if (randos.length === 0) {
+      logger.info('Aucune randonnée pour ces critères', { cle });
+      return { cle, randos, sources, depuisCache: false };
+    }
+
     await db.collection('randos').doc(cle).set({
       randos,
       sources,

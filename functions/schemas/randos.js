@@ -104,9 +104,18 @@ export function validerRandos(donnees) {
   if (!texteRenseigne(donnees.destination)) erreurs.push('destination manquante');
   if (!Array.isArray(donnees.sources)) erreurs.push('sources doit être un tableau');
 
-  if (!Array.isArray(donnees.randos) || donnees.randos.length === 0) {
-    erreurs.push('aucune randonnée renvoyée');
+  if (!Array.isArray(donnees.randos)) {
+    erreurs.push('randos doit être un tableau');
     return { valide: false, erreurs };
+  }
+
+  // Une liste vide est une réponse, pas une panne : elle dit qu'aucun
+  // itinéraire ne tient dans les critères demandés — « difficile » avec
+  // 600 m de dénivelé maximal, par exemple. La refuser déclenchait une
+  // seconde recherche aussi vaine que la première, puis un message d'erreur
+  // technique là où il fallait proposer d'élargir les critères.
+  if (donnees.randos.length === 0) {
+    return { valide: true, erreurs: [] };
   }
 
   donnees.randos.forEach((rando, index) => {

@@ -121,6 +121,12 @@ export const genererLieux = onCall(
     const lieux = resultat.lieux.slice(0, NOMBRE_LIEUX);
     const sources = Array.isArray(resultat.sources) ? resultat.sources : [];
 
+    // Voir randos.js : une liste vide n'est pas mise en cache.
+    if (lieux.length === 0) {
+      logger.info('Aucun lieu pour cette demande', { cle });
+      return { cle, lieux, sources, depuisCache: false };
+    }
+
     await db.collection('lieux').doc(cle).set({
       lieux,
       sources,

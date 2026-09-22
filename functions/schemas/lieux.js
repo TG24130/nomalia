@@ -77,9 +77,14 @@ export function validerLieux(donnees) {
   if (!texteRenseigne(donnees.destination)) erreurs.push('destination manquante');
   if (!Array.isArray(donnees.sources)) erreurs.push('sources doit être un tableau');
 
-  if (!Array.isArray(donnees.lieux) || donnees.lieux.length === 0) {
-    erreurs.push('aucun lieu renvoyé');
+  if (!Array.isArray(donnees.lieux)) {
+    erreurs.push('lieux doit être un tableau');
     return { valide: false, erreurs };
+  }
+
+  // Une liste vide est une réponse, pas une panne (voir schemas/randos.js).
+  if (donnees.lieux.length === 0) {
+    return { valide: true, erreurs: [] };
   }
 
   donnees.lieux.forEach((lieu, index) => {
