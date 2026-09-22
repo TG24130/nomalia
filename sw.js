@@ -8,7 +8,7 @@
  * Incrémenter VERSION_CACHE à chaque mise en ligne pour forcer la mise à jour.
  */
 
-const VERSION_CACHE = 'nomadia-v1';
+const VERSION_CACHE = 'nomadia-v2';
 
 /**
  * Fichiers mis en cache dès l'installation.
@@ -48,6 +48,11 @@ const FICHIERS_STATIQUES = [
   './js/tiroirs/randos.js',
   './js/tiroirs/budget-vue.js',
   './lang/fr.json',
+  // Photos des bandeaux : 420 ko à elles trois, mises en cache dès
+  // l'installation parce qu'elles s'affichent sur le premier écran.
+  './images/accueil.jpg',
+  './images/etape-randos.jpg',
+  './images/etape-tourisme.jpg',
   './icons/icone-192.png',
   './icons/icone-512.png',
   './icons/icone-maskable-512.png',
