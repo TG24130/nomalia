@@ -113,6 +113,14 @@ export const genererLieux = onCall(
       prompt: promptLieux(parametres),
       schema: SCHEMA_LIEUX,
       valider: validerLieux,
+      // Mesuré sur le même cas — Népal, incontournables :
+      //   5 recherches, effort medium : 610 s, 234 000 tokens d'entrée
+      //   2 recherches, effort low    :  42 s,  31 000 tokens d'entrée
+      // Les cinq mêmes lieux dans les deux cas. Sans budget explicite,
+      // demanderJson en accordait six par défaut, et le modèle vérifiait
+      // chaque lieu puis chaque tarif l'un après l'autre.
+      effort: 'low',
+      maxRecherches: 2,
       journal: {
         fonction: 'genererLieux',
         destination: parametres.destination,
