@@ -21,12 +21,22 @@ import { modifierVoyage } from '../voyage.js';
 export const PEUT_ETRE_PASSE = true;
 
 /** Types de séjour (CLAUDE.md §4). */
-const TYPES = ['plage-repos', 'repos-total', 'incontournables'];
+const TYPES = [
+  'incontournables',
+  'plage-repos',
+  'trip-liberte',
+  'trekking',
+  'safari',
+  'repos-total',
+];
 
 /** Type de liste demandé à l'IA selon le type de séjour. */
 const LISTE_PAR_TYPE = {
   'plage-repos': 'plages',
   incontournables: 'incontournables',
+  safari: 'safari',
+  'trip-liberte': 'etapes',
+  trekking: 'treks',
 };
 
 /** Critères d'hébergement conseillés pour un repos total. */

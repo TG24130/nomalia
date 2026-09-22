@@ -43,6 +43,24 @@
       "On cherche les astuces pour éviter la foule…",
       "On met les conseils en forme…"
     ],
+    "safari": [
+      "On repère les parcs et les réserves…",
+      "Quelles espèces, à quelle saison…",
+      "Guides, véhicules, droits d'entrée…",
+      "On met les conseils en forme…"
+    ],
+    "etapes": [
+      "On trace un itinéraire de ville en ville…",
+      "On ordonne les étapes géographiquement…",
+      "Distances et temps de trajet…",
+      "On met les conseils en forme…"
+    ],
+    "treks": [
+      "On cherche des treks de plusieurs jours…",
+      "Durée, altitude, niveau requis…",
+      "Refuges, permis, saison praticable…",
+      "On met les conseils en forme…"
+    ],
     "randos": [
       "On cherche des itinéraires qui correspondent…",
       "Distance, dénivelé, durée…",
@@ -273,7 +291,10 @@
     "type": {
       "plage-repos": "Plage et repos",
       "repos-total": "Repos total",
-      "incontournables": "Les incontournables"
+      "incontournables": "Les incontournables",
+      "safari": "Safari",
+      "trip-liberte": "Trip liberté",
+      "trekking": "Trekking"
     },
     "lieuxRetenus": "Lieux retenus",
     "prixEntree": "Entrée estimée",

@@ -76,6 +76,19 @@ const TRACES = {
   // la lune reste reconnaissable à n'importe quelle taille.
   'repos-total': '<path d="M20 15.2A8.6 8.6 0 1 1 9.4 4.5a6.7 6.7 0 0 0 10.6 10.7Z"/><path d="M17 3.2v2.6M15.7 4.5h2.6"/><path d="M20.5 7.8v1.8M19.6 8.7h1.8"/>',
 
+  // Une empreinte de patte : l'observation animalière, sans choisir un animal
+  // plutôt qu'un autre.
+  safari: '<path d="M12 12.8c2.4 0 4.3 1.5 4.3 3.4S14.4 19.8 12 19.8s-4.3-1.7-4.3-3.6 1.9-3.4 4.3-3.4Z"/><circle cx="6.6" cy="11.3" r="1.6"/><circle cx="10.1" cy="8.2" r="1.7"/><circle cx="13.9" cy="8.2" r="1.7"/><circle cx="17.4" cy="11.3" r="1.6"/>',
+
+  // Deux épingles de carte reliées par un trajet pointillé : on va de ville
+  // en ville. Deux simples cercles se lisaient comme un graphe.
+  'trip-liberte': '<path d="M6.5 11.6S9.6 8.9 9.6 6.8a3.1 3.1 0 1 0-6.2 0c0 2.1 3.1 4.8 3.1 4.8Z"/><circle cx="6.5" cy="6.7" r="1.1"/><path d="M17.5 21.2s3.1-2.7 3.1-4.8a3.1 3.1 0 1 0-6.2 0c0 2.1 3.1 4.8 3.1 4.8Z"/><circle cx="17.5" cy="16.3" r="1.1"/><path stroke-dasharray="1.8 2.4" d="M8.6 12.6c2.8 1.2 4.4 2.7 5.4 4.6"/>',
+
+  // Un sac à dos, bretelles comprises : le trek se distingue ainsi des
+  // sommets de la randonnée à la journée. Sans les bretelles, le corps et son
+  // anse se lisaient comme un cadenas.
+  trekking: '<path d="M7.6 8.6h8.8a2.6 2.6 0 0 1 2.6 2.6V20a1.2 1.2 0 0 1-1.2 1.2H6.2A1.2 1.2 0 0 1 5 20v-8.8a2.6 2.6 0 0 1 2.6-2.6Z"/><path d="M10 8.6V7.2a2 2 0 0 1 4 0v1.4"/><path d="M8.4 8.8C7.4 10.2 7 11.8 7 13.6M15.6 8.8c1 1.4 1.4 3 1.4 4.8"/><path d="M9.4 21.2v-4.4h5.2v4.4"/>',
+
   // Un monument à colonnes : le lieu qu'on ne manque pas.
   incontournables: '<path d="M3 9l9-5 9 5"/><path d="M5.5 9v9M9.8 9v9M14.2 9v9M18.5 9v9"/><path d="M4 18h16"/><path d="M2 21h20"/>',
 

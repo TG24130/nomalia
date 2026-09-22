@@ -38,10 +38,23 @@ export function promptLieux({ destination, type, mois, langue, nombre, voyageurs
   const nomMois = (MOIS[langue] ?? MOIS.fr)[mois - 1];
   const avecEnfants = (voyageurs?.enfants ?? 0) > 0;
 
-  const consigneType =
-    type === 'plages'
-      ? `Sélectionne les ${nombre} plus belles plages de cette destination. Varie les ambiances : plages familiales abritées, criques plus sauvages, plages réputées. Pour chacune, précise la nature du sable ou des galets, la présence d'ombre et de services, et la facilité d'accès.`
-      : `Sélectionne les ${nombre} lieux incontournables de cette destination : sites archéologiques, musées, villages, points de vue ou curiosités naturelles. Pour chacun, précise les horaires d'ouverture habituels, s'il faut réserver à l'avance, et le temps à prévoir sur place.`;
+  // Une consigne par type de séjour. Les types partagent le même schéma : ce
+  // qui leur est propre — nuits conseillées, altitude, permis — se dit dans la
+  // description et les conseils, plutôt que dans des champs qui resteraient
+  // vides pour tous les autres types.
+  const CONSIGNES = {
+    plages: `Sélectionne les ${nombre} plus belles plages de cette destination. Varie les ambiances : plages familiales abritées, criques plus sauvages, plages réputées. Pour chacune, précise la nature du sable ou des galets, la présence d'ombre et de services, et la facilité d'accès.`,
+
+    incontournables: `Sélectionne les ${nombre} lieux incontournables de cette destination : sites archéologiques, musées, villages, points de vue ou curiosités naturelles. Pour chacun, précise les horaires d'ouverture habituels, s'il faut réserver à l'avance, et le temps à prévoir sur place.`,
+
+    safari: `Sélectionne les ${nombre} meilleurs endroits d'observation de la faune sauvage de cette destination : parcs nationaux, réserves, zones humides ou sites d'observation réputés. Pour chacun, dis quelles espèces on y voit vraiment et à quelle période de l'année elles sont les plus visibles. Dans les conseils, précise le mode d'observation (véhicule tout-terrain, à pied, en bateau), s'il faut passer par un guide ou un opérateur agréé, la durée habituelle d'une sortie et le meilleur moment de la journée. Le prix d'entrée est le droit d'entrée du parc par adulte, hors prestation de guide.`,
+
+    etapes: `Construis un itinéraire de ${nombre} étapes pour parcourir cette destination de ville en ville, dans un ordre géographique cohérent, sans revenir deux fois au même endroit. Numérote les étapes dans l'ordre du parcours. Pour chacune, dis ce qui justifie de s'y arrêter et combien de nuits y passer. Dans les conseils, précise la distance et le temps de trajet depuis l'étape précédente ainsi que le moyen de transport le plus pratique entre les deux. Le prix d'entrée n'a pas de sens pour une étape : mets null.`,
+
+    treks: `Sélectionne les ${nombre} plus beaux treks de plusieurs jours de cette destination. Il s'agit bien d'itinéraires en plusieurs étapes avec nuits sur le parcours, et non de randonnées à la journée, qui sont proposées ailleurs dans l'application. Pour chacun, indique le nombre de jours, l'altitude maximale atteinte et le niveau requis. Dans les conseils, précise le type d'hébergement sur le parcours (refuge, lodge, bivouac), les permis ou l'accompagnement obligatoires, et la saison où l'itinéraire est praticable. Le prix d'entrée est celui des permis et droits d'accès par adulte, hors agence.`,
+  };
+
+  const consigneType = CONSIGNES[type] ?? CONSIGNES.incontournables;
 
   const consigneEnfants = avecEnfants
     ? `\nLe voyage se fait avec ${voyageurs.enfants} enfant(s) : indique pour chaque lieu s'il leur convient, et ce qu'il faut prévoir.`
