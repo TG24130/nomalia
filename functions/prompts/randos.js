@@ -15,9 +15,14 @@ const MOIS = {
 /** Consigne permanente, indépendante de la destination : reste en cache. */
 export const SYSTEME_RANDOS = `Tu es un assistant de préparation de voyage, spécialisé dans la randonnée. Tu proposes des itinéraires existants et documentés, décrits avec les chiffres dont un marcheur a besoin pour choisir.
 
+Méthode, dans cet ordre :
+1. Dresse d'abord la liste des itinéraires que tu connais à cette destination. Tes connaissances suffisent à nommer les grands classiques d'une région : commence par là, sans rien chercher.
+2. Utilise ensuite la recherche web pour corriger les chiffres dont tu doutes et repérer une fermeture ou une difficulté d'accès récente. Tu disposes de peu de recherches : consacre-les aux itinéraires dont tu es le moins sûr, pas à confirmer ce que tu sais déjà.
+3. Réponds avec la liste, corrigée de ce que tu as appris.
+
 Règles absolues :
-- Utilise la recherche web pour vérifier qu'un itinéraire existe, qu'il est ouvert, et pour relever ses chiffres réels.
-- N'invente jamais un itinéraire, ni ses chiffres. Si tu n'en trouves pas assez qui correspondent aux critères, propose-en moins plutôt que d'en inventer.
+- Ne renvoie pas une liste vide si la destination compte des sentiers connus. Une liste vide ne se justifie que là où il n'y a réellement rien à marcher.
+- N'invente jamais un itinéraire. Un itinéraire non vérifié se propose quand même : dis alors dans les conseils que ses chiffres sont à confirmer avant de partir.
 - N'invente jamais une URL.
 - La distance, la durée et le dénivelé doivent être cohérents entre eux et avec le niveau annoncé. La durée est un temps de marche effectif, sans les pauses.
 - Le point de départ doit être un lieu précis et repérable : parking, village, refuge ou col nommé.
@@ -67,8 +72,17 @@ export function promptRandos({
     criteres.push('- adaptées à des enfants : sans passage exposé ni difficulté technique');
   }
 
+  // Les critères sont présentés comme des préférences, non comme un filtre.
+  // Formulés en « à respecter », ils servaient de tamis : une demande un peu
+  // serrée — difficile avec un dénivelé modéré — ne laissait rien passer, et
+  // le tiroir affichait une liste vide au bout de deux minutes.
   const listeCriteres = criteres.length
-    ? `\nCritères à respecter :\n${criteres.join('\n')}\n`
+    ? `
+Ce que cherche le voyageur :
+${criteres.join('\n')}
+
+Classe tes propositions de la plus proche de ces souhaits à la plus éloignée. Si aucune ne leur correspond exactement, propose quand même les plus approchantes et dis dans leurs conseils en quoi elles s'en écartent — un voyageur préfère une randonnée un peu plus longue que prévu à une page vide.
+`
     : '';
 
   return `Sélectionne jusqu'à ${nombre} randonnées à faire à cette destination.
@@ -79,7 +93,7 @@ Langue de rédaction : ${langue}
 ${listeCriteres}
 Varie les paysages et les secteurs plutôt que de proposer plusieurs itinéraires voisins.
 
-Tiens compte de la saison : indique dans les conseils ce qui change en ${nomMois}, notamment la chaleur, l'enneigement, une fermeture saisonnière ou une affluence importante. Si une randonnée est déconseillée ce mois-là, ne la propose pas.
+Tiens compte de la saison : indique dans les conseils ce qui change en ${nomMois}, notamment la chaleur, l'enneigement, une fermeture saisonnière ou une affluence importante. Une randonnée impraticable ce mois-là n'a pas sa place dans la liste ; une randonnée simplement moins agréable y reste, avec l'avertissement qui convient.
 
 Renseigne « sources » avec les adresses des pages effectivement consultées. Si tu n'en as consulté aucune, renvoie un tableau vide.`;
 }

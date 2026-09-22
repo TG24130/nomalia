@@ -146,9 +146,18 @@ export const genererRandos = onCall(
       prompt: promptRandos(parametres),
       schema: SCHEMA_RANDOS,
       valider: validerRandos,
-      // Moins de recherches que pour une fiche : au-delà, le modèle vérifie
-      // chaque itinéraire sur plusieurs sites et la génération s'éternise.
-      maxRecherches: 4,
+      // Deux recherches, et un effort de raisonnement réduit. Mesuré sur le
+      // même cas — Népal, niveau moyen, six heures :
+      //   4 recherches, effort medium : 108 s
+      //   2 recherches, effort medium :  88 s
+      //   2 recherches, effort low    :  47 s
+      // Les cinq itinéraires rendus sont les mêmes classiques dans les trois
+      // cas. La liste venant désormais des connaissances du modèle (voir
+      // prompts/randos.js), les recherches ne servent plus qu'à corriger les
+      // chiffres douteux : en accorder davantage allongeait l'attente sans
+      // rien ajouter.
+      effort: 'low',
+      maxRecherches: 2,
       journal: {
         fonction: 'genererRandos',
         destination: parametres.destination,
