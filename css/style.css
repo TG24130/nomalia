@@ -296,6 +296,41 @@ select {
   margin: 0;
 }
 
+/* — Totaux du budget — */
+
+.totaux {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.total {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 12px 4px;
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--rayon);
+  text-align: center;
+}
+
+.total--moyen {
+  border-color: var(--couleur-accent);
+  background: var(--couleur-accent-clair);
+}
+
+.total__libelle {
+  color: var(--couleur-texte-doux);
+  font-size: 0.8rem;
+}
+
+.total__montant {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
 /* — Cartes de lieux — */
 
 .case--lieu {

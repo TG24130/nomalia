@@ -276,7 +276,23 @@
       "annexes": "Dépenses annexes",
       "imprevus": "Imprévus"
     },
+    "detailTitre": "Détail par poste",
+    "parPersonne": "Soit environ {montant} par personne, au niveau moyen.",
+    "terminer": "Terminer",
     "hypotheses": "Hypothèses retenues",
+    "hypothese": {
+      "hebergementSaisi": "Hébergement : {prix} € par nuit, tel que vous l'avez indiqué, sur {nuits} nuits.",
+      "hebergementFiche": "Hébergement : prix moyens de la destination, sur {nuits} nuits. Indiquez un prix trouvé pour affiner.",
+      "hebergementInconnu": "Hébergement non estimé : la fiche de la destination n'était pas disponible.",
+      "repas": "Repas : prix moyens de la destination sur {jours} jours, pour {parts} parts (un enfant compte pour {coefficient}).",
+      "repasInconnu": "Repas non estimés : la fiche de la destination n'était pas disponible.",
+      "transportSaisi": "Transport : {prix} € au total, tel que vous l'avez indiqué.",
+      "transportInconnu": "Transport non estimé : indiquez un prix à l'étape Transport pour le voir apparaître ici.",
+      "voiture": "Voiture de location : {jours} jours, de {bas} à {haut} € par jour selon la gamme.",
+      "activites": "Activités : {nombre} lieu(x) retenu(s), soit {parPersonne} € par personne pour {personnes} personnes.",
+      "annexes": "Dépenses annexes : de {bas} à {haut} € par jour et par personne (transports urbains, cafés, souvenirs).",
+      "imprevus": "Imprévus : {taux} % du total."
+    },
     "mention": "Estimation indicative."
   },
 
