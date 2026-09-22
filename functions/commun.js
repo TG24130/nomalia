@@ -29,6 +29,19 @@ export const CLE_ANTHROPIC = defineSecret('ANTHROPIC_API_KEY');
 /** Durée de validité du cache des fiches et des listes (30 jours). */
 export const DUREE_CACHE_MS = 30 * 24 * 60 * 60 * 1000;
 
+/**
+ * Version du format des réponses mises en cache.
+ *
+ * À incrémenter dès qu'un changement de prompt ou de schéma rend les entrées
+ * existantes inexploitables. Une entrée d'une autre version est ignorée et
+ * régénérée, plutôt que servie trente jours durant dans l'ancien format.
+ *
+ * 2 : tous les montants sont en euros, convertis au taux courant. Avant, les
+ *     prix revenaient dans la monnaie locale et se retrouvaient additionnés
+ *     avec des postes déjà libellés en euros.
+ */
+export const VERSION_CACHE = 2;
+
 setGlobalOptions({
   region: 'europe-west1',
   maxInstances: 10,

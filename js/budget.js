@@ -88,7 +88,14 @@ export function calculerBudget(voyage, fiche = null) {
   const nuits = jours;
 
   const budgetMoyen = fiche?.points?.budgetMoyen ?? null;
-  const devise = budgetMoyen?.devise ?? 'EUR';
+
+  // Le total est toujours en euros, et rien d'autre n'est additionnable ici :
+  // la location de voiture et les frais annexes sont des forfaits en euros, et
+  // le prix du transport est saisi en euros. Les fiches et les listes de lieux
+  // renvoient donc elles aussi des euros, convertis au taux courant côté
+  // Cloud Function (voir functions/prompts/fiche.js). Une ancienne entrée de
+  // cache libellée dans la monnaie locale est régénérée grâce à VERSION_CACHE.
+  const devise = 'EUR';
 
   /** Détail par poste, chaque poste portant ses trois niveaux. */
   const detail = Object.fromEntries(POSTES.map((poste) => [poste, { bas: 0, moyen: 0, haut: 0 }]));

@@ -24,7 +24,7 @@ Règles absolues :
 - Utilise la recherche web pour toute donnée susceptible d'avoir changé : formalités d'entrée, vaccins, prix moyens, monnaie.
 - N'invente jamais une URL. N'indique un lien que si tu l'as effectivement rencontré lors de ta recherche. En cas de doute, renvoie une chaîne vide.
 - Sur les formalités d'entrée et les vaccins, reste prudent et générique : ces informations changent souvent et engagent la sécurité du voyageur. Indique la règle générale, jamais une certitude administrative.
-- Les prix sont des ordres de grandeur par personne et par nuit ou par jour, dans la devise locale principale.
+- Les prix sont des ordres de grandeur par personne et par nuit ou par jour, **exprimés en euros**. Si la destination utilise une autre monnaie, convertis au taux courant, que tu vérifies par la recherche web. Ne renvoie jamais de montant dans la monnaie locale : l'application additionne ces prix avec d'autres postes déjà libellés en euros.
 - Les résumés font une à trois phrases. Pas de listes à puces, pas de mise en forme, pas d'emoji.
 - Réponds uniquement par l'objet JSON demandé, sans texte autour.`;
 

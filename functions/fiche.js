@@ -10,7 +10,15 @@ import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import { logger } from 'firebase-functions';
 import { FieldValue } from 'firebase-admin/firestore';
 
-import { CLE_ANTHROPIC, DUREE_CACHE_MS, MODELE_CLAUDE, cleFiche, db, verifierAcces } from './commun.js';
+import {
+  CLE_ANTHROPIC,
+  cleFiche,
+  db,
+  DUREE_CACHE_MS,
+  MODELE_CLAUDE,
+  verifierAcces,
+  VERSION_CACHE,
+} from './commun.js';
 import { demanderJson } from './claude.js';
 import { SYSTEME_FICHE, promptFiche } from './prompts/fiche.js';
 import { SCHEMA_FICHE, validerFiche } from './schemas/fiche.js';
@@ -89,8 +97,11 @@ export const genererFiche = onCall(
     if (enCache.exists) {
       const donnees = enCache.data();
       const expiree = donnees.expireLe?.toMillis?.() < Date.now();
+      // Une entrée écrite sous un autre contrat est régénérée (voir
+      // VERSION_CACHE dans commun.js).
+      const perimee = donnees.version !== VERSION_CACHE;
 
-      if (!expiree) {
+      if (!expiree && !perimee) {
         logger.info('Fiche servie depuis le cache', { ficheId });
         return { ficheId, fiche: donnees.fiche, depuisCache: true };
       }
@@ -114,6 +125,7 @@ export const genererFiche = onCall(
       mois: parametres.mois,
       langue: parametres.langue,
       modele: MODELE_CLAUDE,
+      version: VERSION_CACHE,
       genereLe: FieldValue.serverTimestamp(),
       expireLe: new Date(maintenant + DUREE_CACHE_MS),
     });

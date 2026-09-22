@@ -100,7 +100,10 @@ export const SCHEMA_FICHE = {
           properties: {
             hotelNuit: trioPrix,
             repasJour: trioPrix,
-            devise: { type: 'string' },
+            // Contraint par le schéma plutôt que par la seule consigne : le
+            // modèle ne peut alors pas renvoyer la monnaie locale, que
+            // l'application additionnerait avec des euros.
+            devise: { type: 'string', enum: ['EUR'] },
             resume,
           },
           required: ['hotelNuit', 'repasJour', 'devise', 'resume'],

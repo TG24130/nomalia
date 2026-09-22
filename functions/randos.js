@@ -12,11 +12,12 @@ import { FieldValue } from 'firebase-admin/firestore';
 
 import {
   CLE_ANTHROPIC,
+  db,
   DUREE_CACHE_MS,
   MODELE_CLAUDE,
-  db,
   normaliser,
   verifierAcces,
+  VERSION_CACHE,
 } from './commun.js';
 import { demanderJson } from './claude.js';
 import { SYSTEME_RANDOS, promptRandos } from './prompts/randos.js';
@@ -130,8 +131,11 @@ export const genererRandos = onCall(
     if (enCache.exists) {
       const donnees = enCache.data();
       const expiree = donnees.expireLe?.toMillis?.() < Date.now();
+      // Une entrée écrite sous un autre contrat est régénérée (voir
+      // VERSION_CACHE dans commun.js).
+      const perimee = donnees.version !== VERSION_CACHE;
 
-      if (!expiree) {
+      if (!expiree && !perimee) {
         logger.info('Randonnées servies depuis le cache', { cle });
         return { cle, randos: donnees.randos, sources: donnees.sources, depuisCache: true };
       }
@@ -170,6 +174,7 @@ export const genererRandos = onCall(
       mois: parametres.mois,
       langue: parametres.langue,
       modele: MODELE_CLAUDE,
+      version: VERSION_CACHE,
       genereLe: FieldValue.serverTimestamp(),
       expireLe: new Date(Date.now() + DUREE_CACHE_MS),
     });

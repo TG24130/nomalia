@@ -35,9 +35,13 @@ export const SCHEMA_LIEUX = {
           prixEntree: {
             type: ['number', 'null'],
             description:
-              "Prix d'entrée par adulte dans la devise locale. null si l'accès est libre ou si le prix est inconnu.",
+              "Prix d'entrée par adulte, en euros, converti au taux courant si le tarif est affiché dans une autre monnaie. null si l'accès est libre ou si le prix est inconnu.",
           },
-          devise: { type: ['string', 'null'] },
+          // Voir schemas/fiche.js : les montants sont toujours en euros.
+          // Le champ n'est pas nullable : l'API refuse un enum sur un type
+          // qui l'est (« Enum value 'EUR' does not match declared type »), et
+          // la devise vaut EUR même quand le prix d'entrée est inconnu.
+          devise: { type: 'string', enum: ['EUR'] },
           lienOfficiel: {
             type: 'string',
             description:
