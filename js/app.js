@@ -41,6 +41,7 @@ import { configurerApi } from './api.js';
 import { icone } from './icones.js';
 import { afficherRecapitulatif } from './recapitulatif.js';
 import { oublierPrechargements } from './prechargement.js';
+import { afficherBanniere, afficherBanniereEtape } from './banniere.js';
 
 import * as tiroirSaisie from './tiroirs/saisie.js';
 import * as tiroirFiche from './tiroirs/fiche.js';
@@ -84,8 +85,8 @@ const zoneMessage = document.getElementById('message');
 /** Bouton de déconnexion de l'en-tête. */
 const boutonDeconnexion = document.getElementById('deconnexion');
 
-/** En-tête : il se réduit dès qu'un tiroir est ouvert (voir masquerParcours). */
-const entete = document.querySelector('.entete');
+/** Bandeau illustré, en tête de chaque écran. */
+const banniere = document.getElementById('banniere');
 
 /** Fil des étapes. */
 const parcours = document.getElementById('parcours');
@@ -136,6 +137,7 @@ function formaterDate(horodatage) {
 /** Écran de connexion : seul point d'entrée non authentifié. */
 function afficherEcranConnexion() {
   boutonDeconnexion.hidden = true;
+  afficherBanniere(banniere, { etape: 'accueil', titre: t('app.nom'), sousTitre: t('app.slogan') });
   masquerParcours();
 
   vue.innerHTML = `
@@ -157,6 +159,7 @@ function afficherEcranConnexion() {
  */
 function afficherEcranRefus(email) {
   boutonDeconnexion.hidden = true;
+  afficherBanniere(banniere, { etape: 'accueil', titre: t('app.nom'), sousTitre: t('app.slogan') });
   masquerParcours();
 
   vue.innerHTML = `
@@ -176,6 +179,7 @@ function afficherEcranRefus(email) {
 /** Écran bloquant quand la configuration Firebase de production est absente. */
 function afficherEcranConfiguration() {
   boutonDeconnexion.hidden = true;
+  afficherBanniere(banniere, { etape: 'accueil', titre: t('app.nom'), sousTitre: t('app.slogan') });
   masquerParcours();
   vue.innerHTML = `
     <section class="carte">
@@ -240,6 +244,7 @@ function carteVoyage(voyage) {
 /** Affiche la liste des voyages de l'utilisateur. */
 async function afficherEcranAccueil() {
   boutonDeconnexion.hidden = false;
+  afficherBanniere(banniere, { etape: 'accueil', titre: t('app.nom'), sousTitre: t('app.slogan') });
   masquerParcours();
   afficherChargement();
 
@@ -368,10 +373,6 @@ function afficherParcours(etape) {
 
   parcours.hidden = false;
 
-  // Dans un tiroir, l'en-tête cède la place au contenu : sur un téléphone, le
-  // logo en grand et le slogan occupaient à eux seuls un tiers de l'écran.
-  entete.classList.add('entete--compacte');
-
   parcoursListe.innerHTML = ETAPES.map((nom, index) => {
     const franchie = index < position;
     const courante = index === position;
@@ -420,7 +421,6 @@ function afficherParcours(etape) {
 function masquerParcours() {
   parcours.hidden = true;
   parcoursListe.innerHTML = '';
-  entete.classList.remove('entete--compacte');
   // Le prochain tiroir ouvert glissera dans le sens de l'avancée.
   positionAffichee = -1;
 }
@@ -458,6 +458,7 @@ function afficherTiroir(etape) {
   const position = ETAPES.indexOf(nom);
 
   boutonDeconnexion.hidden = false;
+  afficherBanniereEtape(banniere, nom, voyage?.destination);
   afficherParcours(nom);
 
   vue.innerHTML = `
@@ -587,6 +588,7 @@ function afficherEcranFin() {
   }
 
   boutonDeconnexion.hidden = false;
+  afficherBanniereEtape(banniere, 'budget', voyage.destination);
   afficherParcours(ETAPES[ETAPES.length - 1]);
 
   vue.innerHTML = '<div id="tiroir"></div>';

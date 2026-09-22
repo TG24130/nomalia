@@ -19,15 +19,15 @@
 </head>
 <body>
 
-  <header class="entete">
-    <img class="entete__logo" src="icons/icone-192.png" alt="" width="72" height="72">
-    <!-- Le nom figure déjà dans le logo : le titre reste présent pour les
-         lecteurs d'écran et les moteurs, sans être affiché deux fois. -->
-    <h1 class="entete__titre invisible" data-i18n="app.nom">NOMADIA</h1>
-    <p class="entete__slogan" data-i18n="app.slogan"></p>
-    <button class="entete__deconnexion" type="button" id="deconnexion"
+  <!-- Le nom et le slogan sont posés sur le bandeau ; le titre reste ici
+       pour les lecteurs d'écran et les moteurs, sans être affiché deux fois. -->
+  <h1 class="invisible" data-i18n="app.nom">NOMADIA</h1>
+
+  <div class="tete">
+    <div class="banniere" id="banniere" hidden></div>
+    <button class="tete__deconnexion" type="button" id="deconnexion"
             data-i18n="auth.deconnexion" hidden></button>
-  </header>
+  </div>
 
   <!-- Fil des étapes (masqué tant qu'aucun voyage n'est ouvert) -->
   <nav class="parcours" id="parcours" hidden aria-label="Étapes du voyage">

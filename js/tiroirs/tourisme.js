@@ -15,6 +15,7 @@ import { brancherChoix, grilleChoix } from '../cartes-choix.js';
 import { echapper, langue, libelles, t } from '../i18n.js';
 import { genererLieux } from '../api.js';
 import { cleLieux, precharger, recuperer } from '../prechargement.js';
+import { vignette } from '../illustrations.js';
 import { LISTE_PAR_TYPE, TYPES_SEJOUR } from '../sejours.js';
 import { lienReservation, nomPartenaire } from '../liens.js';
 import { modifierVoyage } from '../voyage.js';
@@ -185,7 +186,10 @@ export async function afficher(conteneur, voyage, actions) {
       TYPES_SEJOUR.map((valeur) => ({
         valeur,
         libelle: t(`tourisme.type.${valeur}`),
-        icones: [valeur],
+        // Un paysage plutôt qu'un pictogramme : c'est ici qu'on choisit
+        // l'ambiance du voyage, et une plage se reconnaît mieux qu'un parasol
+        // au trait.
+        scene: vignette(valeur),
       })),
       type
     );

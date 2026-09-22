@@ -20,10 +20,12 @@ import { icone } from './icones.js';
  * @param {string} option.valeur valeur écrite dans le voyage
  * @param {string} option.libelle texte affiché
  * @param {string[]} [option.icones] une icône, ou deux pour un mode combiné
+ * @param {string} [option.scene] paysage rempli sur toute la largeur, à la
+ *   place des pictogrammes
  * @param {boolean} option.choisie
  * @returns {string} balisage HTML
  */
-function carte({ valeur, libelle, icones = [], choisie }) {
+function carte({ valeur, libelle, icones = [], scene = '', choisie }) {
   // Deux pictogrammes reliés par un signe pour les modes combinés
   // (avion + voiture) : la carte dit alors le trajet complet.
   const pictogrammes = icones
@@ -34,12 +36,19 @@ function carte({ valeur, libelle, icones = [], choisie }) {
     ? `<span class="carte-choix__coche">${icone('coche', { taille: 13 })}</span>`
     : '';
 
+  // Un paysage occupe toute la largeur de la carte ; à défaut, le
+  // pictogramme se pose au centre.
+  const visuel = scene
+    ? `<span class="carte-choix__scene">${scene}</span>`
+    : `<span class="carte-choix__icone">${pictogrammes}</span>`;
+
   return `
-    <button class="carte-choix${choisie ? ' carte-choix--choisie' : ''}"
-            type="button" data-choix="${echapper(valeur)}"
+    <button class="carte-choix${scene ? ' carte-choix--illustree' : ''}${
+      choisie ? ' carte-choix--choisie' : ''
+    }" type="button" data-choix="${echapper(valeur)}"
             aria-pressed="${choisie}">
       ${coche}
-      <span class="carte-choix__icone">${pictogrammes}</span>
+      ${visuel}
       <span>${echapper(libelle)}</span>
     </button>
   `;
@@ -48,7 +57,7 @@ function carte({ valeur, libelle, icones = [], choisie }) {
 /**
  * Construit une grille de cartes à choix unique.
  *
- * @param {Array<{ valeur: string, libelle: string, icones?: string[] }>} options
+ * @param {Array<{ valeur: string, libelle: string, icones?: string[], scene?: string }>} options
  * @param {string|null} valeurChoisie
  * @returns {string} balisage HTML
  */
