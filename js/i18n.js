@@ -80,6 +80,36 @@ export function t(cle, variables) {
 }
 
 /**
+ * Renvoie une série de libellés.
+ *
+ * Certains libellés vont par série — les phrases qui se relaient pendant une
+ * attente, par exemple. Les stocker en tableau dans le fichier de langue les
+ * garde lisibles et traduisibles d'un bloc, mais t() ne rend que des chaînes.
+ *
+ * Si la clé est absente ou n'est pas une liste de chaînes, une liste vide est
+ * renvoyée : un appelant qui affiche des messages n'a alors rien à afficher,
+ * ce qui vaut mieux qu'une clé brute.
+ *
+ * Le nom évite `liste`, déjà porté par des variables locales dans les tiroirs.
+ *
+ * @param {string} cle
+ * @returns {string[]}
+ */
+export function libelles(cle) {
+  const valeur = cle.split('.').reduce(
+    (noeud, morceau) => (noeud && typeof noeud === 'object' ? noeud[morceau] : undefined),
+    traductions
+  );
+
+  if (!Array.isArray(valeur) || valeur.some((element) => typeof element !== 'string')) {
+    console.warn(`Série de libellés manquante : ${cle}`);
+    return [];
+  }
+
+  return valeur;
+}
+
+/**
  * Échappe une chaîne avant insertion dans du HTML.
  *
  * Vit ici parce que tout texte inséré dans la page passe par les libellés ou

@@ -9,7 +9,8 @@
  * officiels, toujours signalés comme étant à vérifier (CLAUDE.md §3.6).
  */
 
-import { echapper, langue, t } from '../i18n.js';
+import { attente } from '../attente.js';
+import { echapper, langue, libelles, t } from '../i18n.js';
 import { genererFiche } from '../api.js';
 import { modifierVoyage } from '../voyage.js';
 
@@ -247,7 +248,7 @@ export async function afficher(conteneur, voyage, actions) {
   conteneur.innerHTML = `
     <section class="carte">
       <h2>${echapper(t('fiche.titre'))}</h2>
-      <p class="chargement">${echapper(t('commun.chargementIA'))}</p>
+      ${attente(libelles('attente.fiche'), 4)}
     </section>
   `;
 

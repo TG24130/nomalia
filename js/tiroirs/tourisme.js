@@ -10,8 +10,9 @@
  * qui servira au calcul du budget.
  */
 
+import { attente } from '../attente.js';
 import { brancherChoix, grilleChoix } from '../cartes-choix.js';
-import { echapper, langue, t } from '../i18n.js';
+import { echapper, langue, libelles, t } from '../i18n.js';
 import { genererLieux } from '../api.js';
 import { lienReservation, nomPartenaire } from '../liens.js';
 import { modifierVoyage } from '../voyage.js';
@@ -173,7 +174,8 @@ export async function afficher(conteneur, voyage, actions) {
         </section>
       `;
     } else if (chargement) {
-      contenu = `<p class="chargement">${echapper(t('commun.chargementIA'))}</p>`;
+      // Les messages disent ce qui est cherché : des plages ou des visites.
+      contenu = attente(libelles(`attente.${LISTE_PAR_TYPE[type] ?? 'incontournables'}`), 3);
     } else if (erreurListe) {
       contenu = `
         <section class="carte">

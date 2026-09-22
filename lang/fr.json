@@ -5,6 +5,50 @@
     "mentionEstimation": "Estimations indicatives — à vérifier avant de réserver."
   },
 
+  "fin": {
+    "titre": "Votre voyage est prêt",
+    "jours": "{nombre} jour",
+    "jours_pluriel": "{nombre} jours",
+    "voyageurs": "{nombre} voyageur",
+    "voyageurs_pluriel": "{nombre} voyageurs",
+    "criteres": "{nombre} critère",
+    "criteres_pluriel": "{nombre} critères",
+    "lieux": "{nombre} lieu retenu",
+    "lieux_pluriel": "{nombre} lieux retenus",
+    "randos": "{nombre} randonnée retenue",
+    "randos_pluriel": "{nombre} randonnées retenues",
+    "aCompleter": "À compléter",
+    "modifier": "Modifier",
+    "budget": "Budget estimé",
+    "budgetFourchette": "Entre {bas} et {haut} selon vos choix",
+    "retour": "Retour à mes voyages"
+  },
+  "attente": {
+    "fiche": [
+      "On rassemble les informations pratiques…",
+      "Climat, saison, température de la mer…",
+      "Formalités, santé, monnaie…",
+      "On recoupe les sources…"
+    ],
+    "plages": [
+      "On cherche les plus belles plages…",
+      "On regarde lesquelles conviennent aux enfants…",
+      "Accès, stationnement, meilleur moment…",
+      "On met les conseils en forme…"
+    ],
+    "incontournables": [
+      "On repère les lieux à ne pas manquer…",
+      "Horaires, tarifs, réservation…",
+      "On cherche les astuces pour éviter la foule…",
+      "On met les conseils en forme…"
+    ],
+    "randos": [
+      "On cherche des itinéraires qui correspondent…",
+      "Distance, dénivelé, durée…",
+      "On vérifie les points de départ…",
+      "On met les conseils en forme…"
+    ]
+  },
   "commun": {
     "chargement": "Chargement…",
     "chargementIA": "Recherche en cours, cela peut prendre quelques secondes…",

@@ -10,7 +10,8 @@
  * la génération.
  */
 
-import { echapper, langue, t } from '../i18n.js';
+import { attente } from '../attente.js';
+import { echapper, langue, libelles, t } from '../i18n.js';
 import { genererRandos } from '../api.js';
 import { lienReservation, nomPartenaire } from '../liens.js';
 import { modifierVoyage } from '../voyage.js';
@@ -197,7 +198,7 @@ export function afficher(conteneur, voyage, actions) {
     let resultats = '';
 
     if (chargement) {
-      resultats = `<p class="chargement">${echapper(t('commun.chargementIA'))}</p>`;
+      resultats = attente(libelles('attente.randos'), 3);
     } else if (erreur) {
       resultats = `
         <section class="carte">

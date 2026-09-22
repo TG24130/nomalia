@@ -374,6 +374,128 @@ body {
   color: var(--couleur-texte-doux);
 }
 
+/* — Attente d'une génération par l'IA —
+   Ces appels durent de trente secondes à deux minutes : on montre la forme du
+   résultat à venir et ce qui est en train d'être cherché, plutôt qu'une ligne
+   de texte immobile. */
+
+.attente {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Barre indéterminée : elle dit « ça travaille », sans promettre une durée
+   qu'on ne connaît pas. */
+.attente__barre {
+  overflow: hidden;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--couleur-bordure);
+}
+
+.attente__barre span {
+  display: block;
+  width: 40%;
+  height: 100%;
+  border-radius: 2px;
+  background: var(--couleur-accent);
+  animation: attente-barre 1.4s ease-in-out infinite;
+}
+
+@keyframes attente-barre {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(250%);
+  }
+}
+
+/* Les messages sont empilés au même endroit et se relaient. Le conteneur
+   réserve deux lignes pour qu'aucun changement de message ne déplace la
+   suite de la page. */
+.attente__defilement {
+  position: relative;
+  margin: 0;
+  min-height: 3em;
+  text-align: center;
+  color: var(--couleur-texte-doux);
+}
+
+.attente__message {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  animation: attente-message 16s linear infinite;
+}
+
+/* Chaque message occupe un quart du cycle (25 %) et déborde de 3 % sur le
+   suivant : le fondu de l'un recouvre celui de l'autre. Sans ce recouvrement,
+   la zone reste vide une seconde entre deux phrases. */
+@keyframes attente-message {
+  0% {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  3%,
+  25% {
+    opacity: 1;
+    transform: none;
+  }
+  28%,
+  100% {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+}
+
+/* Cartes grisées à la forme du résultat attendu : un titre et deux lignes de
+   texte, dessinés au dégradé pour n'ajouter aucun élément au balisage. */
+.attente__fantome {
+  height: 88px;
+  padding: 14px;
+  border-radius: var(--rayon);
+  background:
+    linear-gradient(var(--couleur-bordure) 0 0) 14px 14px / 45% 13px no-repeat,
+    linear-gradient(var(--couleur-bordure) 0 0) 14px 40px / 85% 9px no-repeat,
+    linear-gradient(var(--couleur-bordure) 0 0) 14px 58px / 65% 9px no-repeat,
+    var(--couleur-carte);
+  border: 1px solid var(--couleur-bordure);
+  animation: attente-respire 1.8s ease-in-out infinite;
+}
+
+.attente__fantome:nth-child(4) {
+  animation-delay: 0.2s;
+}
+
+.attente__fantome:nth-child(5) {
+  animation-delay: 0.4s;
+}
+
+@keyframes attente-respire {
+  50% {
+    opacity: 0.55;
+  }
+}
+
+/* Sans animation, on garde le premier message et des cartes immobiles :
+   l'information reste, le mouvement disparaît. */
+@media (prefers-reduced-motion: reduce) {
+  .attente__barre span,
+  .attente__fantome {
+    animation: none;
+  }
+
+  .attente__message {
+    animation: none;
+  }
+
+  .attente__message:first-child {
+    opacity: 1;
+  }
+}
+
 /* — Boutons et champs — */
 
 .bouton {
@@ -602,6 +724,151 @@ select {
 
   .carte-choix:not([disabled]):active {
     transform: none;
+  }
+}
+
+/* — Écran de fin de parcours — */
+
+.fin {
+  margin-bottom: var(--espace);
+  text-align: center;
+}
+
+/* Le sceau récompense l'arrivée : c'est le seul endroit où le turquoise de
+   marque sert de fond plein, aucun texte n'étant posé dessus. */
+.fin__sceau {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--couleur-accent);
+  color: #fff;
+  animation: fin-sceau 0.45s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+
+@keyframes fin-sceau {
+  from {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+}
+
+.fin__titre {
+  margin: 10px 0 2px;
+  font-size: 1.4rem;
+}
+
+.fin__destination {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--couleur-accent);
+}
+
+.fin__resume {
+  margin: 2px 0 0;
+  color: var(--couleur-texte-doux);
+  font-size: 0.95rem;
+}
+
+.fin__budget {
+  text-align: center;
+}
+
+.fin__budget-libelle {
+  margin: 0;
+  color: var(--couleur-texte-doux);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.fin__budget-montant {
+  margin: 2px 0 4px;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+/* — Récapitulatif des étapes — */
+
+.recap {
+  margin: 0 0 var(--espace);
+  padding: 0;
+  list-style: none;
+}
+
+.recap li + li {
+  margin-top: 8px;
+}
+
+.recap__ligne {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: var(--hauteur-tactile);
+  padding: 10px 12px;
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--rayon);
+  background: var(--couleur-carte);
+  color: var(--couleur-texte);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.recap__ligne:hover {
+  border-color: var(--couleur-accent);
+}
+
+.recap__ligne:focus-visible {
+  outline: 3px solid var(--couleur-accent);
+  outline-offset: 2px;
+}
+
+.recap__icone {
+  display: flex;
+  color: var(--couleur-accent);
+}
+
+.recap__texte {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.recap__etape {
+  color: var(--couleur-texte-doux);
+  font-size: 0.8rem;
+}
+
+.recap__valeur {
+  font-weight: 600;
+}
+
+/* Une étape laissée de côté garde sa ligne, en retrait : le retour en arrière
+   reste proposé au lieu d'être caché. */
+.recap__ligne--vide .recap__icone,
+.recap__ligne--vide .recap__valeur {
+  color: var(--couleur-texte-doux);
+  font-weight: 400;
+  font-style: italic;
+}
+
+.recap__modifier {
+  flex: 0 0 auto;
+  color: var(--couleur-action);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fin__sceau {
+    animation: none;
   }
 }
 

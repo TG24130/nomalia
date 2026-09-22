@@ -39,6 +39,7 @@ import {
 
 import { configurerApi } from './api.js';
 import { icone } from './icones.js';
+import { afficherRecapitulatif } from './recapitulatif.js';
 
 import * as tiroirSaisie from './tiroirs/saisie.js';
 import * as tiroirFiche from './tiroirs/fiche.js';
@@ -519,8 +520,15 @@ function afficherNavigation(nom, position, tiroir, actions) {
 async function allerA(position) {
   masquerMessage();
 
-  if (position < 0 || position >= ETAPES.length) {
+  if (position < 0) {
     await retourAccueil();
+    return;
+  }
+
+  // Sortir par le haut, c'est avoir terminé : on montre le voyage construit
+  // avant de rendre la main, plutôt que de renvoyer sans un mot à la liste.
+  if (position >= ETAPES.length) {
+    afficherEcranFin();
     return;
   }
 
@@ -542,6 +550,31 @@ async function allerA(position) {
   }
 
   afficherTiroir(etape);
+}
+
+/**
+ * Affiche l'écran de fin de parcours.
+ *
+ * Le fil des étapes reste visible : le voyage n'est pas figé, et chaque ligne
+ * du récapitulatif ramène à l'étape correspondante.
+ */
+function afficherEcranFin() {
+  const voyage = voyageCourant();
+  if (!voyage) {
+    retourAccueil();
+    return;
+  }
+
+  boutonDeconnexion.hidden = false;
+  afficherParcours(ETAPES[ETAPES.length - 1]);
+
+  vue.innerHTML = '<div id="tiroir"></div>';
+  animerEntree(ETAPES.length);
+
+  afficherRecapitulatif(document.getElementById('tiroir'), voyage, {
+    allerA,
+    accueil: retourAccueil,
+  });
 }
 
 /** Enregistre puis revient à la liste des voyages. */
