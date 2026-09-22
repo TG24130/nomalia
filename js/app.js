@@ -567,9 +567,18 @@ async function gererUtilisateur(utilisateur) {
 
 /* — Démarrage — */
 
-/** Enregistre le service worker (PWA). Ignoré en local et hors HTTPS. */
+/**
+ * Enregistre le service worker (PWA).
+ *
+ * Désactivé en local, où son cache masquerait les modifications en cours ;
+ * `?sw=1` permet de le tester quand même, l'installation d'une PWA n'étant
+ * possible que sur une origine sûre — ce que localhost est aussi.
+ */
 async function enregistrerServiceWorker() {
-  if (!('serviceWorker' in navigator) || EST_LOCAL) return;
+  if (!('serviceWorker' in navigator)) return;
+
+  const demandeExplicite = new URLSearchParams(location.search).has('sw');
+  if (EST_LOCAL && !demandeExplicite) return;
   try {
     await navigator.serviceWorker.register('sw.js');
   } catch (erreur) {

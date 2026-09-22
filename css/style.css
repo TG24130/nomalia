@@ -5,8 +5,13 @@
   --couleur-carte: #ffffff;
   --couleur-texte: #1c2733;
   --couleur-texte-doux: #5b6b7c;
-  --couleur-accent: #1f6f8b;
-  --couleur-accent-clair: #e3eff3;
+  /* Turquoise du logo, assombri : la teinte d'origine (#01C0C2) ne donne que
+     2,25:1 avec du texte blanc, loin des 4,5:1 attendus. Celle-ci atteint
+     5,29:1 tout en restant la même couleur. */
+  --couleur-accent: #00787a;
+  --couleur-accent-clair: #e0f5f5;
+  /* Teinte de marque, réservée aux surfaces sans texte. */
+  --couleur-marque: #01c0c2;
   --couleur-bordure: #dde3e9;
   --couleur-erreur: #a4262c;
   --couleur-erreur-fond: #fbeaea;
@@ -48,9 +53,29 @@ body {
   text-align: center;
 }
 
+.entete__logo {
+  display: block;
+  width: 72px;
+  height: 72px;
+  margin: 0 auto;
+}
+
+/* Visible des lecteurs d'écran, absent de l'affichage. */
+.invisible {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
 .entete__titre {
   margin: 0;
   font-size: 1.6rem;
+  letter-spacing: 0.08em;
   color: var(--couleur-accent);
 }
 

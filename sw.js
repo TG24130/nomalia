@@ -1,5 +1,5 @@
 /**
- * sw.js — service worker minimal.
+ * sw.js — service worker.
  *
  * Met en cache les fichiers statiques pour permettre l'installation sur
  * l'écran d'accueil et un démarrage rapide. Aucune donnée Firestore n'est
@@ -8,8 +8,15 @@
  * Incrémenter VERSION_CACHE à chaque mise en ligne pour forcer la mise à jour.
  */
 
-const VERSION_CACHE = 'mytrip-v1';
+const VERSION_CACHE = 'nomadia-v1';
 
+/**
+ * Fichiers mis en cache dès l'installation.
+ *
+ * Les tables data/*.json en sont exclues : elles pèsent un demi-mégaoctet à
+ * elles deux et ne servent qu'au tiroir Transport. Elles sont mises en cache
+ * à la première utilisation, comme le reste.
+ */
 const FICHIERS_STATIQUES = [
   './',
   './index.html',
@@ -21,6 +28,7 @@ const FICHIERS_STATIQUES = [
   './js/voyage.js',
   './js/liens.js',
   './js/api.js',
+  './js/budget.js',
   './js/aeroports.js',
   './js/gares.js',
   './js/recherche-lieux.js',
@@ -32,13 +40,28 @@ const FICHIERS_STATIQUES = [
   './js/tiroirs/randos.js',
   './js/tiroirs/budget-vue.js',
   './lang/fr.json',
+  './icons/icone-192.png',
+  './icons/icone-512.png',
+  './icons/icone-maskable-512.png',
+  './icons/icone-apple-180.png',
+  './icons/favicon-32.png',
 ];
 
 self.addEventListener('install', (evenement) => {
   evenement.waitUntil(
     caches
       .open(VERSION_CACHE)
-      .then((cache) => cache.addAll(FICHIERS_STATIQUES))
+      // addAll échoue en bloc si un seul fichier manque : on les ajoute un par
+      // un pour qu'une icône absente n'empêche pas l'installation.
+      .then((cache) =>
+        Promise.all(
+          FICHIERS_STATIQUES.map((fichier) =>
+            cache.add(fichier).catch((erreur) => {
+              console.warn('Fichier non mis en cache', fichier, erreur);
+            })
+          )
+        )
+      )
       .then(() => self.skipWaiting())
   );
 });
@@ -69,6 +92,18 @@ self.addEventListener('fetch', (evenement) => {
         caches.open(VERSION_CACHE).then((cache) => cache.put(requete, copie));
         return reponse;
       })
-      .catch(() => caches.match(requete))
+      .catch(async () => {
+        const enCache = await caches.match(requete);
+        if (enCache) return enCache;
+
+        // Hors ligne sur une navigation : on renvoie la page d'accueil, seule
+        // entrée de l'application.
+        if (requete.mode === 'navigate') {
+          const accueil = await caches.match('./index.html');
+          if (accueil) return accueil;
+        }
+
+        return Response.error();
+      })
   );
 });

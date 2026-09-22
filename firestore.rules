@@ -1,6 +1,6 @@
 rules_version = '2';
 
-// Règles Firestore — MyTrip V0.
+// Règles Firestore — NOMADIA V0.
 //
 // Accès restreint : l'identifiant du document dans `autorises` est l'adresse
 // e-mail en minuscules (ex. `autorises/prenom.nom@gmail.com`).

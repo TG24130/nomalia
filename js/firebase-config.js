@@ -53,7 +53,7 @@ const CONFIGS = {
   prod: {
     apiKey: 'A_REMPLIR',
     authDomain: 'A_REMPLIR.firebaseapp.com',
-    projectId: 'mytrip-prod',
+    projectId: 'nomadia-prod',
     storageBucket: 'A_REMPLIR.appspot.com',
     messagingSenderId: 'A_REMPLIR',
     appId: 'A_REMPLIR',

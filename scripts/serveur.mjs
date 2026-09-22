@@ -59,5 +59,5 @@ const serveur = http.createServer((requete, reponse) => {
 });
 
 serveur.listen(port, '127.0.0.1', () => {
-  console.log(`MyTrip servi sur http://127.0.0.1:${port} (sans cache)`);
+  console.log(`NOMADIA servi sur http://127.0.0.1:${port} (sans cache)`);
 });
