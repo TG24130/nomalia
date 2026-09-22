@@ -38,6 +38,31 @@ function optionsMois(moisChoisi) {
 }
 
 /**
+ * Premier jour possible du voyage, pour le mois choisi.
+ *
+ * Sans cette borne, le calendrier s'ouvre sur le mois courant : choisir
+ * juillet obligeait à faire défiler dix mois pour le retrouver. La poser en
+ * `min` ouvre le calendrier au bon endroit, le jour même étant alors hors
+ * bornes.
+ *
+ * L'année est celle de la prochaine occurrence du mois : un voyage se prépare
+ * pour un mois à venir, pas pour celui de l'an dernier. Rien n'empêche
+ * ensuite d'aller chercher une année plus lointaine — `max` reste libre.
+ *
+ * @param {number|null} mois de 1 à 12
+ * @returns {string} date AAAA-MM-JJ, ou chaîne vide sans mois choisi
+ */
+function premierJourPossible(mois) {
+  if (!Number.isInteger(mois) || mois < 1 || mois > 12) return '';
+
+  const aujourdhui = new Date();
+  const moisCourant = aujourdhui.getMonth() + 1;
+  const annee = mois >= moisCourant ? aujourdhui.getFullYear() : aujourdhui.getFullYear() + 1;
+
+  return `${annee}-${String(mois).padStart(2, '0')}-01`;
+}
+
+/**
  * Construit les options du sélecteur de type de séjour.
  *
  * Le type est demandé ici, et non seulement au tiroir Séjour, pour que la
@@ -114,7 +139,8 @@ export function afficher(conteneur, voyage, actions) {
 
       <div class="champ">
         <label for="saisie-date">${echapper(t('saisie.dateDepart'))}</label>
-        <input type="date" id="saisie-date" value="${echapper(valeurs.dateDepart ?? '')}">
+        <input type="date" id="saisie-date" value="${echapper(valeurs.dateDepart ?? '')}"
+               min="${echapper(premierJourPossible(valeurs.mois))}">
         <p class="champ__aide">${echapper(t('saisie.dateDepartAide'))}</p>
       </div>
 
@@ -185,6 +211,10 @@ export function afficher(conteneur, voyage, actions) {
     const mois = Number.parseInt(evenement.target.value, 10);
     retenir({ mois: Number.isNaN(mois) ? null : mois });
 
+    // Le calendrier suit le mois choisi, au lieu de s'ouvrir sur le mois
+    // courant et d'obliger à le faire défiler.
+    champDate.min = premierJourPossible(valeurs.mois);
+
     // Une date déjà saisie dans un autre mois deviendrait contradictoire.
     if (valeurs.dateDepart && Number(valeurs.dateDepart.slice(5, 7)) !== valeurs.mois) {
       champDate.value = '';
@@ -204,6 +234,7 @@ export function afficher(conteneur, voyage, actions) {
     const mois = Number(date.slice(5, 7));
     retenir({ dateDepart: date, mois });
     champMois.value = String(mois);
+    champDate.min = premierJourPossible(mois);
   });
 
   conteneur.querySelector('#saisie-adultes').addEventListener('input', (evenement) => {
