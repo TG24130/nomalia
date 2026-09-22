@@ -86,6 +86,13 @@ const processus = spawn(commande, parametres, {
   env: {
     ...process.env,
     JAVA_HOME: jdk,
+    // L'émulateur découvre les fonctions en lançant functions/index.js dans un
+    // sous-processus qui publie sa spécification sur un port local, et
+    // abandonne au bout de dix secondes. Sur Windows, l'ouverture de ce port
+    // dépasse parfois ce délai alors que le code se charge en une demi-seconde
+    // — l'émulateur démarre alors sans aucune fonction, et l'application n'a
+    // plus de genererFiche. Une minute laisse la marge nécessaire.
+    FUNCTIONS_DISCOVERY_TIMEOUT: '60',
     PATH: `${path.join(jdk, 'bin')}${path.delimiter}${process.env.PATH}`,
     // Évite que la CLI attende une réponse à ses questions de télémétrie.
     CI: 'true',
