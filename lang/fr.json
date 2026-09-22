@@ -78,6 +78,17 @@
     "erreurMois": "Choisissez un mois de départ."
   },
 
+  "parcours": {
+    "position": "Étape {numero} sur {total} · {titre}",
+    "saisie": "Votre voyage",
+    "fiche": "Fiche pratique",
+    "transport": "Transport",
+    "hebergement": "Hébergement",
+    "tourisme": "Séjour",
+    "randos": "Randonnées",
+    "budget": "Budget"
+  },
+
   "mois": {
     "1": "Janvier",
     "2": "Février",

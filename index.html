@@ -29,10 +29,13 @@
             data-i18n="auth.deconnexion" hidden></button>
   </header>
 
-  <!-- Barre de progression des tiroirs (masquée tant qu'aucun voyage n'est ouvert) -->
-  <div class="progression" id="progression" hidden>
-    <div class="progression__barre" id="progression-barre"></div>
-  </div>
+  <!-- Fil des étapes (masqué tant qu'aucun voyage n'est ouvert) -->
+  <nav class="parcours" id="parcours" hidden aria-label="Étapes du voyage">
+    <div class="parcours__piste">
+      <ol class="parcours__liste" id="parcours-liste"></ol>
+    </div>
+    <p class="parcours__courante" id="parcours-courante"></p>
+  </nav>
 
   <main id="vue" class="vue">
     <!-- Chaque tiroir injecte son contenu ici -->

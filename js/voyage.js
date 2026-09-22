@@ -47,6 +47,10 @@ export const VOYAGE_VIDE = {
   randos: { niveau: null, dureeMax: null, retenues: [] },
   budget: null,
   etapeCourante: 'saisie',
+  // Étape la plus avancée déjà atteinte : le fil des étapes s'en sert pour
+  // savoir lesquelles sont accessibles d'un clic. Sans elle, revenir en
+  // arrière interdirait de repartir vers l'avant autrement que pas à pas.
+  etapeMax: 'saisie',
 };
 
 /** Ordre des tiroirs, utilisé par la navigation et la barre de progression. */

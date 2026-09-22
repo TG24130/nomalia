@@ -38,6 +38,7 @@ import {
 } from './voyage.js';
 
 import { configurerApi } from './api.js';
+import { icone } from './icones.js';
 
 import * as tiroirSaisie from './tiroirs/saisie.js';
 import * as tiroirFiche from './tiroirs/fiche.js';
@@ -67,9 +68,10 @@ const zoneMessage = document.getElementById('message');
 /** Bouton de déconnexion de l'en-tête. */
 const boutonDeconnexion = document.getElementById('deconnexion');
 
-/** Barre de progression des tiroirs. */
-const progression = document.getElementById('progression');
-const barreProgression = document.getElementById('progression-barre');
+/** Fil des étapes. */
+const parcours = document.getElementById('parcours');
+const parcoursListe = document.getElementById('parcours-liste');
+const parcoursCourante = document.getElementById('parcours-courante');
 
 /** Services Firebase, renseignés au démarrage. */
 let firebase = null;
@@ -115,7 +117,7 @@ function formaterDate(horodatage) {
 /** Écran de connexion : seul point d'entrée non authentifié. */
 function afficherEcranConnexion() {
   boutonDeconnexion.hidden = true;
-  masquerProgression();
+  masquerParcours();
 
   vue.innerHTML = `
     <section class="carte">
@@ -136,7 +138,7 @@ function afficherEcranConnexion() {
  */
 function afficherEcranRefus(email) {
   boutonDeconnexion.hidden = true;
-  masquerProgression();
+  masquerParcours();
 
   vue.innerHTML = `
     <section class="carte">
@@ -155,7 +157,7 @@ function afficherEcranRefus(email) {
 /** Écran bloquant quand la configuration Firebase de production est absente. */
 function afficherEcranConfiguration() {
   boutonDeconnexion.hidden = true;
-  masquerProgression();
+  masquerParcours();
   vue.innerHTML = `
     <section class="carte">
       <h2>${echapper(t('erreurs.configurationTitre'))}</h2>
@@ -219,7 +221,7 @@ function carteVoyage(voyage) {
 /** Affiche la liste des voyages de l'utilisateur. */
 async function afficherEcranAccueil() {
   boutonDeconnexion.hidden = false;
-  masquerProgression();
+  masquerParcours();
   afficherChargement();
 
   let voyages;
@@ -322,17 +324,79 @@ function etapeValide(etape) {
   return ETAPES.includes(etape) ? etape : ETAPES[0];
 }
 
-/** Met à jour la barre de progression. */
-function afficherProgression(etape) {
-  const position = ETAPES.indexOf(etape) + 1;
-  progression.hidden = false;
-  barreProgression.style.width = `${(position / ETAPES.length) * 100}%`;
+/**
+ * Affiche le fil des étapes.
+ *
+ * Chaque étape déjà atteinte est cliquable : c'est le moyen le plus direct de
+ * revenir sur un choix sans dérouler toute la navigation. Les suivantes
+ * restent visibles mais inactives, pour qu'on sache ce qui attend.
+ *
+ * @param {string} etape étape affichée
+ */
+function afficherParcours(etape) {
+  const position = ETAPES.indexOf(etape);
+  const voyage = voyageCourant();
+
+  // La plus avancée des trois : l'étape courante peut être en retrait si
+  // l'utilisateur est revenu en arrière, et etapeMax manque aux voyages
+  // créés avant son introduction.
+  const atteinte = Math.max(
+    position,
+    ETAPES.indexOf(voyage?.etapeMax ?? ''),
+    ETAPES.indexOf(voyage?.etapeCourante ?? ''),
+    0
+  );
+
+  parcours.hidden = false;
+
+  parcoursListe.innerHTML = ETAPES.map((nom, index) => {
+    const franchie = index < position;
+    const courante = index === position;
+    const accessible = index <= atteinte;
+
+    const etats = [
+      franchie ? 'parcours__etape--franchie' : '',
+      courante ? 'parcours__etape--courante' : '',
+      accessible ? '' : 'parcours__etape--avenir',
+    ]
+      .filter(Boolean)
+      .join(' ');
+
+    // Une étape franchie montre une coche : le numéro n'apporte plus rien
+    // une fois qu'elle est derrière soi.
+    const symbole = franchie ? icone('coche', { taille: 18 }) : icone(nom, { taille: 20 });
+
+    return `
+      <li class="parcours__etape ${etats}">
+        <button class="parcours__bouton" type="button" data-etape="${index}"
+                ${accessible ? '' : 'disabled'}
+                ${courante ? 'aria-current="step"' : ''}>
+          <span class="parcours__pastille">${symbole}</span>
+          <span class="invisible">${echapper(t(`parcours.${nom}`))}</span>
+        </button>
+      </li>
+    `;
+  }).join('');
+
+  parcoursCourante.textContent = t('parcours.position', {
+    numero: position + 1,
+    total: ETAPES.length,
+    titre: t(`parcours.${etape}`),
+  });
+
+  parcoursListe.querySelectorAll('[data-etape]').forEach((bouton) => {
+    bouton.addEventListener('click', () => allerA(Number(bouton.dataset.etape)));
+  });
+
+  // L'étape courante peut se trouver hors du champ visible sur un téléphone.
+  const active = parcoursListe.querySelector('.parcours__etape--courante');
+  active?.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
 }
 
-/** Masque la barre de progression (écrans hors parcours). */
-function masquerProgression() {
-  progression.hidden = true;
-  barreProgression.style.width = '0';
+/** Masque le fil des étapes (écrans hors parcours). */
+function masquerParcours() {
+  parcours.hidden = true;
+  parcoursListe.innerHTML = '';
 }
 
 /**
@@ -346,12 +410,9 @@ function afficherTiroir(etape) {
   const position = ETAPES.indexOf(nom);
 
   boutonDeconnexion.hidden = false;
-  afficherProgression(nom);
+  afficherParcours(nom);
 
   vue.innerHTML = `
-    <p class="note note--etape">${echapper(
-      t('commun.etape', { courante: position + 1, total: ETAPES.length })
-    )}</p>
     <div id="tiroir"></div>
     <nav class="navigation" id="navigation"></nav>
   `;
@@ -430,7 +491,22 @@ async function allerA(position) {
   }
 
   const etape = ETAPES[position];
-  if (voyageCourant()) modifierVoyage({ etapeCourante: etape });
+  const voyage = voyageCourant();
+
+  if (voyage) {
+    // etapeMax ne recule jamais : le fil des étapes garde accessibles celles
+    // déjà vues, même après un retour en arrière. L'étape d'où l'on part
+    // compte aussi, faute de quoi un voyage créé avant l'arrivée de ce champ
+    // perdrait tout son avancement au premier retour arrière.
+    const plusLoin = Math.max(
+      position,
+      ETAPES.indexOf(voyage.etapeMax ?? ''),
+      ETAPES.indexOf(voyage.etapeCourante ?? ''),
+      0
+    );
+    modifierVoyage({ etapeCourante: etape, etapeMax: ETAPES[plusLoin] });
+  }
+
   afficherTiroir(etape);
 }
 

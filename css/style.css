@@ -12,6 +12,11 @@
   --couleur-accent-clair: #e0f5f5;
   /* Teinte de marque, réservée aux surfaces sans texte. */
   --couleur-marque: #01c0c2;
+
+  /* Orange d'action : le bouton qui fait avancer doit se distinguer du reste
+     de l'interface, turquoise. 5,18:1 avec du texte blanc. */
+  --couleur-action: #c2410c;
+  --couleur-action-clair: #fdf0e7;
   --couleur-bordure: #dde3e9;
   --couleur-erreur: #a4262c;
   --couleur-erreur-fond: #fbeaea;
@@ -98,18 +103,129 @@ body {
   cursor: pointer;
 }
 
-/* — Barre de progression — */
+/* — Fil des étapes — */
 
-.progression {
-  height: 4px;
-  background: var(--couleur-bordure);
+.parcours {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  padding: 10px 0 8px;
+  background: var(--couleur-carte);
+  border-bottom: 1px solid var(--couleur-bordure);
 }
 
-.progression__barre {
-  height: 100%;
-  width: 0;
+/* La piste défile horizontalement : sept étapes ne tiennent pas de front
+   sur un téléphone, et les réduire les rendrait intouchables. */
+.parcours__piste {
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.parcours__piste::-webkit-scrollbar {
+  display: none;
+}
+
+.parcours__liste {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin: 0 auto;
+  padding: 0 var(--espace);
+  list-style: none;
+  width: max-content;
+  min-width: 100%;
+  justify-content: center;
+}
+
+.parcours__etape {
+  display: flex;
+  align-items: center;
+}
+
+/* Trait de liaison entre deux pastilles : il donne à lire un chemin plutôt
+   qu'une série de boutons isolés. */
+.parcours__etape + .parcours__etape::before {
+  content: '';
+  width: 14px;
+  height: 2px;
+  background: var(--couleur-bordure);
+  flex: 0 0 auto;
+}
+
+.parcours__etape--franchie + .parcours__etape::before,
+.parcours__etape--courante::before {
   background: var(--couleur-accent);
-  transition: width 0.25s ease;
+}
+
+.parcours__bouton {
+  display: block;
+  padding: 2px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.parcours__bouton[disabled] {
+  cursor: default;
+}
+
+.parcours__pastille {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 2px solid var(--couleur-bordure);
+  border-radius: 50%;
+  background: var(--couleur-carte);
+  color: var(--couleur-texte-doux);
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.parcours__etape--franchie .parcours__pastille {
+  border-color: var(--couleur-accent);
+  background: var(--couleur-accent);
+  color: #fff;
+}
+
+.parcours__etape--courante .parcours__pastille {
+  border-color: var(--couleur-action);
+  background: var(--couleur-action-clair);
+  color: var(--couleur-action);
+  transform: scale(1.12);
+}
+
+.parcours__etape--avenir .parcours__pastille {
+  opacity: 0.45;
+}
+
+.parcours__bouton:not([disabled]):hover .parcours__pastille {
+  border-color: var(--couleur-accent);
+}
+
+.parcours__courante {
+  margin: 6px 0 0;
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--couleur-texte-doux);
+}
+
+/* Le grossissement de la pastille courante n'apporte rien d'essentiel : il
+   disparaît pour qui demande moins d'animation. */
+@media (prefers-reduced-motion: reduce) {
+  .parcours__pastille {
+    transition: none;
+  }
+
+  .parcours__etape--courante .parcours__pastille {
+    transform: none;
+  }
 }
 
 /* — Vue principale — */
@@ -202,11 +318,45 @@ body {
   cursor: pointer;
 }
 
+/* Le bouton qui fait avancer porte l'orange d'action : il se distingue ainsi
+   des liens partenaires et des choix, qui restent turquoise. */
 .bouton--principal {
-  background: var(--couleur-accent);
-  border-color: var(--couleur-accent);
+  background: var(--couleur-action);
+  border-color: var(--couleur-action);
   color: #fff;
   font-weight: 600;
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s ease;
+}
+
+.bouton--principal:not([disabled]):hover {
+  background: #a83509;
+}
+
+.bouton--principal:not([disabled]):active {
+  transform: scale(0.98);
+}
+
+/* Le focus doit rester visible : c'est le seul repère de navigation au
+   clavier. */
+.bouton:focus-visible,
+.parcours__bouton:focus-visible .parcours__pastille,
+input:focus-visible,
+select:focus-visible,
+summary:focus-visible {
+  outline: 3px solid var(--couleur-action);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bouton--principal {
+    transition: none;
+  }
+
+  .bouton--principal:not([disabled]):active {
+    transform: none;
+  }
 }
 
 .bouton:disabled {
@@ -538,10 +688,6 @@ details[open] > .point__entete::after,
 
 /* — Navigation entre tiroirs — */
 
-.note--etape {
-  margin: 0 0 8px;
-  text-align: center;
-}
 
 .navigation {
   display: flex;
