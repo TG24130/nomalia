@@ -28,6 +28,7 @@ const TYPES = [
   'trip-liberte',
   'trekking',
   'safari',
+  'romantique',
   'repos-total',
 ];
 
@@ -38,6 +39,7 @@ const LISTE_PAR_TYPE = {
   safari: 'safari',
   'trip-liberte': 'etapes',
   trekking: 'treks',
+  romantique: 'romantique',
 };
 
 /**

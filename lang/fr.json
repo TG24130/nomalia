@@ -43,6 +43,12 @@
       "On cherche les astuces pour éviter la foule…",
       "On met les conseils en forme…"
     ],
+    "romantique": [
+      "On cherche les endroits à voir à deux…",
+      "Points de vue, couchers de soleil…",
+      "Tables et moments à réserver…",
+      "On met les conseils en forme…"
+    ],
     "safari": [
       "On repère les parcs et les réserves…",
       "Quelles espèces, à quelle saison…",
@@ -293,6 +299,7 @@
       "repos-total": "Repos total",
       "incontournables": "Les incontournables",
       "safari": "Safari",
+      "romantique": "Romantique",
       "trip-liberte": "Trip liberté",
       "trekking": "Trekking"
     },

@@ -10,7 +10,14 @@
  */
 
 /** Types de listes demandables. */
-export const TYPES_LIEUX = ['plages', 'incontournables', 'safari', 'etapes', 'treks'];
+export const TYPES_LIEUX = [
+  'plages',
+  'incontournables',
+  'safari',
+  'etapes',
+  'treks',
+  'romantique',
+];
 
 /** Nombre de lieux attendus (CLAUDE.md §6, tiroir 4). */
 export const NOMBRE_LIEUX = 5;

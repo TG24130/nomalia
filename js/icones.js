@@ -76,6 +76,10 @@ const TRACES = {
   // la lune reste reconnaissable à n'importe quelle taille.
   'repos-total': '<path d="M20 15.2A8.6 8.6 0 1 1 9.4 4.5a6.7 6.7 0 0 0 10.6 10.7Z"/><path d="M17 3.2v2.6M15.7 4.5h2.6"/><path d="M20.5 7.8v1.8M19.6 8.7h1.8"/>',
 
+  // Un cœur. Convenu, mais c'est justement ce qui le rend lisible d'un coup
+  // d'œil à trente pixels, là où deux coupes qui trinquent se brouillent.
+  romantique: '<path d="M12 20.8 5 13.9C3.5 12.4 2 10.7 2 8.4A5.4 5.4 0 0 1 7.4 3c1.7 0 2.9.5 4.6 2 1.7-1.5 2.9-2 4.6-2A5.4 5.4 0 0 1 22 8.4c0 2.3-1.5 4-3 5.5Z"/>',
+
   // Une empreinte de patte : l'observation animalière, sans choisir un animal
   // plutôt qu'un autre.
   safari: '<path d="M12 12.8c2.4 0 4.3 1.5 4.3 3.4S14.4 19.8 12 19.8s-4.3-1.7-4.3-3.6 1.9-3.4 4.3-3.4Z"/><circle cx="6.6" cy="11.3" r="1.6"/><circle cx="10.1" cy="8.2" r="1.7"/><circle cx="13.9" cy="8.2" r="1.7"/><circle cx="17.4" cy="11.3" r="1.6"/>',
