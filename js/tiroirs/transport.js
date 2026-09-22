@@ -9,6 +9,7 @@
 import { echapper, langue, t } from '../i18n.js';
 import { chercherAeroport } from '../aeroports.js';
 import { chercherGare } from '../gares.js';
+import { brancherChoix, grilleChoix } from '../cartes-choix.js';
 import { estPrerempli, lienReservation, nomPartenaire } from '../liens.js';
 import { datesVoyage, modifierVoyage } from '../voyage.js';
 
@@ -25,6 +26,20 @@ const MODES = [
   'train+voiture',
   'bateau+voiture',
 ];
+
+/**
+ * Pictogramme de chaque mode. Les modes combinés en portent deux : la carte
+ * montre alors le trajet complet, avion puis voiture sur place.
+ */
+const ICONES_MODE = {
+  avion: ['avion'],
+  train: ['train'],
+  bateau: ['bateau'],
+  voiture: ['voiture'],
+  'avion+voiture': ['avion', 'voiture'],
+  'train+voiture': ['train', 'voiture'],
+  'bateau+voiture': ['bateau', 'voiture'],
+};
 
 /** Partenaires par moyen de transport élémentaire. */
 const PARTENAIRES_PAR_MOYEN = {
@@ -141,15 +156,14 @@ export async function afficher(conteneur, voyage, actions) {
   const rendre = () => {
     const mode = voyage.transport?.mode ?? null;
 
-    const boutons = MODES.map(
-      (valeur) => `
-        <button class="bouton bouton--choix${valeur === mode ? ' bouton--choisi' : ''}"
-                type="button" data-mode="${valeur}"
-                aria-pressed="${valeur === mode}">
-          ${echapper(t(`transport.mode.${valeur}`))}
-        </button>
-      `
-    ).join('');
+    const choix = grilleChoix(
+      MODES.map((valeur) => ({
+        valeur,
+        libelle: t(`transport.mode.${valeur}`),
+        icones: ICONES_MODE[valeur] ?? [],
+      })),
+      mode
+    );
 
     const blocs = blocsPourMode(mode).map((bloc) => blocLiens(bloc, params)).join('');
 
@@ -204,7 +218,7 @@ export async function afficher(conteneur, voyage, actions) {
       <section class="carte">
         <h2>${echapper(t('transport.titre'))}</h2>
         <p>${echapper(t('transport.question'))}</p>
-        <div class="choix">${boutons}</div>
+        ${choix}
       </section>
 
       ${rappel}
@@ -227,15 +241,10 @@ export async function afficher(conteneur, voyage, actions) {
       </button>
     `;
 
-    conteneur.querySelectorAll('[data-mode]').forEach((bouton) => {
-      bouton.addEventListener('click', () => {
-        const choisi = bouton.dataset.mode;
-        // Un second clic sur le mode déjà retenu l'annule.
-        const nouveau = choisi === voyage.transport?.mode ? null : choisi;
-        voyage.transport = { ...voyage.transport, mode: nouveau };
-        modifierVoyage({ transport: { mode: nouveau } });
-        rendre();
-      });
+    brancherChoix(conteneur, mode, (nouveau) => {
+      voyage.transport = { ...voyage.transport, mode: nouveau };
+      modifierVoyage({ transport: { mode: nouveau } });
+      rendre();
     });
 
     conteneur.querySelector('#transport-prix').addEventListener('input', (evenement) => {

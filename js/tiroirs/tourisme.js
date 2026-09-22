@@ -10,6 +10,7 @@
  * qui servira au calcul du budget.
  */
 
+import { brancherChoix, grilleChoix } from '../cartes-choix.js';
 import { echapper, langue, t } from '../i18n.js';
 import { genererLieux } from '../api.js';
 import { lienReservation, nomPartenaire } from '../liens.js';
@@ -143,14 +144,15 @@ export async function afficher(conteneur, voyage, actions) {
   function rendre() {
     const type = voyage.tourisme?.type ?? null;
 
-    const boutons = TYPES.map(
-      (valeur) => `
-        <button class="bouton bouton--choix${valeur === type ? ' bouton--choisi' : ''}"
-                type="button" data-type="${valeur}" aria-pressed="${valeur === type}">
-          ${echapper(t(`tourisme.type.${valeur}`))}
-        </button>
-      `
-    ).join('');
+    // Le nom du type sert aussi de clé d'icône : plage-repos, repos-total…
+    const choix = grilleChoix(
+      TYPES.map((valeur) => ({
+        valeur,
+        libelle: t(`tourisme.type.${valeur}`),
+        icones: [valeur],
+      })),
+      type
+    );
 
     let contenu = '';
 
@@ -206,7 +208,7 @@ export async function afficher(conteneur, voyage, actions) {
       <section class="carte">
         <h2>${echapper(t('tourisme.titre'))}</h2>
         <p>${echapper(t('tourisme.question'))}</p>
-        <div class="choix">${boutons}</div>
+        ${choix}
       </section>
 
       ${contenu}
@@ -216,21 +218,15 @@ export async function afficher(conteneur, voyage, actions) {
       </button>
     `;
 
-    conteneur.querySelectorAll('[data-type]').forEach((bouton) => {
-      bouton.addEventListener('click', () => {
-        const choisi = bouton.dataset.type;
-        // Un second clic sur le type déjà retenu l'annule.
-        const nouveau = choisi === voyage.tourisme?.type ? null : choisi;
+    brancherChoix(conteneur, type, (nouveau) => {
+      voyage.tourisme = { ...voyage.tourisme, type: nouveau };
+      modifierVoyage({ tourisme: { type: nouveau } });
 
-        voyage.tourisme = { ...voyage.tourisme, type: nouveau };
-        modifierVoyage({ tourisme: { type: nouveau } });
+      liste = null;
+      erreurListe = null;
 
-        liste = null;
-        erreurListe = null;
-
-        if (nouveau && LISTE_PAR_TYPE[nouveau]) chargerListe(nouveau);
-        else rendre();
-      });
+      if (nouveau && LISTE_PAR_TYPE[nouveau]) chargerListe(nouveau);
+      else rendre();
     });
 
     conteneur.querySelectorAll('[data-lieu]').forEach((caseACocher) => {

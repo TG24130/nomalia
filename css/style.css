@@ -103,6 +103,45 @@ body {
   cursor: pointer;
 }
 
+/* Dans un tiroir, l'en-tête se replie sur une seule ligne : le logo en grand
+   et le slogan mangeaient un tiers d'un écran de téléphone avant même que le
+   contenu commence. */
+.entete--compacte {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px var(--espace);
+  text-align: left;
+}
+
+.entete--compacte .entete__logo {
+  width: 32px;
+  height: 32px;
+  margin: 0;
+}
+
+.entete--compacte .entete__slogan {
+  display: none;
+}
+
+/* Réduit à 32 px, le logo ne se lit plus : le nom reprend sa place à côté,
+   en texte. Les règles de .invisible sont donc toutes annulées ici. */
+.entete--compacte .entete__titre {
+  position: static;
+  width: auto;
+  height: auto;
+  margin: 0;
+  overflow: visible;
+  clip-path: none;
+  font-size: 1.05rem;
+  letter-spacing: 0.1em;
+}
+
+.entete--compacte .entete__deconnexion {
+  margin-top: 0;
+  margin-left: auto;
+}
+
 /* — Fil des étapes — */
 
 .parcours {
@@ -236,6 +275,40 @@ body {
   max-width: 640px;
   margin: 0 auto;
   padding: var(--espace);
+  /* Le glissement d'entrée sort brièvement du cadre. */
+  overflow-x: hidden;
+}
+
+/* Glissement d'entrée d'un tiroir. Le sens indique la direction prise : le
+   contenu arrive de la droite en avançant, de la gauche en reculant. La durée
+   reste courte — le mouvement doit se sentir, pas se faire attendre. */
+@keyframes vue-entre-avant {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+}
+
+@keyframes vue-entre-arriere {
+  from {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+}
+
+.vue--entre-avant {
+  animation: vue-entre-avant 0.22s ease-out;
+}
+
+.vue--entre-arriere {
+  animation: vue-entre-arriere 0.22s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vue--entre-avant,
+  .vue--entre-arriere {
+    animation: none;
+  }
 }
 
 .carte {
@@ -435,6 +508,101 @@ select {
 
 .bouton--choix + .bouton--choix {
   margin-top: 0;
+}
+
+/* Choix présentés en cartes : une icône donne à lire l'option d'un coup
+   d'oeil, là où sept libellés alignés se ressemblent tous. */
+.choix--cartes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.carte-choix {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 96px;
+  padding: 12px 8px;
+  border: 1.5px solid var(--couleur-bordure);
+  border-radius: var(--rayon);
+  background: var(--couleur-carte);
+  color: var(--couleur-texte);
+  font: inherit;
+  font-size: 0.9rem;
+  line-height: 1.25;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease,
+    transform 0.12s ease;
+}
+
+.carte-choix__icone {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  color: var(--couleur-texte-doux);
+  transition: color 0.15s ease;
+}
+
+/* Les modes combinés montrent leurs deux pictogrammes reliés par un signe. */
+.carte-choix__plus {
+  font-size: 0.8rem;
+  line-height: 1;
+}
+
+.carte-choix:not([disabled]):hover {
+  border-color: var(--couleur-accent);
+}
+
+.carte-choix:not([disabled]):active {
+  transform: scale(0.97);
+}
+
+.carte-choix--choisie {
+  border-color: var(--couleur-accent);
+  border-width: 2px;
+  padding: 11.5px 7.5px;
+  background: var(--couleur-accent-clair);
+  font-weight: 600;
+}
+
+.carte-choix--choisie .carte-choix__icone {
+  color: var(--couleur-accent);
+}
+
+/* La coche double l'information portée par la couleur : la sélection reste
+   lisible sans distinguer les teintes. */
+.carte-choix__coche {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--couleur-accent);
+  color: #fff;
+}
+
+.carte-choix:focus-visible {
+  outline: 3px solid var(--couleur-accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carte-choix {
+    transition: none;
+  }
+
+  .carte-choix:not([disabled]):active {
+    transform: none;
+  }
 }
 
 /* — Groupes de cases à cocher — */

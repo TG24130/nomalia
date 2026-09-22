@@ -10,6 +10,7 @@
  * passage à l'autre et à rappeler quoi cocher une fois sur place.
  */
 
+import { brancherChoix, grilleChoix } from '../cartes-choix.js';
 import { echapper, langue, t } from '../i18n.js';
 import { chercherAeroport } from '../aeroports.js';
 import { estPrerempli, lienReservation, nomPartenaire } from '../liens.js';
@@ -133,14 +134,15 @@ export async function afficher(conteneur, voyage, actions) {
     const type = voyage.hebergement?.type ?? null;
     const retenus = new Set(voyage.hebergement?.filtres ?? []);
 
-    const boutonsType = TYPES.map(
-      (valeur) => `
-        <button class="bouton bouton--choix${valeur === type ? ' bouton--choisi' : ''}"
-                type="button" data-type="${valeur}" aria-pressed="${valeur === type}">
-          ${echapper(t(`hebergement.type.${valeur}`))}
-        </button>
-      `
-    ).join('');
+    // Le nom du type sert aussi de clé d'icône : hotel, gite, camping…
+    const choixType = grilleChoix(
+      TYPES.map((valeur) => ({
+        valeur,
+        libelle: t(`hebergement.type.${valeur}`),
+        icones: [valeur],
+      })),
+      type
+    );
 
     const masques = FILTRES_MASQUES[type] ?? [];
 
@@ -219,7 +221,7 @@ export async function afficher(conteneur, voyage, actions) {
       <section class="carte">
         <h2>${echapper(t('hebergement.titre'))}</h2>
         <p>${echapper(t('hebergement.question'))}</p>
-        <div class="choix">${boutonsType}</div>
+        ${choixType}
       </section>
 
       ${
@@ -257,15 +259,10 @@ export async function afficher(conteneur, voyage, actions) {
       </button>
     `;
 
-    conteneur.querySelectorAll('[data-type]').forEach((bouton) => {
-      bouton.addEventListener('click', () => {
-        const choisi = bouton.dataset.type;
-        // Un second clic sur le type déjà retenu l'annule.
-        const nouveau = choisi === voyage.hebergement?.type ? null : choisi;
-        voyage.hebergement = { ...voyage.hebergement, type: nouveau };
-        modifierVoyage({ hebergement: { type: nouveau } });
-        rendre();
-      });
+    brancherChoix(conteneur, type, (nouveau) => {
+      voyage.hebergement = { ...voyage.hebergement, type: nouveau };
+      modifierVoyage({ hebergement: { type: nouveau } });
+      rendre();
     });
 
     conteneur.querySelectorAll('[data-filtre]').forEach((caseACocher) => {

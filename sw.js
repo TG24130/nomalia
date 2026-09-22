@@ -28,6 +28,7 @@ const FICHIERS_STATIQUES = [
   './js/voyage.js',
   './js/liens.js',
   './js/icones.js',
+  './js/cartes-choix.js',
   './js/api.js',
   './js/budget.js',
   './js/aeroports.js',

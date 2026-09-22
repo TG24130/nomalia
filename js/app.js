@@ -68,6 +68,9 @@ const zoneMessage = document.getElementById('message');
 /** Bouton de déconnexion de l'en-tête. */
 const boutonDeconnexion = document.getElementById('deconnexion');
 
+/** En-tête : il se réduit dès qu'un tiroir est ouvert (voir masquerParcours). */
+const entete = document.querySelector('.entete');
+
 /** Fil des étapes. */
 const parcours = document.getElementById('parcours');
 const parcoursListe = document.getElementById('parcours-liste');
@@ -349,6 +352,10 @@ function afficherParcours(etape) {
 
   parcours.hidden = false;
 
+  // Dans un tiroir, l'en-tête cède la place au contenu : sur un téléphone, le
+  // logo en grand et le slogan occupaient à eux seuls un tiers de l'écran.
+  entete.classList.add('entete--compacte');
+
   parcoursListe.innerHTML = ETAPES.map((nom, index) => {
     const franchie = index < position;
     const courante = index === position;
@@ -397,6 +404,31 @@ function afficherParcours(etape) {
 function masquerParcours() {
   parcours.hidden = true;
   parcoursListe.innerHTML = '';
+  entete.classList.remove('entete--compacte');
+  // Le prochain tiroir ouvert glissera dans le sens de l'avancée.
+  positionAffichee = -1;
+}
+
+/** Position du tiroir précédemment affiché, pour connaître le sens du mouvement. */
+let positionAffichee = -1;
+
+/**
+ * Anime l'entrée du tiroir dans le sens de la navigation : vers la gauche en
+ * avançant, vers la droite en reculant. Le mouvement dit où l'on va ; sans
+ * lui, deux écrans successifs se ressemblent trop pour qu'on sente la
+ * progression.
+ *
+ * @param {number} position position du tiroir affiché
+ */
+function animerEntree(position) {
+  const recule = positionAffichee > position;
+  positionAffichee = position;
+
+  vue.classList.remove('vue--entre-avant', 'vue--entre-arriere');
+  // Force un recalcul : sans lui, retirer puis remettre la classe dans le même
+  // cycle ne rejoue pas l'animation.
+  void vue.offsetWidth;
+  vue.classList.add(recule ? 'vue--entre-arriere' : 'vue--entre-avant');
 }
 
 /**
@@ -416,6 +448,8 @@ function afficherTiroir(etape) {
     <div id="tiroir"></div>
     <nav class="navigation" id="navigation"></nav>
   `;
+
+  animerEntree(position);
 
   const actions = {
     suivant: () => allerA(position + 1),
