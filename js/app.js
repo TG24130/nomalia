@@ -40,6 +40,7 @@ import {
 import { configurerApi } from './api.js';
 import { icone } from './icones.js';
 import { afficherRecapitulatif } from './recapitulatif.js';
+import { oublierPrechargements } from './prechargement.js';
 
 import * as tiroirSaisie from './tiroirs/saisie.js';
 import * as tiroirFiche from './tiroirs/fiche.js';
@@ -59,6 +60,19 @@ const TIROIRS = {
   randos: tiroirRandos,
   budget: tiroirBudget,
 };
+
+/**
+ * Générations lancées en avance depuis un tiroir précédent.
+ *
+ * Une recherche par l'IA dure une à deux minutes ; les tiroirs Transport et
+ * Hébergement se remplissent en bien moins. `depuis` nomme le tiroir à
+ * l'ouverture duquel le tiroir `tiroir` lance sa propre recherche, pour
+ * qu'elle soit prête à l'arrivée.
+ *
+ * La liste est explicite plutôt que déduite : le tiroir Randonnées, lui, ne
+ * peut rien anticiper, ses critères n'étant connus qu'une fois choisis.
+ */
+const PRECHARGEMENTS = [{ depuis: 'transport', tiroir: tiroirTourisme }];
 
 /** Élément principal dans lequel les écrans et les tiroirs s'affichent. */
 const vue = document.getElementById('vue');
@@ -474,6 +488,12 @@ function afficherTiroir(etape) {
   }
 
   afficherNavigation(nom, position, tiroir, actions);
+
+  // Après l'affichage : la recherche lancée en avance ne doit pas retarder le
+  // tiroir que l'utilisateur a sous les yeux.
+  for (const { depuis, tiroir: anticipe } of PRECHARGEMENTS) {
+    if (depuis === nom && voyage) anticipe.preparer?.(voyage);
+  }
 }
 
 /**
@@ -580,6 +600,8 @@ function afficherEcranFin() {
 /** Enregistre puis revient à la liste des voyages. */
 async function retourAccueil() {
   afficherChargement();
+  // Les recherches lancées en avance portaient sur le voyage qu'on quitte.
+  oublierPrechargements();
   await fermerVoyage();
   await afficherEcranAccueil();
 }

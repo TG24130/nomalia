@@ -14,6 +14,7 @@ import { attente } from '../attente.js';
 import { brancherChoix, grilleChoix } from '../cartes-choix.js';
 import { echapper, langue, libelles, t } from '../i18n.js';
 import { genererLieux } from '../api.js';
+import { cleLieux, precharger, recuperer } from '../prechargement.js';
 import { lienReservation, nomPartenaire } from '../liens.js';
 import { modifierVoyage } from '../voyage.js';
 
@@ -38,6 +39,54 @@ const LISTE_PAR_TYPE = {
   'trip-liberte': 'etapes',
   trekking: 'treks',
 };
+
+/**
+ * Type préchargé quand l'utilisateur n'a pas encore choisi.
+ *
+ * Le pari n'est juste qu'une fois sur six depuis l'ajout du safari, du trip
+ * liberté et du trekking ; il reste gagnant parce qu'une demande préchargée
+ * ne coûte qu'un appel manqué, là où elle fait gagner une minute et demie
+ * d'attente quand elle tombe juste. Sur un voyage repris, le type déjà retenu
+ * est utilisé et il n'y a plus de pari du tout.
+ */
+const TYPE_PROBABLE = 'incontournables';
+
+/** Décrit une demande de lieux à partir du voyage et d'un type de séjour. */
+function demandeLieux(voyage, type) {
+  const typeListe = LISTE_PAR_TYPE[type];
+  if (!typeListe || !voyage?.destination || !voyage?.mois) return null;
+
+  return {
+    cle: cleLieux({
+      destination: voyage.destinationNormalisee ?? voyage.destination,
+      type: typeListe,
+      mois: voyage.mois,
+      langue: voyage.langue ?? 'fr',
+    }),
+    parametres: {
+      destination: voyage.destination,
+      type: typeListe,
+      mois: voyage.mois,
+      langue: voyage.langue ?? 'fr',
+      voyageurs: voyage.voyageurs ?? { adultes: 2, enfants: 0 },
+    },
+  };
+}
+
+/**
+ * Lance la recherche de lieux en avance, depuis un tiroir précédent.
+ *
+ * Appelé par app.js à l'entrée du tiroir Transport : les deux tiroirs qui
+ * suivent se remplissent pendant que la recherche tourne.
+ *
+ * @param {object} voyage
+ */
+export function preparer(voyage) {
+  const demande = demandeLieux(voyage, voyage?.tourisme?.type ?? TYPE_PROBABLE);
+  if (!demande) return;
+
+  precharger(demande.cle, () => genererLieux(demande.parametres));
+}
 
 /** Critères d'hébergement conseillés pour un repos total. */
 const FILTRES_CONSEILLES = ['piscine', 'spa', 'au-calme', 'vue-mer'];
@@ -89,9 +138,12 @@ export async function afficher(conteneur, voyage, actions) {
 
   /** Demande la liste correspondant au type choisi. */
   const chargerListe = async (type) => {
-    const typeListe = LISTE_PAR_TYPE[type];
-    if (!typeListe) {
+    // Sans type de liste (repos total) ou sans destination, il n'y a rien à
+    // demander — et demandeLieux renvoie null dans les deux cas.
+    const demande = demandeLieux(voyage, type);
+    if (!demande) {
       liste = null;
+      rendre();
       return;
     }
 
@@ -100,13 +152,10 @@ export async function afficher(conteneur, voyage, actions) {
     rendre();
 
     try {
-      const resultat = await genererLieux({
-        destination: voyage.destination,
-        type: typeListe,
-        mois: voyage.mois,
-        langue: voyage.langue ?? 'fr',
-        voyageurs: voyage.voyageurs ?? { adultes: 2, enfants: 0 },
-      });
+      // Si la recherche a été lancée en avance, on attend celle-là : en
+      // ouvrir une seconde paierait deux fois la même chose et annulerait
+      // l'avance prise.
+      const resultat = await (recuperer(demande.cle) ?? genererLieux(demande.parametres));
       liste = resultat;
     } catch (erreur) {
       erreurListe = erreur.cleLibelle ?? 'erreurs.ia';
