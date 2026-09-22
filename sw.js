@@ -30,6 +30,7 @@ const FICHIERS_STATIQUES = [
   './js/icones.js',
   './js/attente.js',
   './js/recapitulatif.js',
+  './js/sejours.js',
   './js/prechargement.js',
   './js/cartes-choix.js',
   './js/api.js',

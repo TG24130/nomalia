@@ -12,6 +12,7 @@
  */
 
 import { echapper, t, traduireDom } from '../i18n.js';
+import { TYPES_SEJOUR } from '../sejours.js';
 import { modifierVoyage } from '../voyage.js';
 
 /** La saisie ne peut pas être passée : elle crée le voyage. */
@@ -31,6 +32,30 @@ function optionsMois(moisChoisi) {
   for (let mois = 1; mois <= 12; mois += 1) {
     const selectionne = mois === Number(moisChoisi) ? ' selected' : '';
     options.push(`<option value="${mois}"${selectionne}>${echapper(t(`mois.${mois}`))}</option>`);
+  }
+
+  return options.join('');
+}
+
+/**
+ * Construit les options du sélecteur de type de séjour.
+ *
+ * Le type est demandé ici, et non seulement au tiroir Séjour, pour que la
+ * recherche de lieux puisse démarrer dès la fiche — elle dure une à deux
+ * minutes, que l'on passe de toute façon sur les tiroirs suivants.
+ *
+ * Une liste déroulante plutôt que les cartes du tiroir Séjour : au milieu
+ * d'un formulaire, sept cartes ajouteraient quatre cents pixels avant le
+ * bouton de validation.
+ */
+function optionsSejour(typeChoisi) {
+  const options = [`<option value="">${echapper(t('saisie.choisirSejour'))}</option>`];
+
+  for (const type of TYPES_SEJOUR) {
+    const selectionne = type === typeChoisi ? ' selected' : '';
+    options.push(
+      `<option value="${echapper(type)}"${selectionne}>${echapper(t(`tourisme.type.${type}`))}</option>`
+    );
   }
 
   return options.join('');
@@ -57,6 +82,7 @@ export function afficher(conteneur, voyage, actions) {
       adultes: voyage?.voyageurs?.adultes ?? 2,
       enfants: voyage?.voyageurs?.enfants ?? 0,
     },
+    tourisme: { type: voyage?.tourisme?.type ?? null },
   };
 
   conteneur.innerHTML = `
@@ -112,6 +138,12 @@ export function afficher(conteneur, voyage, actions) {
         <input type="text" id="saisie-depart" autocomplete="off"
                value="${echapper(valeurs.depart)}">
         <p class="champ__aide">${echapper(t('saisie.departAide'))}</p>
+      </div>
+
+      <div class="champ">
+        <label for="saisie-sejour">${echapper(t('saisie.sejour'))}</label>
+        <select id="saisie-sejour">${optionsSejour(valeurs.tourisme.type)}</select>
+        <p class="champ__aide">${echapper(t('saisie.sejourAide'))}</p>
       </div>
 
       <button class="bouton bouton--principal" type="button" id="saisie-valider">
@@ -188,6 +220,14 @@ export function afficher(conteneur, voyage, actions) {
 
   conteneur.querySelector('#saisie-depart').addEventListener('input', (evenement) => {
     retenir({ depart: evenement.target.value });
+  });
+
+  conteneur.querySelector('#saisie-sejour').addEventListener('change', (evenement) => {
+    const type = evenement.target.value || null;
+    // Object.assign remplacerait tourisme en entier ; en reprise, la fusion
+    // profonde de modifierVoyage préserve les lieux déjà retenus.
+    valeurs.tourisme = { ...valeurs.tourisme, type };
+    if (!enCreation) modifierVoyage({ tourisme: { type } });
   });
 
   conteneur.querySelector('#saisie-valider').addEventListener('click', () => {

@@ -64,15 +64,16 @@ const TIROIRS = {
 /**
  * Générations lancées en avance depuis un tiroir précédent.
  *
- * Une recherche par l'IA dure une à deux minutes ; les tiroirs Transport et
- * Hébergement se remplissent en bien moins. `depuis` nomme le tiroir à
+ * Une recherche par l'IA dure une à deux minutes ; lire la fiche puis remplir
+ * Transport et Hébergement prend bien plus. `depuis` nomme le tiroir à
  * l'ouverture duquel le tiroir `tiroir` lance sa propre recherche, pour
- * qu'elle soit prête à l'arrivée.
+ * qu'elle soit prête à l'arrivée. Le type de séjour étant demandé dès la
+ * Saisie, la recherche part dès la Fiche et vise le bon type.
  *
  * La liste est explicite plutôt que déduite : le tiroir Randonnées, lui, ne
  * peut rien anticiper, ses critères n'étant connus qu'une fois choisis.
  */
-const PRECHARGEMENTS = [{ depuis: 'transport', tiroir: tiroirTourisme }];
+const PRECHARGEMENTS = [{ depuis: 'fiche', tiroir: tiroirTourisme }];
 
 /** Élément principal dans lequel les écrans et les tiroirs s'affichent. */
 const vue = document.getElementById('vue');

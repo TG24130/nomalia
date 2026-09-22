@@ -70,7 +70,7 @@ Valeurs possibles :
 - `transport.mode` : `avion`, `bateau`, `train`, `voiture`, `avion+voiture`, `train+voiture`, `bateau+voiture`
 - `hebergement.type` : `hotel`, `gite`, `appartement`, `chez-habitant`, `camping`, `camping-materiel-loue`
 - `hebergement.filtres` : `petit-dejeuner`, `piscine`, `parking`, `annulation-gratuite`, `animaux`, `vue-mer`, `climatisation`, `etoiles-3`, `etoiles-4`, `etoiles-5`
-- `tourisme.type` : `plage-repos`, `repos-total`, `incontournables`
+- `tourisme.type` : `incontournables`, `plage-repos`, `trip-liberte`, `trekking`, `safari`, `romantique`, `repos-total`
 
 ### Collection `fiches/{ficheId}` (cache)
 
@@ -127,7 +127,7 @@ NOMADIA/
 
 ### Tiroir 0 — Saisie
 
-Champs : destination (texte libre), nombre de jours, mois de départ, adultes, enfants, ville de départ. Nationalité fixée à `FR` en V0 (champ présent dans les données, non affiché). Bouton « Préparer mon voyage » → crée le document voyage puis ouvre la fiche.
+Champs : destination (texte libre), nombre de jours, mois de départ, date de départ (facultative), adultes, enfants, ville de départ, type de séjour (facultatif). Le type de séjour est demandé ici, bien qu'il appartienne au tiroir 4 : le connaître dès la saisie permet de lancer `genererLieux` à l'ouverture de la fiche, pendant que l'utilisateur parcourt les tiroirs suivants. Il reste modifiable au tiroir 4. Nationalité fixée à `FR` en V0 (champ présent dans les données, non affiché). Bouton « Préparer mon voyage » → crée le document voyage puis ouvre la fiche.
 
 ### Tiroir 1 — Fiche en 10 points
 

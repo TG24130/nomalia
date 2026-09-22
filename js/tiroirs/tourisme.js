@@ -15,43 +15,12 @@ import { brancherChoix, grilleChoix } from '../cartes-choix.js';
 import { echapper, langue, libelles, t } from '../i18n.js';
 import { genererLieux } from '../api.js';
 import { cleLieux, precharger, recuperer } from '../prechargement.js';
+import { LISTE_PAR_TYPE, TYPES_SEJOUR } from '../sejours.js';
 import { lienReservation, nomPartenaire } from '../liens.js';
 import { modifierVoyage } from '../voyage.js';
 
 /** Ce tiroir peut être passé (CLAUDE.md §7). */
 export const PEUT_ETRE_PASSE = true;
-
-/** Types de séjour (CLAUDE.md §4). */
-const TYPES = [
-  'incontournables',
-  'plage-repos',
-  'trip-liberte',
-  'trekking',
-  'safari',
-  'romantique',
-  'repos-total',
-];
-
-/** Type de liste demandé à l'IA selon le type de séjour. */
-const LISTE_PAR_TYPE = {
-  'plage-repos': 'plages',
-  incontournables: 'incontournables',
-  safari: 'safari',
-  'trip-liberte': 'etapes',
-  trekking: 'treks',
-  romantique: 'romantique',
-};
-
-/**
- * Type préchargé quand l'utilisateur n'a pas encore choisi.
- *
- * Le pari n'est juste qu'une fois sur six depuis l'ajout du safari, du trip
- * liberté et du trekking ; il reste gagnant parce qu'une demande préchargée
- * ne coûte qu'un appel manqué, là où elle fait gagner une minute et demie
- * d'attente quand elle tombe juste. Sur un voyage repris, le type déjà retenu
- * est utilisé et il n'y a plus de pari du tout.
- */
-const TYPE_PROBABLE = 'incontournables';
 
 /** Décrit une demande de lieux à partir du voyage et d'un type de séjour. */
 function demandeLieux(voyage, type) {
@@ -78,13 +47,18 @@ function demandeLieux(voyage, type) {
 /**
  * Lance la recherche de lieux en avance, depuis un tiroir précédent.
  *
- * Appelé par app.js à l'entrée du tiroir Transport : les deux tiroirs qui
- * suivent se remplissent pendant que la recherche tourne.
+ * Appelé par app.js à l'ouverture de la Fiche : les trois tiroirs qui suivent
+ * — Fiche, Transport, Hébergement — se lisent et se remplissent pendant que
+ * la recherche tourne.
+ *
+ * Sans type choisi, rien n'est lancé. Parier sur l'un des sept reviendrait à
+ * payer six appels perdus pour un bon, maintenant que le type se demande dès
+ * la Saisie.
  *
  * @param {object} voyage
  */
 export function preparer(voyage) {
-  const demande = demandeLieux(voyage, voyage?.tourisme?.type ?? TYPE_PROBABLE);
+  const demande = demandeLieux(voyage, voyage?.tourisme?.type);
   if (!demande) return;
 
   precharger(demande.cle, () => genererLieux(demande.parametres));
@@ -208,7 +182,7 @@ export async function afficher(conteneur, voyage, actions) {
 
     // Le nom du type sert aussi de clé d'icône : plage-repos, repos-total…
     const choix = grilleChoix(
-      TYPES.map((valeur) => ({
+      TYPES_SEJOUR.map((valeur) => ({
         valeur,
         libelle: t(`tourisme.type.${valeur}`),
         icones: [valeur],
