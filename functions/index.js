@@ -19,4 +19,4 @@ export {
 
 export { genererFiche } from './fiche.js';
 export { genererLieux } from './lieux.js';
-// export { genererRandos } from './randos.js'; → étape 10
+export { genererRandos } from './randos.js';

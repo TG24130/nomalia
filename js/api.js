@@ -107,3 +107,15 @@ export function genererFiche(parametres) {
 export function genererLieux(parametres) {
   return appeler(FONCTIONS.genererLieux, parametres);
 }
+
+/**
+ * Demande une liste de randonnées correspondant à des critères.
+ *
+ * @param {{ destination: string, mois: number, langue: string, niveau: string|null,
+ *           dureeMax: number|null, deniveleMax: number|null,
+ *           boucleUniquement: boolean, adapteeEnfants: boolean }} parametres
+ * @returns {Promise<{ cle: string, randos: Array<object>, sources: string[], depuisCache: boolean }>}
+ */
+export function genererRandos(parametres) {
+  return appeler(FONCTIONS.genererRandos, parametres);
+}
