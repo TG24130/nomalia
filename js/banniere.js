@@ -37,6 +37,10 @@ function cheminPhoto(etape, compacte) {
 /** Présence des photos déjà testées, par chemin : on ne teste qu'une fois. */
 const photosConnues = new Map();
 
+/** Écran affiché, pour qu'une photo lente ne se pose pas sur le suivant. */
+let etapeAffichee = null;
+let compacteAffichee = false;
+
 /**
  * Vérifie si une photo est présente.
  *
@@ -70,6 +74,9 @@ function photoExiste(chemin) {
  * @param {string} [options.sousTitre]
  */
 export function afficherBanniere(element, { etape = 'saisie', compacte = false, titre, sousTitre } = {}) {
+  etapeAffichee = etape;
+  compacteAffichee = compacte;
+
   element.classList.toggle('banniere--compacte', compacte);
   element.hidden = false;
 
@@ -83,19 +90,41 @@ export function afficherBanniere(element, { etape = 'saisie', compacte = false, 
 
   element.innerHTML = `<div class="banniere__scene">${bandeau(etape)}</div>${legende}`;
 
-  // Une photo prend la place du dessin quand il y en a une. Le test est
-  // asynchrone : l'illustration s'affiche d'abord et la photo la remplace si
-  // elle charge, ce qui évite un bandeau vide le temps de la vérification.
+  afficherFond(etape, compacte);
+}
+
+/**
+ * Pose la photo de l'écran en fond de page.
+ *
+ * Les photos ont d'abord été affichées dans le bandeau : sur une bande de
+ * quatre-vingts pixels, on n'y voyait rien. Elles occupent désormais une large
+ * part de l'écran, derrière le contenu, atténuées par un voile et estompées
+ * sur les bords — assez présentes pour qu'on les regarde, assez discrètes pour
+ * qu'on lise ce qui est posé dessus.
+ *
+ * Le dessin du bandeau reste : il porte le titre de l'étape et tient la place
+ * quand aucune photo n'a été déposée.
+ *
+ * @param {string} etape
+ * @param {boolean} compacte
+ */
+function afficherFond(etape, compacte) {
+  const fond = document.getElementById('fond');
+  if (!fond) return;
+
   const chemin = cheminPhoto(etape, compacte);
 
   photoExiste(chemin).then((existe) => {
-    if (!existe || !element.isConnected) return;
+    // La photo de l'écran courant peut avoir changé entre-temps : on ne pose
+    // que celle qui correspond encore à ce qui est affiché.
+    if (chemin !== cheminPhoto(etapeAffichee, compacteAffichee)) return;
 
-    const scene = element.querySelector('.banniere__scene');
-    if (!scene) return;
+    fond.style.backgroundImage = existe ? `url("${chemin}")` : '';
+    fond.classList.toggle('fond--visible', existe);
 
-    scene.innerHTML = `<img class="banniere__photo" src="${chemin}"
-      alt="" width="1200" height="600">`;
+    // Deux paysages l'un sur l'autre se mangent : quand la photo est là, le
+    // bandeau ne garde que son titre et la laisse paraître au travers.
+    document.body.classList.toggle('a-photo', existe);
   });
 }
 

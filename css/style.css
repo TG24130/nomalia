@@ -57,6 +57,39 @@ body {
     env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
+/* — Photo de fond — */
+
+/* Fixe : la photo ne défile pas avec le contenu, elle reste le décor devant
+   lequel le voyage se construit. Elle occupe une large bande centrale plutôt
+   que tout l'écran, et s'estompe en haut et en bas pour se fondre dans le
+   sable du fond. */
+.fond {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transition: opacity 0.45s ease;
+  /* Le dégradé du masque decide de la « large partie centrée » : pleine
+     intensité au milieu, effacée aux extrémités. */
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 64%, transparent 96%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 64%, transparent 96%);
+}
+
+/* Atténuée : à pleine intensité, aucun texte posé dessus ne resterait
+   lisible. Le voile sable la ramène au rang de décor. */
+.fond--visible {
+  opacity: 0.6;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fond {
+    transition: none;
+  }
+}
+
 /* — Bandeau illustré — */
 
 .tete {
@@ -101,8 +134,7 @@ body {
 }
 
 .banniere__scene,
-.banniere svg,
-.banniere__photo {
+.banniere svg {
   display: block;
   width: 100%;
 }
@@ -113,14 +145,38 @@ body {
   height: auto;
 }
 
-.banniere__photo {
-  height: 200px;
-  object-fit: cover;
+/* Avec une photo de fond, le bandeau abandonne son dessin et ne garde que son
+   texte : le titre se pose alors directement sur la photo, que plus rien ne
+   recouvre. Le voile de .banniere::after suffit à le rendre lisible. */
+.a-photo .banniere__scene {
+  display: none;
 }
 
-/* En bandeau court, la photo se réduit à la même bande que le dessin. */
-.banniere--compacte .banniere__photo {
-  height: 84px;
+.a-photo .banniere {
+  margin-bottom: 0;
+  border-radius: 0;
+  min-height: 132px;
+}
+
+.a-photo .banniere--compacte {
+  min-height: 74px;
+}
+
+.a-photo .banniere::after {
+  border-radius: 0;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    rgba(45, 18, 4, 0.42) 0%,
+    rgba(45, 18, 4, 0.14) 62%,
+    transparent 100%
+  );
+}
+
+.a-photo .banniere__texte {
+  bottom: auto;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 /* Dans un tiroir, le paysage se réduit à une bande : présent, mais il laisse
@@ -383,8 +439,11 @@ body {
   }
 }
 
+/* Presque opaques : on devine la photo derrière sans que le texte en pâtisse.
+   Le flou d'arrière-plan calme ce qui passe au travers. */
 .carte {
-  background: var(--couleur-carte);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(6px);
   border: 1px solid var(--couleur-bordure);
   border-radius: var(--rayon);
   padding: var(--espace);
