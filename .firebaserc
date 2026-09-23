@@ -2,6 +2,6 @@
   "projects": {
     "default": "demo-mytrip",
     "test": "demo-mytrip",
-    "prod": "nomalia-prod"
+    "prod": "nomalia"
   }
 }

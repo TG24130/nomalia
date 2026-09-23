@@ -39,7 +39,9 @@ export const EST_LOCAL = ENVIRONNEMENT === 'test';
  * les émulateurs l'acceptent tel quel et refusent tout accès au cloud, ce qui
  * garantit qu'un test local ne touche jamais de données réelles.
  *
- * `prod` est à compléter une fois le projet créé dans la console Firebase.
+ * `prod` : projet Firebase « nomalia ». Ces valeurs sont publiques par
+ * conception ; la protection repose sur les règles Firestore et la liste
+ * `autorises`.
  */
 const CONFIGS = {
   test: {
@@ -51,12 +53,12 @@ const CONFIGS = {
     appId: '1:000000000000:web:demo',
   },
   prod: {
-    apiKey: 'A_REMPLIR',
-    authDomain: 'A_REMPLIR.firebaseapp.com',
-    projectId: 'nomalia-prod',
-    storageBucket: 'A_REMPLIR.appspot.com',
-    messagingSenderId: 'A_REMPLIR',
-    appId: 'A_REMPLIR',
+    apiKey: 'AIzaSyCM8Tu521pzvp8nLBMyNue77wl2cnhoLY0',
+    authDomain: 'nomalia.firebaseapp.com',
+    projectId: 'nomalia',
+    storageBucket: 'nomalia.firebasestorage.app',
+    messagingSenderId: '184219825842',
+    appId: '1:184219825842:web:d1094796300ed5aeaefbab',
   },
 };
 
