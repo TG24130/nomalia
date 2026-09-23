@@ -1,5 +1,5 @@
 /**
- * index.js — point d'entrée des Cloud Functions NOMADIA (Node 20, 2nd gen).
+ * index.js — point d'entrée des Cloud Functions NOMALIA (Node 20, 2nd gen).
  *
  * Ce fichier ne contient que les exports : le socle partagé (modèle, secret,
  * vérification d'accès, cache) vit dans commun.js, et chaque fonction métier

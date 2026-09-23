@@ -1,6 +1,6 @@
 {
-  "name": "nomadia-functions",
-  "description": "Cloud Functions NOMADIA — appels à l'API Claude (fiche, lieux, randonnées)",
+  "name": "nomalia-functions",
+  "description": "Cloud Functions NOMALIA — appels à l'API Claude (fiche, lieux, randonnées)",
   "version": "0.1.0",
   "private": true,
   "type": "module",

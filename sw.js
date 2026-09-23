@@ -8,7 +8,7 @@
  * Incrémenter VERSION_CACHE à chaque mise en ligne pour forcer la mise à jour.
  */
 
-const VERSION_CACHE = 'nomadia-v2';
+const VERSION_CACHE = 'nomalia-v2';
 
 /**
  * Fichiers mis en cache dès l'installation.

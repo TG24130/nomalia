@@ -1,8 +1,8 @@
-# CLAUDE.md — Projet NOMADIA (V0 « Famille »)
+# CLAUDE.md — Projet NOMALIA (V0 « Famille »)
 
 ## 1. Contexte
 
-NOMADIA est une app de préparation de voyage guidée. L'utilisateur saisit une destination et une durée, reçoit une fiche pratique en 10 points, puis répond à une série de questions « à tiroirs » (transport, hébergement, type de tourisme, randonnées). À la fin, l'app calcule un budget estimatif.
+NOMALIA est une app de préparation de voyage guidée. L'utilisateur saisit une destination et une durée, reçoit une fiche pratique en 10 points, puis répond à une série de questions « à tiroirs » (transport, hébergement, type de tourisme, randonnées). À la fin, l'app calcule un budget estimatif.
 
 V0 = usage personnel et familial uniquement (quelques utilisateurs, tous avec un passeport français, interface en français).
 
@@ -87,7 +87,7 @@ Même principe que les fiches.
 ## 5. Structure du projet
 
 ```
-NOMADIA/
+NOMALIA/
 ├── CLAUDE.md
 ├── index.html
 ├── manifest.json
