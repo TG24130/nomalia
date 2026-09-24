@@ -8,6 +8,10 @@
  *
  * Les lieux cochés sont conservés dans `tourisme.lieuxRetenus` avec leur prix,
  * qui servira au calcul du budget.
+ *
+ * Le safari ajoute un bloc « Safari organisé » : sa durée, ce qu'il comprend
+ * et son prix, conservés dans `tourisme.safari`, et les liens vers les
+ * opérateurs locaux. Le budget en déduit hébergement et repas (budget.js).
  */
 
 import { attente } from '../attente.js';
@@ -17,7 +21,8 @@ import { genererLieux } from '../api.js';
 import { cleLieux, precharger, recuperer } from '../prechargement.js';
 import { vignette } from '../illustrations.js';
 import { LISTE_PAR_TYPE, TYPES_SEJOUR } from '../sejours.js';
-import { lienReservation, nomPartenaire } from '../liens.js';
+import { chercherAeroport } from '../aeroports.js';
+import { estPrerempli, lienReservation, nomPartenaire } from '../liens.js';
 import { modifierVoyage } from '../voyage.js';
 
 /** Ce tiroir peut être passé (CLAUDE.md §7). */
@@ -65,6 +70,12 @@ export function preparer(voyage) {
   precharger(demande.cle, () => genererLieux(demande.parametres));
 }
 
+/** Durée maximale proposée pour un safari organisé, en jours. */
+const SAFARI_JOURS_MAX = 21;
+
+/** Où chercher un safari organisé, du plus spécialisé au plus général. */
+const PARTENAIRES_SAFARI = ['safaribookings', 'tourradar', 'viator'];
+
 /** Critères d'hébergement conseillés pour un repos total. */
 const FILTRES_CONSEILLES = ['piscine', 'spa', 'au-calme', 'vue-mer'];
 
@@ -96,6 +107,9 @@ function formaterPrix(prix, devise) {
  * @param {object} actions navigation fournie par app.js
  */
 export async function afficher(conteneur, voyage, actions) {
+  // Le pays de destination oriente les liens vers les opérateurs de safari.
+  const pays = (await chercherAeroport(voyage?.destination))?.pays ?? null;
+
   /** Liste chargée pour le type courant, null tant qu'elle n'a pas été demandée. */
   let liste = null;
   let erreurListe = null;
@@ -141,6 +155,66 @@ export async function afficher(conteneur, voyage, actions) {
       chargement = false;
       rendre();
     }
+  };
+
+  /** Enregistre une modification du safari organisé. */
+  const enregistrerSafari = (modifications) => {
+    const safari = { ...(voyage.tourisme?.safari ?? {}), ...modifications };
+    voyage.tourisme = { ...voyage.tourisme, safari };
+    modifierVoyage({ tourisme: { safari } });
+  };
+
+  /** Bloc « Safari organisé » : durée, contenu, prix et opérateurs. */
+  const blocSafari = () => {
+    const safari = voyage.tourisme?.safari ?? {};
+    const maximum = Math.max(1, Math.min(voyage.jours ?? SAFARI_JOURS_MAX, SAFARI_JOURS_MAX));
+
+    const durees = [
+      `<option value="">${echapper(t('tourisme.safariSansOrganise'))}</option>`,
+      ...Array.from({ length: maximum }, (_, index) => index + 1).map(
+        (nombre) =>
+          `<option value="${nombre}"${nombre === safari.jours ? ' selected' : ''}>
+            ${echapper(t('tourisme.safariJoursValeur', { nombre }))}</option>`
+      ),
+    ].join('');
+
+    // Un lien qui ne mènerait qu'à une page d'accueil (SafariBookings hors
+    // d'Afrique) n'aide pas : on ne le montre pas.
+    const params = { pays, destination: voyage.destination, requete: 'safari' };
+    const liens = PARTENAIRES_SAFARI.filter((partenaire) => estPrerempli(partenaire, params))
+      .map(
+        (partenaire) => `
+          <li>
+            <a class="bouton bouton--lien" href="${echapper(lienReservation(partenaire, params))}"
+               target="_blank" rel="noopener noreferrer">${echapper(nomPartenaire(partenaire))}</a>
+          </li>`
+      )
+      .join('');
+
+    return `
+      <section class="carte">
+        <h3>${echapper(t('tourisme.safariTitre'))}</h3>
+        <p>${echapper(t('tourisme.safariIntro'))}</p>
+        <ul class="liens">${liens}</ul>
+
+        <div class="champ">
+          <label for="safari-jours">${echapper(t('tourisme.safariJours'))}</label>
+          <select id="safari-jours">${durees}</select>
+        </div>
+
+        <label class="case">
+          <input type="checkbox" id="safari-tout-compris" ${safari.toutCompris === false ? '' : 'checked'}>
+          <span>${echapper(t('tourisme.safariToutCompris'))}</span>
+        </label>
+
+        <div class="champ">
+          <label for="safari-prix">${echapper(t('tourisme.safariPrix'))}</label>
+          <input type="number" id="safari-prix" min="0" step="10" inputmode="decimal"
+                 value="${safari.prixTotal ?? ''}">
+          <p class="champ__aide">${echapper(t('tourisme.safariPrixAide'))}</p>
+        </div>
+      </section>
+    `;
   };
 
   /** Construit la carte d'un lieu. */
@@ -262,6 +336,8 @@ export async function afficher(conteneur, voyage, actions) {
         ${choix}
       </section>
 
+      ${type === 'safari' ? blocSafari() : ''}
+
       ${contenu}
 
       <button class="bouton bouton--principal" type="button" id="tourisme-suivant">
@@ -299,6 +375,20 @@ export async function afficher(conteneur, voyage, actions) {
         enregistrerRetenus();
         rendre();
       });
+    });
+
+    conteneur.querySelector('#safari-jours')?.addEventListener('change', (evenement) => {
+      const jours = Number.parseInt(evenement.target.value, 10);
+      enregistrerSafari({ jours: Number.isNaN(jours) ? null : jours });
+    });
+
+    conteneur.querySelector('#safari-tout-compris')?.addEventListener('change', (evenement) => {
+      enregistrerSafari({ toutCompris: evenement.target.checked });
+    });
+
+    conteneur.querySelector('#safari-prix')?.addEventListener('input', (evenement) => {
+      const prix = Number.parseFloat(evenement.target.value);
+      enregistrerSafari({ prixTotal: Number.isFinite(prix) && prix > 0 ? prix : null });
     });
 
     conteneur.querySelector('#tourisme-reessayer')?.addEventListener('click', () => {

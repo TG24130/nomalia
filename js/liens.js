@@ -75,6 +75,28 @@ function requete(paires) {
   return retenues.length ? `?${retenues.join('&')}` : '';
 }
 
+/** Pays couverts par SafariBookings, qui ne propose que l'Afrique. */
+const PAYS_SAFARIBOOKINGS = new Set([
+  'KE', 'TZ', 'UG', 'RW', 'ZA', 'BW', 'NA', 'ZM', 'ZW', 'MW', 'MZ', 'ET', 'MG', 'CD', 'CG', 'GA',
+]);
+
+/**
+ * Nom anglais d'un pays, en minuscules et tirets : « south-africa ».
+ * @param {string} code ISO 3166-1 alpha-2
+ * @returns {string}
+ */
+function slugPaysAnglais(code) {
+  try {
+    return new Intl.DisplayNames(['en'], { type: 'region' })
+      .of(code)
+      .toLowerCase()
+      .replace(/[^a-z]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  } catch {
+    return '';
+  }
+}
+
 /**
  * Critères d'hébergement que Booking sait recevoir dans son lien (`nflt`).
  * Chaque code a été vérifié un à un sur téléphone le 24/09/2026 (4 étoiles
@@ -379,6 +401,31 @@ const PARTENAIRES = {
       if (!termes) return `https://www.viator.com/${locale}/`;
       return `https://www.viator.com/${locale}/searchResults/all?text=${encoder(termes)}`;
     },
+  },
+
+  /* — Safaris organisés (tiroir 4) — */
+
+  // Comparateur des opérateurs locaux, pour l'Afrique seulement. Page par
+  // pays : /tours/{pays en anglais}. Les pages par durée n'existent que pour
+  // quelques durées (« 5-day-kenya » renvoie une 404, vérifié le 24/09/2026) ;
+  // la durée se filtre donc sur la page.
+  safaribookings: {
+    nom: 'SafariBookings',
+    affiliateId: null,
+    preremplissage: 'observe',
+    construire: ({ pays }) =>
+      PAYS_SAFARIBOOKINGS.has(pays)
+        ? `https://www.safaribookings.com/tours/${slugPaysAnglais(pays)}`
+        : 'https://www.safaribookings.com/',
+  },
+
+  // Circuits de plusieurs jours : /i/{pays}-safari, vérifié sur la Tanzanie.
+  tourradar: {
+    nom: 'TourRadar',
+    affiliateId: null,
+    preremplissage: 'observe',
+    construire: ({ pays }) =>
+      pays ? `https://www.tourradar.com/i/${slugPaysAnglais(pays)}-safari` : 'https://www.tourradar.com/',
   },
 
   /* — Randonnées (tiroir 5) — */

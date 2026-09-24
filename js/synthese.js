@@ -194,8 +194,23 @@ function activites(voyage, budget) {
 
   return section(
     t('synthese.activites'),
-    liste + (lieux.length ? ligne(t('synthese.budgetMoyen'), montantPoste(budget.detail.activites)) : '')
+    liste +
+      (lieux.length && budget.detail.activites.moyen > 0
+        ? ligne(t('synthese.budgetMoyen'), montantPoste(budget.detail.activites))
+        : '') +
+      safariOrganise(voyage, budget)
   );
+}
+
+/** Le safari organisé, s'il y en a un : sa durée, ce qu'il comprend, son coût. */
+function safariOrganise(voyage, budget) {
+  const safari = voyage.tourisme?.type === 'safari' ? voyage.tourisme.safari : null;
+  if (!safari?.jours || budget.detail.safari.moyen <= 0) return '';
+
+  const detail = t(safari.toutCompris === false ? 'synthese.safariDetailSeul' : 'synthese.safariDetail', {
+    jours: safari.jours,
+  });
+  return ligne(t('synthese.safari'), `${detail} — ${montantPoste(budget.detail.safari)}`);
 }
 
 /** Randonnées retenues. */

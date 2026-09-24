@@ -157,5 +157,39 @@ const journee = coutJournalier(
 );
 verifier('coût d’une journée : 120 + 45 × 2,6', journee.moyen, Math.round(120 + 45 * 2.6));
 
+console.log('\n— Cas 7 : safari organisé de 5 jours sur un voyage de 12 —');
+
+const baseSafari = {
+  jours: 12,
+  voyageurs: { adultes: 2, enfants: 1 },
+  hebergement: { type: 'hotel' },
+  tourisme: {
+    type: 'safari',
+    lieuxRetenus: [{ nom: 'Masaï Mara', prixEntree: 80 }],
+    safari: { jours: 5, toutCompris: true },
+  },
+};
+
+const safariForfait = calculerBudget(baseSafari, fiche);
+verifier('hébergement : 7 nuits hors safari × 90 €', safariForfait.detail.hebergement.moyen, 630);
+verifier('repas : 7 jours hors safari', safariForfait.detail.repas.moyen, Math.round(45 * 2.6 * 7));
+verifier('safari au forfait : 350 € × 5 jours × 2,6 parts', safariForfait.detail.safari.moyen, Math.round(350 * 5 * 2.6));
+verifier('entrées des parcs comprises dans le safari', safariForfait.detail.activites.moyen, 0);
+
+const safariSaisi = calculerBudget(
+  { ...baseSafari, tourisme: { ...baseSafari.tourisme, safari: { jours: 5, toutCompris: true, prixTotal: 4200 } } },
+  fiche
+);
+verifier('safari au prix saisi', safariSaisi.detail.safari.moyen, 4200);
+
+const safariSansLogement = calculerBudget(
+  { ...baseSafari, tourisme: { ...baseSafari.tourisme, safari: { jours: 5, toutCompris: false } } },
+  fiche
+);
+verifier('safari sans logement : 12 nuits d’hôtel', safariSansLogement.detail.hebergement.moyen, 1080);
+
+const sansSafari = calculerBudget({ ...baseSafari, tourisme: { ...baseSafari.tourisme, safari: null } }, fiche);
+verifier('sans safari organisé : entrées comptées', sansSafari.detail.activites.moyen, 80 * 3);
+
 console.log(echecs === 0 ? '\nTous les cas passent.\n' : `\n${echecs} vérification(s) en échec.\n`);
 process.exit(echecs === 0 ? 0 : 1);

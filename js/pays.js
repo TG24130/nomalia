@@ -34,6 +34,31 @@ export function nomPays(code) {
   }
 }
 
+/** Index « nom de pays normalisé → code », construit à la première demande. */
+let indexNoms = null;
+
+/**
+ * Reconnaît un nom de pays, en français, en anglais ou en espagnol.
+ *
+ * @param {string} texte saisie de l'utilisateur
+ * @param {(texte: string) => string} normaliser même normalisation que l'appelant
+ * @returns {string|null} code ISO, ou null si le texte ne nomme pas un pays
+ */
+export function paysDepuisNom(texte, normaliser) {
+  if (!indexNoms) {
+    indexNoms = new Map();
+    for (const locale of ['fr', 'en', 'es']) {
+      try {
+        const noms = new Intl.DisplayNames([locale], { type: 'region' });
+        for (const code of TOUS) indexNoms.set(normaliser(noms.of(code)), code);
+      } catch {
+        // Locale indisponible : les autres suffisent.
+      }
+    }
+  }
+  return indexNoms.get(normaliser(texte)) ?? null;
+}
+
 /**
  * Options du sélecteur de nationalité : les plus fréquentes, puis toutes,
  * par ordre alphabétique dans la langue courante.

@@ -21,6 +21,7 @@ import {
   normaliser,
   proche,
 } from './recherche-lieux.js';
+import { paysDepuisNom } from './pays.js';
 
 const charger = chargeurTable('data/aeroports.json', (donnees) =>
   donnees.aeroports.map((aeroport) => {
@@ -96,6 +97,20 @@ export async function chercherAeroport(lieu) {
     const parCode = aeroports.find((aeroport) => aeroport.c.toLowerCase() === requete);
     if (parCode) {
       return { code: parCode.c, ville: parCode.v, nom: parCode.n, pays: parCode.p };
+    }
+  }
+
+  // Un nom de pays (« Kenya », « Portugal ») ne désigne aucune ville : la
+  // recherche approximative ci-dessous trouvait alors n'importe quoi (« Kenya »
+  // donnait un aéroport canadien). On retient l'aéroport du pays qui dessert
+  // le plus de pays, celui par lequel on y arrive le plus souvent.
+  const pays = paysDepuisNom(lieu, normaliser);
+  if (pays) {
+    const principal = aeroports
+      .filter((aeroport) => aeroport.p === pays)
+      .reduce((meilleur, aeroport) => ((aeroport.i ?? 0) > (meilleur?.i ?? -1) ? aeroport : meilleur), null);
+    if (principal) {
+      return { code: principal.c, ville: principal.v, nom: principal.n, pays: principal.p };
     }
   }
 

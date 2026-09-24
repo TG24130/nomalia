@@ -36,6 +36,13 @@ const LOCATION_VAN_JOUR = { bas: 100, moyen: 150, haut: 220 };
 const NUIT_VAN = { bas: 15, moyen: 25, haut: 40 };
 
 /**
+ * Safari organisé tout compris (hébergement, repas, véhicule, guide, droits
+ * d'entrée des parcs), par personne et par jour. Retenu par Thierry : camp
+ * simple, lodge, camp de luxe — ordres de grandeur d'Afrique de l'Est.
+ */
+const SAFARI_JOUR = { bas: 200, moyen: 350, haut: 600 };
+
+/**
  * Dépenses annexes par jour et par personne : transports urbains, café,
  * souvenirs, menus imprévus du quotidien. Volontairement modeste.
  */
@@ -54,6 +61,7 @@ export const POSTES = [
   'hebergement',
   'repas',
   'activites',
+  'safari',
   'transportLocal',
   'annexes',
   'imprevus',
@@ -144,6 +152,18 @@ export function calculerBudget(voyage, fiche = null) {
   // départ de celui du retour.
   const nuits = jours;
 
+  // Un safari organisé loge et nourrit le voyageur pendant sa durée : ces
+  // jours-là sortent de l'hébergement et des repas, sauf s'il ne comprend
+  // ni l'un ni l'autre.
+  const safari = voyage?.tourisme?.type === 'safari' ? voyage.tourisme.safari ?? null : null;
+  const joursSafari = Math.min(jours, nombrePositif(safari?.jours) ?? 0);
+  const safariToutCompris = joursSafari > 0 && safari?.toutCompris !== false;
+  const nuitsLogement = safariToutCompris ? nuits - joursSafari : nuits;
+  const joursRepas = safariToutCompris ? jours - joursSafari : jours;
+
+  // Un enfant mange et paie moins qu'un adulte : on compte des « parts ».
+  const parts = adultes + enfants * COEFFICIENT_ENFANT;
+
   const budgetMoyen = fiche?.points?.budgetMoyen ?? null;
 
   // Le total est toujours en euros, et rien d'autre n'est additionnable ici :
@@ -170,18 +190,18 @@ export function calculerBudget(voyage, fiche = null) {
       valeurs: { prix: prixTotalSaisi, nuits },
     });
   } else if (enVan) {
-    for (const { cle } of NIVEAUX) detail.hebergement[cle] = arrondir(NUIT_VAN[cle] * nuits);
+    for (const { cle } of NIVEAUX) detail.hebergement[cle] = arrondir(NUIT_VAN[cle] * nuitsLogement);
     hypotheses.push({
       cle: 'hebergementVan',
-      valeurs: { nuits, bas: NUIT_VAN.bas, haut: NUIT_VAN.haut },
+      valeurs: { nuits: nuitsLogement, bas: NUIT_VAN.bas, haut: NUIT_VAN.haut },
     });
   } else if (prixNuitFiche(budgetMoyen, voyage?.hebergement?.type)) {
     const prixNuit = prixNuitFiche(budgetMoyen, voyage?.hebergement?.type);
     for (const { cle, prix } of NIVEAUX) {
       const parNuit = nombrePositif(prixNuit[prix]) ?? 0;
-      detail.hebergement[cle] = arrondir(parNuit * nuits);
+      detail.hebergement[cle] = arrondir(parNuit * nuitsLogement);
     }
-    hypotheses.push({ cle: 'hebergementFiche', valeurs: { nuits } });
+    hypotheses.push({ cle: 'hebergementFiche', valeurs: { nuits: nuitsLogement } });
   } else {
     hypotheses.push({ cle: 'hebergementInconnu' });
   }
@@ -189,20 +209,16 @@ export function calculerBudget(voyage, fiche = null) {
   /* — Repas — */
 
   if (budgetMoyen?.repasJour) {
-    // Un enfant mange moins qu'un adulte : on compte des « parts » plutôt que
-    // des personnes.
-    const parts = adultes + enfants * COEFFICIENT_ENFANT;
-
     for (const { cle, prix } of NIVEAUX) {
       const parJour = nombrePositif(budgetMoyen.repasJour[prix]) ?? 0;
-      detail.repas[cle] = arrondir(parJour * parts * jours);
+      detail.repas[cle] = arrondir(parJour * parts * joursRepas);
     }
 
     // Les nombres sont renvoyés bruts : leur mise en forme relève de
     // l'affichage, qui seul connaît la langue de l'utilisateur.
     hypotheses.push({
       cle: 'repas',
-      valeurs: { jours, parts, coefficient: COEFFICIENT_ENFANT },
+      valeurs: { jours: joursRepas, parts, coefficient: COEFFICIENT_ENFANT },
     });
   } else {
     hypotheses.push({ cle: 'repasInconnu' });
@@ -243,13 +259,35 @@ export function calculerBudget(voyage, fiche = null) {
   const lieux = Array.isArray(voyage?.tourisme?.lieuxRetenus) ? voyage.tourisme.lieuxRetenus : [];
   const entrees = lieux.reduce((somme, lieu) => somme + (nombrePositif(lieu?.prixEntree) ?? 0), 0);
 
-  if (entrees > 0) {
+  // Les droits d'entrée des parcs sont compris dans un safari organisé.
+  if (entrees > 0 && joursSafari === 0) {
     const total = arrondir(entrees * personnes);
     for (const { cle } of NIVEAUX) detail.activites[cle] = total;
     hypotheses.push({
       cle: 'activites',
       valeurs: { nombre: lieux.length, personnes, parPersonne: arrondir(entrees) },
     });
+  }
+
+  /* — Safari organisé — */
+
+  if (joursSafari > 0) {
+    const prixSafariSaisi = nombrePositif(safari?.prixTotal);
+
+    if (prixSafariSaisi) {
+      for (const { cle } of NIVEAUX) detail.safari[cle] = arrondir(prixSafariSaisi);
+      hypotheses.push({ cle: 'safariSaisi', valeurs: { prix: prixSafariSaisi, jours: joursSafari } });
+    } else {
+      for (const { cle } of NIVEAUX) {
+        detail.safari[cle] = arrondir(SAFARI_JOUR[cle] * joursSafari * parts);
+      }
+      hypotheses.push({
+        cle: 'safari',
+        valeurs: { jours: joursSafari, bas: SAFARI_JOUR.bas, haut: SAFARI_JOUR.haut, parts },
+      });
+    }
+
+    if (safariToutCompris) hypotheses.push({ cle: 'safariInclus', valeurs: { jours: joursSafari } });
   }
 
   /* — Dépenses annexes — */

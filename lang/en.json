@@ -321,7 +321,15 @@
     "reposTitre": "A stay with no schedule",
     "reposConseils": "For total relaxation, the choice of accommodation matters more than sightseeing. Pick a place where you'll want to spend the day, and keep one or two outings in reserve rather than a schedule.",
     "reposFiltres": "Recommended accommodation features: {filtres}.",
-    "aucunTrouve": "No places could be suggested for this destination. Try again in a moment or skip this step."
+    "aucunTrouve": "No places could be suggested for this destination. Try again in a moment or skip this step.",
+    "safariTitre": "Organised safari",
+    "safariIntro": "A multi-day safari is booked with a local operator: accommodation, meals, vehicle, guide and park fees are usually included. Compare the offers, then enter what you choose.",
+    "safariJours": "Safari length",
+    "safariSansOrganise": "No organised safari",
+    "safariJoursValeur": "{nombre} day(s)",
+    "safariToutCompris": "Accommodation and meals included in the safari",
+    "safariPrix": "Total safari price found (€)",
+    "safariPrixAide": "Optional — otherwise estimated at 200 to 600 € per person per day, a child counting as 0.6."
   },
 
   "randos": {
@@ -367,7 +375,8 @@
       "activites": "Activities",
       "transportLocal": "Local transport",
       "annexes": "Extras",
-      "imprevus": "Contingency"
+      "imprevus": "Contingency",
+      "safari": "Organised safari"
     },
     "detailTitre": "Breakdown by item",
     "parPersonne": "About {montant} per person, at mid-range.",
@@ -386,7 +395,10 @@
       "hebergementVan": "Accommodation: nights on motorhome sites or campsites, from {bas} to {haut} € per night, over {nuits} nights.",
       "activites": "Activities: {nombre} place(s) selected, i.e. {parPersonne} € per person for {personnes} people.",
       "annexes": "Extras: from {bas} to {haut} € per day and per person (local transport, coffees, souvenirs).",
-      "imprevus": "Contingency: {taux} % of the total."
+      "imprevus": "Contingency: {taux} % of the total.",
+      "safari": "Organised safari: {jours} days, from {bas} to {haut} € per person per day, for {parts} shares (a child counts as 0.6).",
+      "safariSaisi": "Organised safari: {prix} € in total for {jours} days, as you entered it.",
+      "safariInclus": "Accommodation and meals: the {jours} safari days are deducted, as they are included in the safari."
     },
     "mention": "Estimate only."
   },
@@ -426,7 +438,10 @@
     "parPersonne": "{montant} per person",
     "aucuneActivite": "No activities selected.",
     "aucuneRando": "No hikes selected.",
-    "budgetTotal": "Total estimated budget"
+    "budgetTotal": "Total estimated budget",
+    "safari": "Organised safari",
+    "safariDetail": "{jours} day(s), accommodation and meals included",
+    "safariDetailSeul": "{jours} day(s), accommodation and meals extra"
   },
 
   "liens": {

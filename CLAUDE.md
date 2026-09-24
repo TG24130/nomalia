@@ -195,6 +195,7 @@ Champ optionnel « prix total trouvé pour vos N nuits » (`hebergement.prixTota
 - `business` → `genererLieux(type: "business")` : quartier d'affaires où loger, restaurants pour repas d'affaires, coworking ; conseils pratiques (accès depuis l'aéroport, transports, réservation).
 - `repos-total` → conseils courts + rappel des filtres hébergement conseillés (piscine, spa).
 - `trip-liberte`, `safari`, `romantique` → `genererLieux` avec le type correspondant (`etapes`, `safari`, `romantique`).
+- `safari` → en plus de la liste des parcs, bloc « Safari organisé » (`tourisme.safari` : `jours`, `toutCompris`, `prixTotal`) et liens SafariBookings (Afrique), TourRadar, Viator. Le budget déduit de l'hébergement et des repas les jours de safari tout compris, ne compte pas les entrées des parcs, et ajoute le poste `safari` (prix saisi, sinon 200/350/600 € par personne et par jour, enfant 0,6).
 
 L'utilisateur coche les lieux retenus (stockés dans `tourisme.lieuxRetenus` avec leur prix estimé).
 
