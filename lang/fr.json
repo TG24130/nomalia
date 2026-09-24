@@ -31,12 +31,6 @@
       "Formalités, santé, monnaie…",
       "On recoupe les sources…"
     ],
-    "plages": [
-      "On cherche les plus belles plages…",
-      "On regarde lesquelles conviennent aux enfants…",
-      "Accès, stationnement, meilleur moment…",
-      "On met les conseils en forme…"
-    ],
     "incontournables": [
       "On repère les lieux à ne pas manquer…",
       "Horaires, tarifs, réservation…",
@@ -61,10 +55,10 @@
       "Distances et temps de trajet…",
       "On met les conseils en forme…"
     ],
-    "treks": [
-      "On cherche des treks de plusieurs jours…",
-      "Durée, altitude, niveau requis…",
-      "Refuges, permis, saison praticable…",
+    "business": [
+      "On repère les quartiers d'affaires…",
+      "Où loger, où inviter à déjeuner…",
+      "Aéroport, transports, espaces de travail…",
       "On met les conseils en forme…"
     ],
     "randos": [
@@ -298,13 +292,12 @@
     "titre": "Type de séjour",
     "question": "Quel séjour souhaitez-vous ?",
     "type": {
-      "plage-repos": "Plage et repos",
       "repos-total": "Repos total",
       "incontournables": "Les incontournables",
       "safari": "Safari",
       "romantique": "Romantique",
       "trip-liberte": "Trip liberté",
-      "trekking": "Trekking"
+      "business": "Business"
     },
     "lieuxRetenus": "Lieux retenus",
     "prixEntree": "Entrée estimée",

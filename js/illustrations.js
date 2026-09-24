@@ -285,20 +285,19 @@ const VIGNETTES = {
       };
     }),
 
-  'plage-repos': () =>
+  business: () =>
     scene(120, 60, (d) => {
-      const ciel = d('#ffc98a', '#ffe6c2');
-      const mer = d('#19a5a7', '#0b7e80');
+      const ciel = d('#ffd9b0', '#cfe3f2');
       return {
-        defs: ciel.def + mer.def,
+        defs: ciel.def,
         corps: `
           <rect width="120" height="60" fill="${ciel.url}"/>
-          <circle cx="24" cy="14" r="8" fill="#fff4dc"/>
-          <rect y="30" width="120" height="16" fill="${mer.url}"/>
-          <path d="M0 44c60-8 60 8 120 0v16H0Z" fill="#f2d7a8"/>
-          <path d="M92 46V28" stroke="#7a4b2a" stroke-width="2.5" stroke-linecap="round"/>
-          <path d="M92 28c-9-6-17-4-21 2 7-3 14-2 19 2Zm0 0c9-6 17-4 21 2-7-3-14-2-19 2Zm0 0c-3-9 0-15 7-17-4 6-5 12-4 17Z"
-                fill="#1f8a5c"/>`,
+          <circle cx="96" cy="14" r="7" fill="#fff4dc"/>
+          <path d="M8 60V30h12v30Zm16 0V18h14v42Zm18 0V26h10v34Zm14 0V10h12v50Zm16 0V24h12v36Zm16 0V34h12v26Z"
+                fill="#35506e"/>
+          <path d="M28 22h2M33 22h2M28 28h2M33 28h2M28 34h2M33 34h2M60 14h2M65 14h2M60 20h2M65 20h2M60 26h2M65 26h2M60 32h2M65 32h2"
+                stroke="#ffd58a" stroke-width="2"/>
+          <path d="M0 54h120v6H0Z" fill="#233a52"/>`,
       };
     }),
 
@@ -315,21 +314,6 @@ const VIGNETTES = {
                 stroke-dasharray="5 5" fill="none" stroke-linecap="round"/>
           <circle cx="14" cy="40" r="4.5" fill="#c2410c"/>
           <circle cx="106" cy="42" r="4.5" fill="#c2410c"/>`,
-      };
-    }),
-
-  trekking: () =>
-    scene(120, 60, (d) => {
-      const ciel = d('#cfe6f5', '#ffe1bd');
-      return {
-        defs: ciel.def,
-        corps: `
-          <rect width="120" height="60" fill="${ciel.url}"/>
-          <circle cx="22" cy="13" r="7" fill="#fff6e2"/>
-          <path d="M-4 52 34 16l24 22 16-12 50 26Z" fill="#7d8ca8"/>
-          <path d="M34 16l10 9-8 6-6-5Z" fill="#fff"/>
-          <path d="M74 26l8 6-6 5-5-4Z" fill="#fff"/>
-          <path d="M0 50h120v10H0Z" fill="#5b6a83"/>`,
       };
     }),
 

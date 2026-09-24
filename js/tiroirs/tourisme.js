@@ -1,10 +1,10 @@
 /**
  * tourisme.js — tiroir 4 « Type de séjour ».
  *
- * Trois types de séjour (CLAUDE.md §6, tiroir 4) :
- *  - plage et repos : cinq plages proposées par l'IA ;
+ * Types de séjour (CLAUDE.md §6, tiroir 4) :
  *  - repos total : conseils courts, aucun appel à l'IA ;
- *  - incontournables : cinq lieux, avec prix d'entrée et liens d'activités.
+ *  - tous les autres : cinq lieux proposés par l'IA, avec prix d'entrée
+ *    et liens d'activités.
  *
  * Les lieux cochés sont conservés dans `tourisme.lieuxRetenus` avec leur prix,
  * qui servira au calcul du budget.
@@ -181,7 +181,7 @@ export async function afficher(conteneur, voyage, actions) {
   function rendre() {
     const type = voyage.tourisme?.type ?? null;
 
-    // Le nom du type sert aussi de clé d'icône : plage-repos, repos-total…
+    // Le nom du type sert aussi de clé d'icône : business, repos-total…
     const choix = grilleChoix(
       TYPES_SEJOUR.map((valeur) => ({
         valeur,
@@ -213,7 +213,7 @@ export async function afficher(conteneur, voyage, actions) {
         </section>
       `;
     } else if (chargement) {
-      // Les messages disent ce qui est cherché : des plages ou des visites.
+      // Les messages disent ce qui est cherché : visites, adresses, étapes…
       contenu = attente(libelles(`attente.${LISTE_PAR_TYPE[type] ?? 'incontournables'}`), 3);
     } else if (erreurListe) {
       contenu = `

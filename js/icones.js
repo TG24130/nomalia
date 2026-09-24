@@ -68,8 +68,8 @@ const TRACES = {
 
   /* — Types de séjour (tiroir 4) — */
 
-  // Un parasol au bord de l'eau.
-  'plage-repos': '<path d="M12 4v10"/><path d="M4.5 11a7.5 7.5 0 0 1 15 0Z"/><path d="M3 19.5q2-2 4 0t4 0 4 0 4 0"/>',
+  // Une mallette : le voyage d'affaires, lisible à trente pixels.
+  business: '<rect x="3" y="7.5" width="18" height="12.5" rx="2"/><path d="M9 7.5V5.6A1.6 1.6 0 0 1 10.6 4h2.8A1.6 1.6 0 0 1 15 5.6v1.9"/><path d="M3 12.6h18"/><path d="M10.6 12.6v1.6h2.8v-1.6"/>',
 
   // Un croissant de lune et deux étoiles. Le hamac et les feuilles de spa
   // essayés avant se réduisaient tous deux à un trait illisible à 30 pixels ;
@@ -88,10 +88,6 @@ const TRACES = {
   // en ville. Deux simples cercles se lisaient comme un graphe.
   'trip-liberte': '<path d="M6.5 11.6S9.6 8.9 9.6 6.8a3.1 3.1 0 1 0-6.2 0c0 2.1 3.1 4.8 3.1 4.8Z"/><circle cx="6.5" cy="6.7" r="1.1"/><path d="M17.5 21.2s3.1-2.7 3.1-4.8a3.1 3.1 0 1 0-6.2 0c0 2.1 3.1 4.8 3.1 4.8Z"/><circle cx="17.5" cy="16.3" r="1.1"/><path stroke-dasharray="1.8 2.4" d="M8.6 12.6c2.8 1.2 4.4 2.7 5.4 4.6"/>',
 
-  // Un sac à dos, bretelles comprises : le trek se distingue ainsi des
-  // sommets de la randonnée à la journée. Sans les bretelles, le corps et son
-  // anse se lisaient comme un cadenas.
-  trekking: '<path d="M7.6 8.6h8.8a2.6 2.6 0 0 1 2.6 2.6V20a1.2 1.2 0 0 1-1.2 1.2H6.2A1.2 1.2 0 0 1 5 20v-8.8a2.6 2.6 0 0 1 2.6-2.6Z"/><path d="M10 8.6V7.2a2 2 0 0 1 4 0v1.4"/><path d="M8.4 8.8C7.4 10.2 7 11.8 7 13.6M15.6 8.8c1 1.4 1.4 3 1.4 4.8"/><path d="M9.4 21.2v-4.4h5.2v4.4"/>',
 
   // Un monument à colonnes : le lieu qu'on ne manque pas.
   incontournables: '<path d="M3 9l9-5 9 5"/><path d="M5.5 9v9M9.8 9v9M14.2 9v9M18.5 9v9"/><path d="M4 18h16"/><path d="M2 21h20"/>',

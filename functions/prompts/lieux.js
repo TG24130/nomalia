@@ -3,8 +3,8 @@
  *
  * Aucun prompt dans le code métier (CLAUDE.md §9).
  *
- * Deux listes possibles selon le type de séjour choisi au tiroir 4 :
- * les plages, ou les incontournables de la destination.
+ * Une liste par type de séjour choisi au tiroir 4 : incontournables,
+ * business, étapes d'un trip liberté, safari ou séjour romantique.
  */
 
 /** Noms des mois, pour situer la demande dans la saison. */
@@ -48,8 +48,6 @@ export function promptLieux({ destination, type, mois, langue, nombre, voyageurs
   // description et les conseils, plutôt que dans des champs qui resteraient
   // vides pour tous les autres types.
   const CONSIGNES = {
-    plages: `Sélectionne les ${nombre} plus belles plages de cette destination. Varie les ambiances : plages familiales abritées, criques plus sauvages, plages réputées. Pour chacune, précise la nature du sable ou des galets, la présence d'ombre et de services, et la facilité d'accès.`,
-
     incontournables: `Sélectionne les ${nombre} lieux incontournables de cette destination : sites archéologiques, musées, villages, points de vue ou curiosités naturelles. Pour chacun, précise les horaires d'ouverture habituels, s'il faut réserver à l'avance, et le temps à prévoir sur place.`,
 
     safari: `Sélectionne les ${nombre} meilleurs endroits d'observation de la faune sauvage de cette destination : parcs nationaux, réserves, zones humides ou sites d'observation réputés. Pour chacun, dis quelles espèces on y voit vraiment et à quelle période de l'année elles sont les plus visibles. Dans les conseils, précise le mode d'observation (véhicule tout-terrain, à pied, en bateau), s'il faut passer par un guide ou un opérateur agréé, la durée habituelle d'une sortie et le meilleur moment de la journée. Le prix d'entrée est le droit d'entrée du parc par adulte, hors prestation de guide.`,
@@ -58,7 +56,7 @@ export function promptLieux({ destination, type, mois, langue, nombre, voyageurs
 
     romantique: `Sélectionne les ${nombre} plus beaux endroits de cette destination pour un séjour à deux : points de vue au coucher du soleil, ruelles et jardins à parcourir sans hâte, tables réputées, bains thermaux, balades en bateau au crépuscule. Écarte ce qui se visite en groupe serré ou dans le bruit. Pour chacun, dis ce qui en fait un moment à deux plutôt qu'une visite de plus. Dans les conseils, précise le moment de la journée où y aller, s'il faut réserver et combien de temps à l'avance, et la tenue attendue quand l'endroit l'impose.`,
 
-    treks: `Sélectionne les ${nombre} plus beaux treks de plusieurs jours de cette destination. Il s'agit bien d'itinéraires en plusieurs étapes avec nuits sur le parcours, et non de randonnées à la journée, qui sont proposées ailleurs dans l'application. Pour chacun, indique le nombre de jours, l'altitude maximale atteinte et le niveau requis. Dans les conseils, précise le type d'hébergement sur le parcours (refuge, lodge, bivouac), les permis ou l'accompagnement obligatoires, et la saison où l'itinéraire est praticable. Le prix d'entrée est celui des permis et droits d'accès par adulte, hors agence.`,
+    business: `Prépare un séjour professionnel dans cette destination en ${nombre} adresses, dans cet ordre de priorité : le ou les quartiers d'affaires et le secteur où loger pour y être au plus près, deux ou trois restaurants adaptés à un déjeuner ou un dîner d'affaires (calmes, service efficace, réputés), puis un espace de coworking ou un lieu où travailler hors de l'hôtel. Pour chacun, dis en quoi il est pratique pour un voyageur d'affaires. Dans les conseils, précise comment le rejoindre depuis l'aéroport principal et avec quel transport (durée, coût approximatif), s'il faut réserver, et le niveau de prix. Le prix d'entrée est le prix d'une journée pour un coworking, et null pour un quartier ou un restaurant.`,
   };
 
   const consigneType = CONSIGNES[type] ?? CONSIGNES.incontournables;

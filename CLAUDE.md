@@ -70,7 +70,7 @@ Valeurs possibles :
 - `transport.mode` : `avion`, `bateau`, `train`, `voiture`, `avion+voiture`, `train+voiture`, `bateau+voiture`
 - `hebergement.type` : `hotel`, `gite`, `appartement`, `chez-habitant`, `camping`, `camping-materiel-loue`
 - `hebergement.filtres` : `petit-dejeuner`, `piscine`, `parking`, `annulation-gratuite`, `animaux`, `vue-mer`, `climatisation`, `etoiles-3`, `etoiles-4`, `etoiles-5`
-- `tourisme.type` : `incontournables`, `plage-repos`, `trip-liberte`, `trekking`, `safari`, `romantique`, `repos-total`
+- `tourisme.type` : `incontournables`, `business`, `trip-liberte`, `safari`, `romantique`, `repos-total`
 
 ### Collection `fiches/{ficheId}` (cache)
 
@@ -192,8 +192,9 @@ Champ optionnel « prix par nuit trouvé » pour affiner le budget.
 
 ### Tiroir 4 — Type de tourisme
 
-- `plage-repos` → Cloud Function `genererLieux(type: "plages")` : 5 plages avec description, conseils (meilleur moment, accès, enfants).
+- `business` → `genererLieux(type: "business")` : quartier d'affaires où loger, restaurants pour repas d'affaires, coworking ; conseils pratiques (accès depuis l'aéroport, transports, réservation).
 - `repos-total` → conseils courts + rappel des filtres hébergement conseillés (piscine, spa).
+- `trip-liberte`, `safari`, `romantique` → `genererLieux` avec le type correspondant (`etapes`, `safari`, `romantique`).
 - `incontournables` → `genererLieux(type: "incontournables")` : 5 lieux avec description, conseils (horaires, réservation nécessaire ou non, astuces), prix d'entrée estimé, lien officiel « à vérifier », et un lien de recherche GetYourGuide/Viator construit par `liens.js` à partir du nom du lieu.
 
 L'utilisateur coche les lieux retenus (stockés dans `tourisme.lieuxRetenus` avec leur prix estimé).

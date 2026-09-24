@@ -9,9 +9,8 @@
 /** Types proposés, dans l'ordre d'affichage. */
 export const TYPES_SEJOUR = [
   'incontournables',
-  'plage-repos',
+  'business',
   'trip-liberte',
-  'trekking',
   'safari',
   'romantique',
   'repos-total',
@@ -25,9 +24,8 @@ export const TYPES_SEJOUR = [
  */
 export const LISTE_PAR_TYPE = {
   incontournables: 'incontournables',
-  'plage-repos': 'plages',
+  business: 'business',
   'trip-liberte': 'etapes',
-  trekking: 'treks',
   safari: 'safari',
   romantique: 'romantique',
 };

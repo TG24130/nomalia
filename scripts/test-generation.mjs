@@ -11,6 +11,7 @@
  *   node scripts/test-generation.mjs randos
  *   node scripts/test-generation.mjs lieux
  *   node scripts/test-generation.mjs randos --tous
+ *   node scripts/test-generation.mjs randos --cas=3
  *   node scripts/test-generation.mjs lieux --recherches=2 --effort=low
  *
  * La clé est lue dans functions/.secret.local, qui n'est pas versionné.
@@ -92,6 +93,14 @@ const FAMILLES = {
           adapteeEnfants: false,
         },
       },
+      {
+        nom: 'Hong Kong, ville-territoire (bloquait en prod)',
+        parametres: {
+          destination: 'Hong Kong', mois: 11, langue: 'fr', nombre: NOMBRE_RANDOS,
+          niveau: 'facile', dureeMax: 3, deniveleMax: null, boucle: null,
+          adapteeEnfants: false,
+        },
+      },
     ],
   },
 
@@ -112,10 +121,10 @@ const FAMILLES = {
         },
       },
       {
-        nom: 'Crète, plages',
+        nom: 'Hong Kong, business',
         parametres: {
-          destination: 'Crète', type: 'plages', mois: 7, langue: 'fr',
-          nombre: NOMBRE_LIEUX, voyageurs: { adultes: 2, enfants: 2 },
+          destination: 'Hong Kong', type: 'business', mois: 11, langue: 'fr',
+          nombre: NOMBRE_LIEUX, voyageurs: { adultes: 1, enfants: 0 },
         },
       },
       {
@@ -180,7 +189,8 @@ if (!famille) {
 }
 
 const client = new Anthropic({ apiKey: lireCle() });
-const cas = process.argv.includes('--tous') ? famille.cas : [famille.cas[0]];
+const argCas = process.argv.find((a) => a.startsWith('--cas='));
+const cas = argCas ? [famille.cas[Number(argCas.split('=')[1])]] : process.argv.includes('--tous') ? famille.cas : [famille.cas[0]];
 
 for (const unCas of cas) {
   try {
