@@ -179,12 +179,23 @@ const PARTENAIRES = {
   booking: {
     nom: 'Booking.com',
     affiliateId: null,
-    // Testé le 21/09/2026 : searchresults.fr.html?ss=…&checkin=… n'ouvre
-    // aucune recherche, le site retombe sur sa page d'accueil. Le paramètre
-    // de destination ne suffit manifestement plus, un identifiant interne
-    // semble attendu. On s'en tient donc à la page de recherche.
-    preremplissage: false,
-    construire: () => 'https://www.booking.com/index.fr.html',
+    // Format produit par le site : searchresults.fr.html?ss=…&checkin=…
+    // Vérifié le 24/09/2026 sur un vrai téléphone : destination, dates et
+    // voyageurs arrivent préremplis. Le test du 21/09, qui concluait
+    // l'inverse, avait été fait dans un navigateur que Booking bloque.
+    preremplissage: 'observe',
+    construire: ({ destination, dateDebut, dateFin, adultes, enfants }) => {
+      if (!destination) return 'https://www.booking.com/index.fr.html';
+
+      return `https://www.booking.com/searchresults.fr.html${requete([
+        ['ss', destination],
+        ['checkin', dateDebut],
+        ['checkout', dateFin],
+        ['group_adults', adultes],
+        ['no_rooms', 1],
+        ['group_children', enfants],
+      ])}`;
+    },
   },
   hotels: { nom: 'Hotels.com', affiliateId: null, preremplissage: false, construire: () => 'https://fr.hotels.com/' },
   abritel: { nom: 'Abritel', affiliateId: null, preremplissage: false, construire: () => 'https://www.abritel.fr/' },
