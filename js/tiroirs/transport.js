@@ -25,6 +25,7 @@ const MODES = [
   'avion+voiture',
   'train+voiture',
   'bateau+voiture',
+  'van',
 ];
 
 /**
@@ -39,6 +40,7 @@ const ICONES_MODE = {
   'avion+voiture': ['avion', 'voiture'],
   'train+voiture': ['train', 'voiture'],
   'bateau+voiture': ['bateau', 'voiture'],
+  van: ['van'],
 };
 
 /** Partenaires par moyen de transport élémentaire. */
@@ -51,6 +53,29 @@ const PARTENAIRES_PAR_MOYEN = {
   // Le « +voiture » des combinés désigne une voiture de location sur place.
   location: ['discovercars', 'rentalcars'],
 };
+
+/** Pays d'Europe où les loueurs de vans européens opèrent. */
+const EUROPE = new Set([
+  'FR', 'ES', 'PT', 'IT', 'DE', 'AT', 'CH', 'BE', 'NL', 'LU', 'GB', 'IE', 'DK', 'NO',
+  'SE', 'FI', 'IS', 'PL', 'CZ', 'SK', 'HU', 'SI', 'HR', 'GR', 'RO', 'BG', 'EE', 'LV',
+  'LT', 'MT', 'CY', 'AD', 'MC',
+]);
+
+/**
+ * Loueurs de vans et camping-cars selon le pays de destination. Aucun ne
+ * couvre le monde entier : on propose ceux qui opèrent là où l'on va, puis
+ * le comparateur mondial et une recherche web, qui trouve les loueurs locaux.
+ * @param {string|null} pays code ISO du pays de destination
+ * @returns {string[]}
+ */
+function loueursVan(pays) {
+  let regionaux = [];
+  if (EUROPE.has(pays)) regionaux = ['yescapa', 'indiecampers', 'roadsurfer'];
+  else if (pays === 'US' || pays === 'CA') regionaux = ['outdoorsy', 'indiecampers', 'roadsurfer'];
+  else if (pays === 'AU' || pays === 'NZ') regionaux = ['jucy'];
+
+  return [...regionaux, 'motorhomerepublic', 'recherchevan'];
+}
 
 /**
  * Met en forme une date ISO selon la langue courante.
@@ -70,10 +95,12 @@ function formaterDate(date) {
 /**
  * Traduit un mode en liste de blocs de liens.
  * @param {string} mode
+ * @param {string|null} pays code ISO du pays de destination
  * @returns {Array<{ moyen: string, partenaires: string[] }>}
  */
-function blocsPourMode(mode) {
+function blocsPourMode(mode, pays) {
   if (!mode) return [];
+  if (mode === 'van') return [{ moyen: 'van', partenaires: loueursVan(pays) }];
 
   const [principal, complement] = mode.split('+');
   const blocs = [{ moyen: principal, partenaires: PARTENAIRES_PAR_MOYEN[principal] ?? [] }];
@@ -165,7 +192,7 @@ export async function afficher(conteneur, voyage, actions) {
       mode
     );
 
-    const blocs = blocsPourMode(mode).map((bloc) => blocLiens(bloc, params)).join('');
+    const blocs = blocsPourMode(mode, destination?.pays ?? null).map((bloc) => blocLiens(bloc, params)).join('');
 
     // Le rappel des critères évite d'avoir à revenir en arrière une fois sur
     // le site du partenaire, puisque la plupart n'acceptent pas de recherche

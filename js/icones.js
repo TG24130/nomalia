@@ -45,6 +45,9 @@ const TRACES = {
   // Une voiture de profil.
   voiture: '<path d="M5.2 12l1.6-3.8A2 2 0 0 1 8.6 7h6.8a2 2 0 0 1 1.8 1.2L18.8 12"/><path d="M3 12h18v4H3z"/><circle cx="7.4" cy="17" r="1.7"/><circle cx="16.6" cy="17" r="1.7"/>',
 
+  // Un van de profil, cabine à droite, fenêtre de la partie habitable.
+  van: '<path d="M2.5 16V7.5A1.5 1.5 0 0 1 4 6h11.2a2 2 0 0 1 1.7.9L20 11.5l1.5 1V16Z"/><path d="M15 6.3v5.2h5"/><rect x="5" y="8.5" width="6" height="3" rx=".6"/><circle cx="7" cy="17" r="1.7"/><circle cx="17" cy="17" r="1.7"/>',
+
   /* — Types d'hébergement (tiroir 3) — */
 
   // Un immeuble à fenêtres régulières, avec son porche.

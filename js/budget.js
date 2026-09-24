@@ -24,6 +24,18 @@ export const TAUX_IMPREVUS = 0.1;
 const LOCATION_VOITURE_JOUR = { bas: 35, moyen: 55, haut: 90 };
 
 /**
+ * Coût journalier d'un van aménagé ou d'un camping-car de location. Retenu
+ * par Thierry : plutôt camping-car familial en haute saison.
+ */
+const LOCATION_VAN_JOUR = { bas: 100, moyen: 150, haut: 220 };
+
+/**
+ * Nuitée en aire de camping-car ou en camping, quand on dort dans le van :
+ * elle remplace le prix d'une chambre.
+ */
+const NUIT_VAN = { bas: 15, moyen: 25, haut: 40 };
+
+/**
  * Dépenses annexes par jour et par personne : transports urbains, café,
  * souvenirs, menus imprévus du quotidien. Volontairement modeste.
  */
@@ -103,12 +115,19 @@ export function calculerBudget(voyage, fiche = null) {
   /* — Hébergement — */
 
   const prixNuitSaisi = nombrePositif(voyage?.hebergement?.prixNuit);
+  const enVan = voyage?.transport?.mode === 'van';
 
   if (prixNuitSaisi) {
     for (const { cle } of NIVEAUX) detail.hebergement[cle] = arrondir(prixNuitSaisi * nuits);
     hypotheses.push({
       cle: 'hebergementSaisi',
       valeurs: { prix: prixNuitSaisi, nuits },
+    });
+  } else if (enVan) {
+    for (const { cle } of NIVEAUX) detail.hebergement[cle] = arrondir(NUIT_VAN[cle] * nuits);
+    hypotheses.push({
+      cle: 'hebergementVan',
+      valeurs: { nuits, bas: NUIT_VAN.bas, haut: NUIT_VAN.haut },
     });
   } else if (budgetMoyen?.hotelNuit) {
     for (const { cle, prix } of NIVEAUX) {
@@ -157,15 +176,18 @@ export function calculerBudget(voyage, fiche = null) {
 
   /* — Transport sur place — */
 
-  const avecVoiture = String(voyage?.transport?.mode ?? '').includes('voiture');
+  // Seuls les combinés « +voiture » louent une voiture sur place : le mode
+  // « voiture » seul désigne la voiture personnelle.
+  const avecLocation = String(voyage?.transport?.mode ?? '').endsWith('+voiture');
+  const tarif = enVan ? LOCATION_VAN_JOUR : avecLocation ? LOCATION_VOITURE_JOUR : null;
 
-  if (avecVoiture) {
+  if (tarif) {
     for (const { cle } of NIVEAUX) {
-      detail.transportLocal[cle] = arrondir(LOCATION_VOITURE_JOUR[cle] * jours);
+      detail.transportLocal[cle] = arrondir(tarif[cle] * jours);
     }
     hypotheses.push({
-      cle: 'voiture',
-      valeurs: { jours, bas: LOCATION_VOITURE_JOUR.bas, haut: LOCATION_VOITURE_JOUR.haut },
+      cle: enVan ? 'van' : 'voiture',
+      valeurs: { jours, bas: tarif.bas, haut: tarif.haut },
     });
   }
 

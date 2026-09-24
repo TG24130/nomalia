@@ -115,5 +115,20 @@ verifier(
   Math.round(45 * COEFFICIENT_ENFANT * 5)
 );
 
+console.log('\n— Cas 5 : voiture personnelle, puis van —');
+
+const perso = calculerBudget({ jours: 5, transport: { mode: 'voiture' } }, fiche);
+verifier('voiture personnelle : pas de location', perso.detail.transportLocal.moyen, 0);
+
+const van = calculerBudget({ jours: 8, voyageurs: { adultes: 2 }, transport: { mode: 'van' } }, fiche);
+verifier('van : location 150 € × 8 jours', van.detail.transportLocal.moyen, 1200);
+verifier('van : nuits en aire 25 € × 8 au lieu de l’hôtel', van.detail.hebergement.moyen, 200);
+
+const vanPrixSaisi = calculerBudget(
+  { jours: 8, transport: { mode: 'van' }, hebergement: { prixNuit: 30 } },
+  fiche
+);
+verifier('van : un prix de nuit saisi l’emporte', vanPrixSaisi.detail.hebergement.moyen, 240);
+
 console.log(echecs === 0 ? '\nTous les cas passent.\n' : `\n${echecs} vérification(s) en échec.\n`);
 process.exit(echecs === 0 ? 0 : 1);

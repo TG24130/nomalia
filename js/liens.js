@@ -174,6 +174,32 @@ const PARTENAIRES = {
     construire: () => 'https://www.viamichelin.fr/itineraires',
   },
 
+  /* — Vans et camping-cars (tiroir 2) — */
+
+  // Ces loueurs cherchent par agence ou par coordonnées GPS, pas par nom de
+  // lieu : aucun format de lien prérempli n'a pu être établi. La recherche
+  // web, elle, est préremplie et trouve aussi les loueurs locaux.
+  yescapa: { nom: 'Yescapa', affiliateId: null, preremplissage: false, construire: () => 'https://www.yescapa.fr/' },
+  indiecampers: { nom: 'Indie Campers', affiliateId: null, preremplissage: false, construire: () => 'https://indiecampers.com/' },
+  roadsurfer: { nom: 'Roadsurfer', affiliateId: null, preremplissage: false, construire: () => 'https://roadsurfer.com/' },
+  outdoorsy: { nom: 'Outdoorsy', affiliateId: null, preremplissage: false, construire: () => 'https://www.outdoorsy.com/' },
+  jucy: { nom: 'Jucy', affiliateId: null, preremplissage: false, construire: () => 'https://www.jucy.com/' },
+  motorhomerepublic: {
+    nom: 'Motorhome Republic',
+    affiliateId: null,
+    preremplissage: false,
+    construire: () => 'https://www.motorhomerepublic.com/',
+  },
+  recherchevan: {
+    nom: 'Loueurs locaux (Google)',
+    affiliateId: null,
+    preremplissage: 'documente',
+    construire: ({ destination }) =>
+      destination
+        ? `https://www.google.com/search?q=${encoder(`location van aménagé camping-car ${destination}`)}`
+        : 'https://www.google.com/',
+  },
+
   /* — Hébergement (tiroir 3) — */
 
   booking: {

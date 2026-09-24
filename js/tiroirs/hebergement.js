@@ -117,6 +117,13 @@ function formaterDate(date) {
 export async function afficher(conteneur, voyage, actions) {
   const { dateDebut, dateFin } = datesVoyage(voyage);
 
+  // En van, on dort dans le véhicule : les aires et campings sont le choix
+  // naturel, et le budget compte déjà des nuitées d'aire (budget.js).
+  if (voyage.transport?.mode === 'van' && !voyage.hebergement?.type) {
+    voyage.hebergement = { ...voyage.hebergement, type: 'camping' };
+    modifierVoyage({ hebergement: { type: 'camping' } });
+  }
+
   const params = {
     destination: voyage?.destination ?? '',
     dateDebut,

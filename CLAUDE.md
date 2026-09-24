@@ -67,7 +67,7 @@ Toute décision d'architecture doit permettre ces évolutions sans réécriture.
 
 Valeurs possibles :
 
-- `transport.mode` : `avion`, `bateau`, `train`, `voiture`, `avion+voiture`, `train+voiture`, `bateau+voiture`
+- `transport.mode` : `avion`, `bateau`, `train`, `voiture`, `avion+voiture`, `train+voiture`, `bateau+voiture`, `van` (location sur place ; loueurs selon la région, nuits en aire dans le budget)
 - `hebergement.type` : `hotel`, `gite`, `appartement`, `chez-habitant`, `camping`, `camping-materiel-loue`
 - `hebergement.filtres` : `petit-dejeuner`, `piscine`, `parking`, `annulation-gratuite`, `animaux`, `vue-mer`, `climatisation`, `etoiles-3`, `etoiles-4`, `etoiles-5`
 - `tourisme.type` : `incontournables`, `business`, `trip-liberte`, `safari`, `romantique`, `repos-total`

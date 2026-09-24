@@ -212,16 +212,18 @@
       "bateau": "Bateau",
       "train": "Train",
       "voiture": "Voiture",
-      "avion+voiture": "Avion puis voiture",
-      "train+voiture": "Train puis voiture",
-      "bateau+voiture": "Bateau puis voiture"
+      "avion+voiture": "Avion + voiture de loc",
+      "train+voiture": "Train + voiture de loc",
+      "bateau+voiture": "Bateau + voiture de loc",
+      "van": "Van / camping-car"
     },
     "bloc": {
       "avion": "Chercher un vol",
       "train": "Chercher un train",
       "bateau": "Chercher une traversée",
       "voiture": "Voir l'itinéraire",
-      "location": "Louer une voiture sur place"
+      "location": "Louer une voiture sur place",
+      "van": "Louer un van ou un camping-car sur place"
     },
     "aSaisir": "recherche à saisir sur le site",
     "rappel": "Votre voyage : {destination}, {mois}, {jours} jours, {voyageurs} voyageurs.",
@@ -370,6 +372,8 @@
       "transportSaisi": "Transport : {prix} € au total, tel que vous l'avez indiqué.",
       "transportInconnu": "Transport non estimé : indiquez un prix à l'étape Transport pour le voir apparaître ici.",
       "voiture": "Voiture de location : {jours} jours, de {bas} à {haut} € par jour selon la gamme.",
+      "van": "Van ou camping-car de location : {jours} jours, de {bas} à {haut} € par jour selon le modèle et la saison.",
+      "hebergementVan": "Hébergement : nuits en aire de camping-car ou en camping, de {bas} à {haut} € la nuit, sur {nuits} nuits.",
       "activites": "Activités : {nombre} lieu(x) retenu(s), soit {parPersonne} € par personne pour {personnes} personnes.",
       "annexes": "Dépenses annexes : de {bas} à {haut} € par jour et par personne (transports urbains, cafés, souvenirs).",
       "imprevus": "Imprévus : {taux} % du total."
