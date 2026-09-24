@@ -286,8 +286,8 @@
     },
     "rappelSejour": "Votre séjour : {destination}, {dates}, {nuits} nuits, {voyageurs} voyageurs.",
     "rappelFiltres": "Critères à cocher sur le site : {filtres}.",
-    "prixNuit": "Prix par nuit trouvé (€)",
-    "prixNuitAide": "Facultatif — affine le budget."
+    "prixTotal": "Prix total trouvé pour vos {nuits} nuits (€)",
+    "prixTotalAide": "Facultatif — le montant total affiché par le site de réservation. Il remplace l'estimation dans le budget."
   },
 
   "tourisme": {
@@ -364,7 +364,7 @@
     "terminer": "Terminer",
     "hypotheses": "Hypothèses retenues",
     "hypothese": {
-      "hebergementSaisi": "Hébergement : {prix} € par nuit, tel que vous l'avez indiqué, sur {nuits} nuits.",
+      "hebergementSaisi": "Hébergement : {prix} € au total pour {nuits} nuits, tel que vous l'avez indiqué.",
       "hebergementFiche": "Hébergement : prix moyens de la destination, sur {nuits} nuits. Indiquez un prix trouvé pour affiner.",
       "hebergementInconnu": "Hébergement non estimé : la fiche de la destination n'était pas disponible.",
       "repas": "Repas : prix moyens de la destination sur {jours} jours, pour {parts} parts (un enfant compte pour {coefficient}).",

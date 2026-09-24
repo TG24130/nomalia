@@ -5,9 +5,8 @@
  * liens partenaires correspondants, tous construits par js/liens.js
  * (CLAUDE.md §3.4).
  *
- * Les critères ne sont transmis à aucun partenaire : aucun des sites vérifiés
- * n'accepte de filtres par URL. Ils servent à garder la préférence d'un
- * passage à l'autre et à rappeler quoi cocher une fois sur place.
+ * Seul Booking reçoit une partie des critères dans son lien (js/liens.js) ;
+ * pour les autres sites, ils sont rappelés à l'écran, à recocher sur place.
  */
 
 import { brancherChoix, grilleChoix } from '../cartes-choix.js';
@@ -200,7 +199,7 @@ export async function afficher(conteneur, voyage, actions) {
       })
       .join('');
 
-    // Les critères cochés ne partent pas chez le partenaire : on les rappelle
+    // Les critères ne partent pas chez tous les partenaires : on les rappelle
     // pour qu'il n'y ait plus qu'à les recocher sur place.
     const rappelFiltres = retenus.size
       ? `<p class="note">${echapper(
@@ -254,10 +253,10 @@ export async function afficher(conteneur, voyage, actions) {
 
       <section class="carte">
         <div class="champ">
-          <label for="hebergement-prix">${echapper(t('hebergement.prixNuit'))}</label>
+          <label for="hebergement-prix">${echapper(t('hebergement.prixTotal', { nuits: voyage.jours ?? '?' }))}</label>
           <input type="number" id="hebergement-prix" min="0" step="5"
-                 value="${voyage.hebergement?.prixNuit ?? ''}">
-          <p class="champ__aide">${echapper(t('hebergement.prixNuitAide'))}</p>
+                 value="${voyage.hebergement?.prixTotal ?? ''}">
+          <p class="champ__aide">${echapper(t('hebergement.prixTotalAide'))}</p>
         </div>
       </section>
 
@@ -289,9 +288,9 @@ export async function afficher(conteneur, voyage, actions) {
 
     conteneur.querySelector('#hebergement-prix').addEventListener('input', (evenement) => {
       const valeur = Number.parseFloat(evenement.target.value);
-      const prixNuit = Number.isFinite(valeur) && valeur >= 0 ? valeur : null;
-      voyage.hebergement = { ...voyage.hebergement, prixNuit };
-      modifierVoyage({ hebergement: { prixNuit } });
+      const prixTotal = Number.isFinite(valeur) && valeur >= 0 ? valeur : null;
+      voyage.hebergement = { ...voyage.hebergement, prixTotal };
+      modifierVoyage({ hebergement: { prixTotal } });
     });
 
     conteneur.querySelector('#hebergement-suivant').addEventListener('click', actions.suivant);

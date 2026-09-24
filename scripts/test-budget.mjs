@@ -72,7 +72,7 @@ const voyage2 = {
   jours: 7,
   voyageurs: { adultes: 2, enfants: 0 },
   transport: { mode: 'train', prixEstime: 480 },
-  hebergement: { prixNuit: 120 },
+  hebergement: { prixTotal: 840 },
   tourisme: {
     lieuxRetenus: [
       { nom: 'Knossos', prixEntree: 15 },
@@ -125,7 +125,7 @@ verifier('van : location 150 € × 8 jours', van.detail.transportLocal.moyen, 1
 verifier('van : nuits en aire 25 € × 8 au lieu de l’hôtel', van.detail.hebergement.moyen, 200);
 
 const vanPrixSaisi = calculerBudget(
-  { jours: 8, transport: { mode: 'van' }, hebergement: { prixNuit: 30 } },
+  { jours: 8, transport: { mode: 'van' }, hebergement: { prixTotal: 240 } },
   fiche
 );
 verifier('van : un prix de nuit saisi l’emporte', vanPrixSaisi.detail.hebergement.moyen, 240);

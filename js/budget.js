@@ -114,14 +114,15 @@ export function calculerBudget(voyage, fiche = null) {
 
   /* — Hébergement — */
 
-  const prixNuitSaisi = nombrePositif(voyage?.hebergement?.prixNuit);
+  // Prix total du séjour, tel qu'affiché par les sites de réservation.
+  const prixTotalSaisi = nombrePositif(voyage?.hebergement?.prixTotal);
   const enVan = voyage?.transport?.mode === 'van';
 
-  if (prixNuitSaisi) {
-    for (const { cle } of NIVEAUX) detail.hebergement[cle] = arrondir(prixNuitSaisi * nuits);
+  if (prixTotalSaisi) {
+    for (const { cle } of NIVEAUX) detail.hebergement[cle] = arrondir(prixTotalSaisi);
     hypotheses.push({
       cle: 'hebergementSaisi',
-      valeurs: { prix: prixNuitSaisi, nuits },
+      valeurs: { prix: prixTotalSaisi, nuits },
     });
   } else if (enVan) {
     for (const { cle } of NIVEAUX) detail.hebergement[cle] = arrondir(NUIT_VAN[cle] * nuits);
