@@ -441,6 +441,20 @@ body {
 
 /* Presque opaques : on devine la photo derrière sans que le texte en pâtisse.
    Le flou d'arrière-plan calme ce qui passe au travers. */
+/* Le logo est sur fond blanc : « multiply » fond ce blanc dans la carte. */
+.logo {
+  display: block;
+  width: min(100%, 220px);
+  height: auto;
+  margin: 0 auto var(--espace);
+  mix-blend-mode: multiply;
+}
+
+.carte--logo .logo {
+  width: min(100%, 160px);
+  margin-bottom: 0;
+}
+
 .carte {
   background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(6px);

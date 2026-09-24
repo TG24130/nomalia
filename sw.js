@@ -8,7 +8,7 @@
  * Incrémenter VERSION_CACHE à chaque mise en ligne pour forcer la mise à jour.
  */
 
-const VERSION_CACHE = 'nomalia-v2';
+const VERSION_CACHE = 'nomalia-v3';
 
 /**
  * Fichiers mis en cache dès l'installation.
@@ -53,6 +53,7 @@ const FICHIERS_STATIQUES = [
   './images/accueil.jpg',
   './images/etape-randos.jpg',
   './images/etape-tourisme.jpg',
+  './icons/logo-nomalia.png',
   './icons/icone-192.png',
   './icons/icone-512.png',
   './icons/icone-maskable-512.png',

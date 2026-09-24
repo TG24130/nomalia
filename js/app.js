@@ -134,6 +134,12 @@ function formaterDate(horodatage) {
 
 /* — Écrans d'authentification — */
 
+/** Logo complet de l'app, en tête des écrans d'entrée. */
+function logo() {
+  return `<img class="logo" src="icons/logo-nomalia.png" width="640" height="560"
+               alt="${echapper(t('app.nom'))}">`;
+}
+
 /** Écran de connexion : seul point d'entrée non authentifié. */
 function afficherEcranConnexion() {
   boutonDeconnexion.hidden = true;
@@ -142,6 +148,7 @@ function afficherEcranConnexion() {
 
   vue.innerHTML = `
     <section class="carte">
+      ${logo()}
       <h2>${echapper(t('auth.titre'))}</h2>
       <p>${echapper(t('auth.invite'))}</p>
       <button class="bouton bouton--principal" type="button" id="bouton-connexion">
@@ -263,6 +270,7 @@ async function afficherEcranAccueil() {
     : `<p class="note">${echapper(t('accueil.aucunVoyage'))}</p>`;
 
   vue.innerHTML = `
+    <section class="carte carte--logo">${logo()}</section>
     <h2>${echapper(t('accueil.titre'))}</h2>
     ${liste}
     <button class="bouton bouton--principal" type="button" id="bouton-nouveau">
