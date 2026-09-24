@@ -3,23 +3,16 @@
  *
  * Renvoie la fiche pratique en 10 points d'une destination, depuis le cache
  * Firestore si elle y est encore valide, sinon en interrogeant l'API Claude
- * avec l'outil de recherche web.
+ * avec l'outil de recherche web. Hors du français, la fiche française est
+ * traduite (voir traduction.js).
  */
 
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import { logger } from 'firebase-functions';
-import { FieldValue } from 'firebase-admin/firestore';
 
-import {
-  CLE_ANTHROPIC,
-  cleFiche,
-  db,
-  DUREE_CACHE_MS,
-  MODELE_CLAUDE,
-  verifierAcces,
-  VERSION_CACHE,
-} from './commun.js';
+import { CLE_ANTHROPIC, cleFiche, ecrireCache, lireCache, verifierAcces } from './commun.js';
 import { demanderJson } from './claude.js';
+import { LANGUE_GENERATION, traduire } from './traduction.js';
 import { SYSTEME_FICHE, promptFiche } from './prompts/fiche.js';
 import { SCHEMA_FICHE, validerFiche } from './schemas/fiche.js';
 
@@ -89,48 +82,64 @@ export const genererFiche = onCall(
     await verifierAcces(requete);
 
     const parametres = lireParametres(requete.data);
-    const ficheId = cleFiche(parametres.destination, parametres.mois, parametres.langue);
+    return obtenirFiche(parametres);
+  }
+);
 
-    // Le cache passe avant tout appel à l'API (CLAUDE.md §9).
-    const enCache = await db.collection('fiches').doc(ficheId).get();
+/**
+ * Fiche d'une destination dans une langue : depuis le cache, sinon générée en
+ * français, puis traduite pour les autres langues.
+ *
+ * @param {{ destination: string, mois: number, langue: string, nationalite: string }} parametres
+ * @returns {Promise<{ ficheId: string, fiche: object, depuisCache: boolean }>}
+ */
+async function obtenirFiche(parametres) {
+  const ficheId = cleFiche(parametres.destination, parametres.mois, parametres.langue);
 
-    if (enCache.exists) {
-      const donnees = enCache.data();
-      const expiree = donnees.expireLe?.toMillis?.() < Date.now();
-      // Une entrée écrite sous un autre contrat est régénérée (voir
-      // VERSION_CACHE dans commun.js).
-      const perimee = donnees.version !== VERSION_CACHE;
+  // Le cache passe avant tout appel à l'API (CLAUDE.md §9).
+  const enCache = await lireCache('fiches', ficheId);
+  if (enCache) {
+    logger.info('Fiche servie depuis le cache', { ficheId });
+    return { ficheId, fiche: enCache.fiche, depuisCache: true };
+  }
 
-      if (!expiree && !perimee) {
-        logger.info('Fiche servie depuis le cache', { ficheId });
-        return { ficheId, fiche: donnees.fiche, depuisCache: true };
-      }
-    }
+  const journal = { fonction: 'genererFiche', destination: parametres.destination };
+  let fiche;
 
-    const fiche = await demanderJson({
+  if (parametres.langue === LANGUE_GENERATION) {
+    fiche = await demanderJson({
       systeme: SYSTEME_FICHE,
       prompt: promptFiche(parametres),
       schema: SCHEMA_FICHE,
       valider: validerFiche,
-      journal: { fonction: 'genererFiche', destination: parametres.destination },
+      journal,
     });
-
     recalerTemperatureMer(fiche, parametres.mois);
-
-    const maintenant = Date.now();
-
-    await db.collection('fiches').doc(ficheId).set({
-      fiche,
-      destinationNormalisee: ficheId.split('_')[0],
-      mois: parametres.mois,
-      langue: parametres.langue,
-      modele: MODELE_CLAUDE,
-      version: VERSION_CACHE,
-      genereLe: FieldValue.serverTimestamp(),
-      expireLe: new Date(maintenant + DUREE_CACHE_MS),
-    });
-
-    logger.info('Fiche générée et mise en cache', { ficheId });
-    return { ficheId, fiche, depuisCache: false };
+  } else {
+    const francaise = await obtenirFiche({ ...parametres, langue: LANGUE_GENERATION });
+    try {
+      fiche = await traduire({
+        donnees: francaise.fiche,
+        schema: SCHEMA_FICHE,
+        valider: validerFiche,
+        langue: parametres.langue,
+        journal,
+      });
+    } catch (erreur) {
+      // Mieux vaut le français qu'une erreur. Rien n'est mis en cache sous
+      // cette langue : la traduction sera retentée à la prochaine demande.
+      logger.warn('Traduction impossible, fiche servie en français', { ficheId, erreur: erreur.message });
+      return { ficheId, fiche: francaise.fiche, depuisCache: false };
+    }
   }
-);
+
+  await ecrireCache('fiches', ficheId, {
+    fiche,
+    destinationNormalisee: ficheId.split('_')[0],
+    mois: parametres.mois,
+    langue: parametres.langue,
+  });
+
+  logger.info('Fiche générée et mise en cache', { ficheId });
+  return { ficheId, fiche, depuisCache: false };
+}

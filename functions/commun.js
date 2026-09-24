@@ -9,7 +9,7 @@
  */
 
 import { initializeApp } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
+import { FieldValue, getFirestore } from 'firebase-admin/firestore';
 import { defineSecret } from 'firebase-functions/params';
 import { HttpsError } from 'firebase-functions/v2/https';
 import { setGlobalOptions } from 'firebase-functions/v2';
@@ -113,4 +113,37 @@ export function normaliser(texte) {
  */
 export function cleFiche(destination, mois, langue) {
   return `${normaliser(destination)}_${String(mois).padStart(2, '0')}_${langue}`;
+}
+
+/**
+ * Lit une entrée de cache encore valable : ni expirée, ni écrite sous une
+ * autre VERSION_CACHE.
+ * @param {string} collection
+ * @param {string} cle
+ * @returns {Promise<object|null>} les données, ou null
+ */
+export async function lireCache(collection, cle) {
+  const entree = await db.collection(collection).doc(cle).get();
+  if (!entree.exists) return null;
+
+  const donnees = entree.data();
+  const expiree = donnees.expireLe?.toMillis?.() < Date.now();
+  const perimee = donnees.version !== VERSION_CACHE;
+  return expiree || perimee ? null : donnees;
+}
+
+/**
+ * Écrit une entrée de cache, horodatée et versionnée.
+ * @param {string} collection
+ * @param {string} cle
+ * @param {object} donnees
+ */
+export async function ecrireCache(collection, cle, donnees) {
+  await db.collection(collection).doc(cle).set({
+    ...donnees,
+    modele: MODELE_CLAUDE,
+    version: VERSION_CACHE,
+    genereLe: FieldValue.serverTimestamp(),
+    expireLe: new Date(Date.now() + DUREE_CACHE_MS),
+  });
 }

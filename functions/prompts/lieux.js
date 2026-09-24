@@ -7,13 +7,7 @@
  * business, étapes d'un trip liberté, safari ou séjour romantique.
  */
 
-/** Noms des mois, pour situer la demande dans la saison. */
-const MOIS = {
-  fr: [
-    'janvier', 'février', 'mars', 'avril', 'mai', 'juin',
-    'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre',
-  ],
-};
+import { MOIS, consigneLangue } from './langues.js';
 
 /** Consigne permanente, indépendante de la destination : reste en cache. */
 export const SYSTEME_LIEUX = `Tu es un assistant de préparation de voyage. Tu proposes des lieux à visiter, décrits de façon concrète et utile à quelqu'un qui prépare son séjour.
@@ -40,7 +34,7 @@ Règles absolues :
  * @returns {string}
  */
 export function promptLieux({ destination, type, mois, langue, nombre, voyageurs }) {
-  const nomMois = (MOIS[langue] ?? MOIS.fr)[mois - 1];
+  const nomMois = MOIS[mois - 1];
   const avecEnfants = (voyageurs?.enfants ?? 0) > 0;
 
   // Une consigne par type de séjour. Les types partagent le même schéma : ce
@@ -69,7 +63,7 @@ export function promptLieux({ destination, type, mois, langue, nombre, voyageurs
 
 Destination : ${destination}
 Mois du voyage : ${nomMois}
-Langue de rédaction : ${langue}${consigneEnfants}
+${consigneLangue(langue)}${consigneEnfants}
 
 Tiens compte de la saison : signale dans les conseils ce qui change en ${nomMois}, notamment l'affluence, la chaleur ou une fermeture saisonnière.
 

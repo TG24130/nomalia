@@ -4,13 +4,7 @@
  * Aucun prompt dans le code métier (CLAUDE.md §9).
  */
 
-/** Noms des mois, pour situer la demande dans la saison. */
-const MOIS = {
-  fr: [
-    'janvier', 'février', 'mars', 'avril', 'mai', 'juin',
-    'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre',
-  ],
-};
+import { MOIS, consigneLangue } from './langues.js';
 
 /** Consigne permanente, indépendante de la destination : reste en cache. */
 export const SYSTEME_RANDOS = `Tu es un assistant de préparation de voyage, spécialisé dans la randonnée. Tu proposes des itinéraires existants et documentés, décrits avec les chiffres dont un marcheur a besoin pour choisir.
@@ -49,7 +43,7 @@ export function promptRandos({
   boucle,
   adapteeEnfants,
 }) {
-  const nomMois = (MOIS[langue] ?? MOIS.fr)[mois - 1];
+  const nomMois = MOIS[mois - 1];
 
   /** Formulation attendue pour chaque niveau, l'intitulé seul étant ambigu. */
   const DESCRIPTION_NIVEAU = {
@@ -89,7 +83,7 @@ Classe tes propositions de la plus proche de ces souhaits à la plus éloignée.
 
 Destination : ${destination}
 Mois du voyage : ${nomMois}
-Langue de rédaction : ${langue}
+${consigneLangue(langue)}
 ${listeCriteres}
 Varie les paysages et les secteurs plutôt que de proposer plusieurs itinéraires voisins.
 

@@ -9,13 +9,7 @@
  *  - ne jamais inventer d'URL (CLAUDE.md §3.6).
  */
 
-/** Noms des mois, pour formuler la demande dans la langue de l'utilisateur. */
-const MOIS = {
-  fr: [
-    'janvier', 'février', 'mars', 'avril', 'mai', 'juin',
-    'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre',
-  ],
-};
+import { MOIS, consigneLangue } from './langues.js';
 
 /** Consigne permanente, indépendante de la destination : reste en cache. */
 export const SYSTEME_FICHE = `Tu es un assistant de préparation de voyage. Tu rédiges des fiches pratiques factuelles et concises pour des voyageurs.
@@ -35,14 +29,14 @@ Règles absolues :
  * @returns {string}
  */
 export function promptFiche({ destination, mois, langue, nationalite }) {
-  const nomMois = (MOIS[langue] ?? MOIS.fr)[mois - 1];
+  const nomMois = MOIS[mois - 1];
 
   return `Rédige la fiche pratique de la destination suivante.
 
 Destination : ${destination}
 Mois du voyage : ${nomMois}
 Nationalité du voyageur : ${nationalite}
-Langue de rédaction : ${langue}
+${consigneLangue(langue)}
 
 Contenu attendu, en dix points :
 1. visa — formalités d'entrée pour un ressortissant ${nationalite}. Pour un voyageur français, cite le lien France Diplomatie de la destination dans « lienOfficiel » si tu l'as trouvé, sinon laisse la chaîne vide.

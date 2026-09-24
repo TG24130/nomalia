@@ -8,18 +8,10 @@
 
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import { logger } from 'firebase-functions';
-import { FieldValue } from 'firebase-admin/firestore';
 
-import {
-  CLE_ANTHROPIC,
-  db,
-  DUREE_CACHE_MS,
-  MODELE_CLAUDE,
-  normaliser,
-  verifierAcces,
-  VERSION_CACHE,
-} from './commun.js';
+import { CLE_ANTHROPIC, ecrireCache, lireCache, normaliser, verifierAcces } from './commun.js';
 import { demanderJson } from './claude.js';
+import { LANGUE_GENERATION, traduire } from './traduction.js';
 import { SYSTEME_RANDOS, promptRandos } from './prompts/randos.js';
 import { NIVEAUX, NOMBRE_RANDOS, SCHEMA_RANDOS, validerRandos } from './schemas/randos.js';
 
@@ -123,24 +115,31 @@ export const genererRandos = onCall(
     await verifierAcces(requete);
 
     const parametres = lireParametres(requete.data);
-    const cle = cleRandos(parametres);
+    return obtenirRandos(parametres);
+  }
+);
 
-    // Le cache passe avant tout appel à l'API (CLAUDE.md §9).
-    const enCache = await db.collection('randos').doc(cle).get();
+/**
+ * Liste dans une langue : depuis le cache, sinon générée en français, puis
+ * traduite pour les autres langues (voir traduction.js).
+ *
+ * @param {object} parametres paramètres validés
+ * @returns {Promise<{ cle: string, randos: Array<object>, sources: string[], depuisCache: boolean }>}
+ */
+async function obtenirRandos(parametres) {
+  const cle = cleRandos(parametres);
 
-    if (enCache.exists) {
-      const donnees = enCache.data();
-      const expiree = donnees.expireLe?.toMillis?.() < Date.now();
-      // Une entrée écrite sous un autre contrat est régénérée (voir
-      // VERSION_CACHE dans commun.js).
-      const perimee = donnees.version !== VERSION_CACHE;
+  // Le cache passe avant tout appel à l'API (CLAUDE.md §9).
+  const enCache = await lireCache('randos', cle);
+  if (enCache) {
+    logger.info('Randonnées servies depuis le cache', { cle });
+    return { cle, randos: enCache.randos, sources: enCache.sources, depuisCache: true };
+  }
 
-      if (!expiree && !perimee) {
-        logger.info('Randonnées servies depuis le cache', { cle });
-        return { cle, randos: donnees.randos, sources: donnees.sources, depuisCache: true };
-      }
-    }
+  let randos;
+  let sources;
 
+  if (parametres.langue === LANGUE_GENERATION) {
     const resultat = await demanderJson({
       systeme: SYSTEME_RANDOS,
       prompt: promptRandos(parametres),
@@ -165,30 +164,48 @@ export const genererRandos = onCall(
       },
     });
 
-    const randos = resultat.randos.slice(0, NOMBRE_RANDOS);
-    const sources = Array.isArray(resultat.sources) ? resultat.sources : [];
+    randos = resultat.randos.slice(0, NOMBRE_RANDOS);
+    sources = Array.isArray(resultat.sources) ? resultat.sources : [];
+  } else {
+    const francaise = await obtenirRandos({ ...parametres, langue: LANGUE_GENERATION });
+    randos = francaise.randos;
+    sources = francaise.sources;
 
-    // Une recherche restée vide n'est pas mise en cache : elle tient souvent à
-    // des critères trop serrés, et la figer trente jours interdirait de
-    // retrouver quoi que ce soit avec les mêmes critères élargis entre-temps.
-    if (randos.length === 0) {
-      logger.info('Aucune randonnée pour ces critères', { cle });
-      return { cle, randos, sources, depuisCache: false };
+    if (randos.length > 0) {
+      try {
+        const traduite = await traduire({
+          donnees: { destination: parametres.destination, randos, sources },
+          schema: SCHEMA_RANDOS,
+          valider: validerRandos,
+          langue: parametres.langue,
+          journal: { fonction: 'genererRandos', destination: parametres.destination },
+        });
+        randos = traduite.randos;
+      } catch (erreur) {
+        // Mieux vaut le français qu'une erreur. Rien n'est mis en cache sous
+        // cette langue : la traduction sera retentée à la prochaine demande.
+        logger.warn('Traduction impossible, liste servie en français', { cle, erreur: erreur.message });
+        return { cle, randos, sources, depuisCache: false };
+      }
     }
+  }
 
-    await db.collection('randos').doc(cle).set({
-      randos,
-      sources,
-      destinationNormalisee: normaliser(parametres.destination),
-      mois: parametres.mois,
-      langue: parametres.langue,
-      modele: MODELE_CLAUDE,
-      version: VERSION_CACHE,
-      genereLe: FieldValue.serverTimestamp(),
-      expireLe: new Date(Date.now() + DUREE_CACHE_MS),
-    });
-
-    logger.info('Randonnées générées et mises en cache', { cle, nombre: randos.length });
+  // Une liste vide n'est pas mise en cache : elle tient souvent à des
+  // critères trop serrés, et la figer trente jours interdirait de retrouver
+  // quoi que ce soit avec les mêmes critères élargis entre-temps.
+  if (randos.length === 0) {
+    logger.info('Liste vide pour cette demande', { cle });
     return { cle, randos, sources, depuisCache: false };
   }
-);
+
+  await ecrireCache('randos', cle, {
+    randos,
+    sources,
+    destinationNormalisee: normaliser(parametres.destination),
+    mois: parametres.mois,
+    langue: parametres.langue,
+  });
+
+  logger.info('Randonnées générées et mises en cache', { cle, nombre: randos.length });
+  return { cle, randos, sources, depuisCache: false };
+}

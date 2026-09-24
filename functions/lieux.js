@@ -1,25 +1,18 @@
 /**
  * lieux.js — Cloud Function `genererLieux`.
  *
- * Renvoie cinq plages ou cinq incontournables d'une destination, selon le
- * type de séjour choisi au tiroir 4, depuis le cache Firestore si la liste y
- * est encore valide (CLAUDE.md §6, tiroir 4).
+ * Renvoie cinq lieux d'une destination, selon le type de séjour choisi au
+ * tiroir 4, depuis le cache Firestore si la liste y est encore valide
+ * (CLAUDE.md §6, tiroir 4). Hors du français, la liste française est
+ * traduite (voir traduction.js).
  */
 
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import { logger } from 'firebase-functions';
-import { FieldValue } from 'firebase-admin/firestore';
 
-import {
-  CLE_ANTHROPIC,
-  db,
-  DUREE_CACHE_MS,
-  MODELE_CLAUDE,
-  normaliser,
-  verifierAcces,
-  VERSION_CACHE,
-} from './commun.js';
+import { CLE_ANTHROPIC, ecrireCache, lireCache, normaliser, verifierAcces } from './commun.js';
 import { demanderJson } from './claude.js';
+import { LANGUE_GENERATION, traduire } from './traduction.js';
 import { SYSTEME_LIEUX, promptLieux } from './prompts/lieux.js';
 import { NOMBRE_LIEUX, SCHEMA_LIEUX, TYPES_LIEUX, validerLieux } from './schemas/lieux.js';
 
@@ -90,24 +83,31 @@ export const genererLieux = onCall(
     await verifierAcces(requete);
 
     const parametres = lireParametres(requete.data);
-    const cle = cleLieux(parametres);
+    return obtenirLieux(parametres);
+  }
+);
 
-    // Le cache passe avant tout appel à l'API (CLAUDE.md §9).
-    const enCache = await db.collection('lieux').doc(cle).get();
+/**
+ * Liste dans une langue : depuis le cache, sinon générée en français, puis
+ * traduite pour les autres langues (voir traduction.js).
+ *
+ * @param {object} parametres paramètres validés
+ * @returns {Promise<{ cle: string, lieux: Array<object>, sources: string[], depuisCache: boolean }>}
+ */
+async function obtenirLieux(parametres) {
+  const cle = cleLieux(parametres);
 
-    if (enCache.exists) {
-      const donnees = enCache.data();
-      const expiree = donnees.expireLe?.toMillis?.() < Date.now();
-      // Une entrée écrite sous un autre contrat est régénérée (voir
-      // VERSION_CACHE dans commun.js).
-      const perimee = donnees.version !== VERSION_CACHE;
+  // Le cache passe avant tout appel à l'API (CLAUDE.md §9).
+  const enCache = await lireCache('lieux', cle);
+  if (enCache) {
+    logger.info('Lieux servis depuis le cache', { cle });
+    return { cle, lieux: enCache.lieux, sources: enCache.sources, depuisCache: true };
+  }
 
-      if (!expiree && !perimee) {
-        logger.info('Lieux servis depuis le cache', { cle });
-        return { cle, lieux: donnees.lieux, sources: donnees.sources, depuisCache: true };
-      }
-    }
+  let lieux;
+  let sources;
 
+  if (parametres.langue === LANGUE_GENERATION) {
     const resultat = await demanderJson({
       systeme: SYSTEME_LIEUX,
       prompt: promptLieux(parametres),
@@ -128,31 +128,49 @@ export const genererLieux = onCall(
       },
     });
 
-    // Le modèle en renvoie parfois un de plus ou un de moins : on s'en tient
-    // au nombre demandé plutôt que de rejeter une liste par ailleurs correcte.
-    const lieux = resultat.lieux.slice(0, NOMBRE_LIEUX);
-    const sources = Array.isArray(resultat.sources) ? resultat.sources : [];
+    lieux = resultat.lieux.slice(0, NOMBRE_LIEUX);
+    sources = Array.isArray(resultat.sources) ? resultat.sources : [];
+  } else {
+    const francaise = await obtenirLieux({ ...parametres, langue: LANGUE_GENERATION });
+    lieux = francaise.lieux;
+    sources = francaise.sources;
 
-    // Voir randos.js : une liste vide n'est pas mise en cache.
-    if (lieux.length === 0) {
-      logger.info('Aucun lieu pour cette demande', { cle });
-      return { cle, lieux, sources, depuisCache: false };
+    if (lieux.length > 0) {
+      try {
+        const traduite = await traduire({
+          donnees: { destination: parametres.destination, lieux, sources },
+          schema: SCHEMA_LIEUX,
+          valider: validerLieux,
+          langue: parametres.langue,
+          journal: { fonction: 'genererLieux', destination: parametres.destination, type: parametres.type },
+        });
+        lieux = traduite.lieux;
+      } catch (erreur) {
+        // Mieux vaut le français qu'une erreur. Rien n'est mis en cache sous
+        // cette langue : la traduction sera retentée à la prochaine demande.
+        logger.warn('Traduction impossible, liste servie en français', { cle, erreur: erreur.message });
+        return { cle, lieux, sources, depuisCache: false };
+      }
     }
+  }
 
-    await db.collection('lieux').doc(cle).set({
-      lieux,
-      sources,
-      destinationNormalisee: normaliser(parametres.destination),
-      type: parametres.type,
-      mois: parametres.mois,
-      langue: parametres.langue,
-      modele: MODELE_CLAUDE,
-      version: VERSION_CACHE,
-      genereLe: FieldValue.serverTimestamp(),
-      expireLe: new Date(Date.now() + DUREE_CACHE_MS),
-    });
-
-    logger.info('Lieux générés et mis en cache', { cle, nombre: lieux.length });
+  // Une liste vide n'est pas mise en cache : elle tient souvent à des
+  // critères trop serrés, et la figer trente jours interdirait de retrouver
+  // quoi que ce soit avec les mêmes critères élargis entre-temps.
+  if (lieux.length === 0) {
+    logger.info('Liste vide pour cette demande', { cle });
     return { cle, lieux, sources, depuisCache: false };
   }
-);
+
+  await ecrireCache('lieux', cle, {
+    lieux,
+    sources,
+    destinationNormalisee: normaliser(parametres.destination),
+    type: parametres.type,
+    mois: parametres.mois,
+    langue: parametres.langue,
+  });
+
+  logger.info('Lieux générés et mis en cache', { cle, nombre: lieux.length });
+  return { cle, lieux, sources, depuisCache: false };
+}

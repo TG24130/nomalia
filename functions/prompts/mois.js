@@ -4,6 +4,8 @@
  * Aucun prompt dans le code métier (CLAUDE.md §9).
  */
 
+import { consigneLangue } from './langues.js';
+
 /** Consigne permanente. */
 export const SYSTEME_CONSEIL_MOIS = `Tu es un assistant de préparation de voyage. Tu conseilles le mois de départ vers une destination, pour un voyageur qui part de France.
 
@@ -24,7 +26,7 @@ Règles absolues :
  */
 export function promptConseilMois({ destination, langue }) {
   return `Destination : ${destination}
-Langue de la réponse : ${langue}
+${consigneLangue(langue)}
 
 Indique le mois le moins cher et le mois au meilleur climat pour y partir.`;
 }

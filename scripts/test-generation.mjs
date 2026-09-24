@@ -12,6 +12,7 @@
  *   node scripts/test-generation.mjs lieux
  *   node scripts/test-generation.mjs randos --tous
  *   node scripts/test-generation.mjs randos --cas=3
+ *   node scripts/test-generation.mjs lieux --langue=en
  *   node scripts/test-generation.mjs lieux --recherches=2 --effort=low
  *
  * La clé est lue dans functions/.secret.local, qui n'est pas versionné.
@@ -40,6 +41,10 @@ const argRecherches = process.argv.find((a) => a.startsWith('--recherches='));
 const MAX_RECHERCHES = argRecherches ? Number(argRecherches.split('=')[1]) : 4;
 const argEffort = process.argv.find((a) => a.startsWith('--effort='));
 const EFFORT = argEffort ? argEffort.split('=')[1] : 'medium';
+const argLangue = process.argv.find((a) => a.startsWith('--langue='));
+const LANGUE = argLangue ? argLangue.split('=')[1] : null;
+const argOutil = process.argv.find((a) => a.startsWith('--outil='));
+const OUTIL_RECHERCHE = argOutil ? argOutil.split('=')[1] : 'web_search_20260209';
 
 /**
  * Lit la clé API dans le fichier de secrets local.
@@ -152,15 +157,20 @@ async function essayer(client, famille, cas) {
     model: MODELE,
     max_tokens: 16000,
     system: famille.systeme,
-    messages: [{ role: 'user', content: famille.prompt(cas.parametres) }],
-    tools: [{ type: 'web_search_20260209', name: 'web_search', max_uses: MAX_RECHERCHES }],
+    messages: [{ role: 'user', content: famille.prompt({ ...cas.parametres, langue: LANGUE ?? cas.parametres.langue }) }],
+    tools: [{ type: OUTIL_RECHERCHE, name: 'web_search', max_uses: MAX_RECHERCHES }],
     output_config: { effort: EFFORT, format: { type: 'json_schema', schema: famille.schema } },
   });
 
   const reponse = await flux.finalMessage();
   const secondes = Math.round((Date.now() - depart) / 1000);
 
-  const texte = reponse.content.find((bloc) => bloc.type === 'text')?.text ?? '';
+  // Comme functions/claude.js : le dernier bloc de texte fait foi, la recherche
+  // web pouvant être précédée d'un brouillon.
+  const blocs = reponse.content.filter((bloc) => bloc.type === 'text');
+  const texte = blocs.at(-1)?.text ?? '';
+  console.log(`  blocs texte  : ${blocs.length}`);
+  if (process.argv.includes('--brut')) console.log(`  séquence     : ${reponse.content.map((b) => b.type).join(' > ')}`);
   let donnees = null;
   try {
     donnees = JSON.parse(texte);
@@ -174,10 +184,14 @@ async function essayer(client, famille, cas) {
   console.log(`  durée        : ${secondes} s (effort ${EFFORT}, ${MAX_RECHERCHES} recherches max)`);
   console.log(`  recherches   : ${reponse.usage?.server_tool_use?.web_search_requests ?? 0}`);
   console.log(`  tokens entrée: ${reponse.usage?.input_tokens}`);
+  console.log(`  arrêt        : ${reponse.stop_reason}, ${reponse.usage?.output_tokens} tokens de sortie`);
   console.log(`  résultats    : ${resultats.length}`);
+  if (!controle.valide && process.argv.includes('--brut')) console.log(texte.slice(0, 1500));
   console.log(`  validation   : ${controle.valide ? 'OK' : controle.erreurs.join(', ')}`);
 
   for (const resultat of resultats) console.log(`    · ${famille.resumer(resultat)}`);
+  // Un extrait de texte, pour juger de la langue de rédaction.
+  if (resultats[0]?.description) console.log(`  extrait      : ${resultats[0].description.slice(0, 160)}`);
 }
 
 const nomFamille = process.argv[2];
