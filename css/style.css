@@ -1350,3 +1350,118 @@ details[open] > .point__entete::after,
   margin-top: 4px;
   opacity: 0.6;
 }
+
+/* — Fiche de synthèse (écran de fin) — */
+
+.synthese__actions {
+  margin: var(--espace) 0;
+}
+
+.synthese {
+  background: var(--couleur-carte);
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--rayon);
+  padding: var(--espace);
+  margin-bottom: var(--espace);
+  color: var(--couleur-texte);
+}
+
+.synthese__entete {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 2px solid var(--couleur-marque);
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+
+.synthese__logo {
+  width: 72px;
+  height: auto;
+  mix-blend-mode: multiply;
+}
+
+.synthese__surtitre {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--couleur-texte-doux);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.synthese__destination {
+  margin: 2px 0 0;
+}
+
+.synthese__section {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--couleur-bordure);
+}
+
+.synthese__section:last-child {
+  border-bottom: 0;
+}
+
+.synthese__section h3 {
+  margin: 4px 0 6px;
+  color: var(--couleur-accent);
+}
+
+.synthese__section p,
+.synthese__section ul {
+  margin: 4px 0;
+}
+
+.synthese__point h4 {
+  margin: 10px 0 2px;
+  font-size: 0.95rem;
+}
+
+.synthese__total {
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+/*
+ * À l'impression, seule la fiche de synthèse sort : le reste de l'écran
+ * (bandeau, photo de fond, boutons) est masqué. « visibility » plutôt que
+ * « display » : la fiche est imbriquée dans des blocs qu'il faut garder.
+ */
+@media print {
+  @page {
+    margin: 14mm;
+  }
+
+  body {
+    background: #fff !important;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  .synthese,
+  .synthese * {
+    visibility: visible;
+  }
+
+  .synthese {
+    position: absolute;
+    inset: 0 0 auto 0;
+    border: 0;
+    padding: 0;
+    font-size: 11pt;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .synthese__section,
+  .synthese__point {
+    break-inside: avoid;
+  }
+
+  .synthese a {
+    color: inherit;
+    text-decoration: none;
+  }
+}

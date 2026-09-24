@@ -168,5 +168,5 @@ export async function afficher(conteneur, voyage, actions) {
     </button>
   `;
 
-  conteneur.querySelector('#budget-terminer').addEventListener('click', actions.accueil);
+  conteneur.querySelector('#budget-terminer').addEventListener('click', actions.suivant);
 }

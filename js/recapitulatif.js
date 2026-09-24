@@ -6,11 +6,16 @@
  * écran ferme le parcours : il rassemble les choix faits, donne le budget, et
  * permet de revenir sur n'importe quelle étape.
  *
+ * Il porte aussi la fiche de synthèse imprimable (js/synthese.js).
+ *
  * Il ne lit que l'objet voyage et ne l'écrit jamais.
  */
 
 import { echapper, langue, t } from './i18n.js';
 import { icone } from './icones.js';
+import { genererFiche } from './api.js';
+import { calculerBudget } from './budget.js';
+import { construireSynthese } from './synthese.js';
 import { ETAPES, datesVoyage } from './voyage.js';
 
 /**
@@ -198,6 +203,17 @@ export function afficherRecapitulatif(conteneur, voyage, actions) {
 
     ${blocBudget}
 
+    <div class="synthese__actions">
+      <button class="bouton bouton--principal" type="button" id="fin-pdf" disabled>
+        ${echapper(t('synthese.enregistrerPdf'))}
+      </button>
+      <p class="note">${echapper(t('synthese.aidePdf'))}</p>
+    </div>
+
+    <div id="fin-synthese">
+      <p class="chargement">${echapper(t('synthese.chargement'))}</p>
+    </div>
+
     <ul class="recap">${recap}</ul>
 
     <button class="bouton bouton--principal" type="button" id="fin-accueil">
@@ -212,4 +228,53 @@ export function afficherRecapitulatif(conteneur, voyage, actions) {
   });
 
   conteneur.querySelector('#fin-accueil').addEventListener('click', actions.accueil);
+
+  const boutonPdf = conteneur.querySelector('#fin-pdf');
+  boutonPdf.addEventListener('click', () => imprimer(voyage));
+
+  preparerSynthese(voyage).then((html) => {
+    const cible = conteneur.querySelector('#fin-synthese');
+    if (!cible) return;
+    cible.innerHTML = html;
+    boutonPdf.disabled = false;
+  });
+}
+
+/**
+ * Charge la fiche destination et calcule le budget, puis construit la
+ * synthèse. La fiche est en cache à ce stade : l'appel est instantané.
+ * @param {object} voyage
+ * @returns {Promise<string>}
+ */
+async function preparerSynthese(voyage) {
+  let fiche = null;
+
+  if (voyage.destination && voyage.mois) {
+    try {
+      const resultat = await genererFiche({
+        destination: voyage.destination,
+        mois: voyage.mois,
+        langue: voyage.langue ?? 'fr',
+        nationalite: voyage.nationalite ?? 'FR',
+      });
+      fiche = resultat.fiche;
+    } catch (erreur) {
+      // La synthèse reste utile sans la fiche : elle le dit, simplement.
+      console.warn('Fiche indisponible pour la synthèse', erreur);
+    }
+  }
+
+  return construireSynthese(voyage, fiche, calculerBudget(voyage, fiche));
+}
+
+/**
+ * Ouvre l'impression du navigateur. Le titre de la page devient le nom
+ * proposé pour le fichier PDF.
+ * @param {object} voyage
+ */
+function imprimer(voyage) {
+  const titre = document.title;
+  document.title = `${t('app.nom')} - ${voyage.destination ?? ''}`.trim();
+  window.addEventListener('afterprint', () => { document.title = titre; }, { once: true });
+  window.print();
 }

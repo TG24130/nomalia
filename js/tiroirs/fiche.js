@@ -18,7 +18,7 @@ import { modifierVoyage } from '../voyage.js';
 export const PEUT_ETRE_PASSE = true;
 
 /** Ordre d'affichage des points. */
-const POINTS = [
+export const POINTS = [
   'visa',
   'climat',
   'meilleuresPeriodes',
@@ -74,7 +74,7 @@ function moisAbrege(mois) {
  * @param {object} fiche
  * @returns {string}
  */
-function apercu(nom, point, fiche) {
+export function apercu(nom, point, fiche) {
   switch (nom) {
     case 'meilleuresPeriodes':
       return point.mois.map((mois) => t(`mois.${mois}`)).join(', ');
@@ -122,7 +122,7 @@ function liste(valeurs) {
  * @param {number} moisVoyage
  * @returns {string}
  */
-function contenu(nom, point, fiche, moisVoyage) {
+export function contenu(nom, point, fiche, moisVoyage) {
   const morceaux = [];
 
   if (point.resume) morceaux.push(`<p>${echapper(point.resume)}</p>`);

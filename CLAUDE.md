@@ -290,4 +290,4 @@ export function lienReservation(partenaire, params) { /* … */ }
 
 ## 12. Hors périmètre V0
 
-Ne pas développer : langues autres que le français, liens affiliés, API payantes (Sherpa, Numbeo), statistiques d'usage, bandeau cookies / RGPD complet, comptes ouverts au public, publication sur les stores, partage public de voyage, export PDF.
+Ne pas développer : langues autres que le français, liens affiliés, API payantes (Sherpa, Numbeo), statistiques d'usage, bandeau cookies / RGPD complet, comptes ouverts au public, publication sur les stores, partage public de voyage. (L'export PDF de la fiche de synthèse a été demandé par Thierry le 2026-09-24 : il passe par l'impression du navigateur, sans bibliothèque — js/synthese.js.)

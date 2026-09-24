@@ -381,6 +381,34 @@
     "mention": "Estimation indicative."
   },
 
+  "synthese": {
+    "titre": "Fiche de synthèse du voyage",
+    "enregistrerPdf": "Enregistrer en PDF",
+    "aidePdf": "Dans la fenêtre d'impression, choisissez « Enregistrer au format PDF ».",
+    "chargement": "Préparation de la fiche de synthèse…",
+    "dates": "Dates",
+    "du": "du {debut} au {fin}",
+    "duree": "Durée",
+    "jours": "{nombre} jours",
+    "voyageurs": "Voyageurs",
+    "voyageursDetail": "{adultes} adulte(s), {enfants} enfant(s)",
+    "typeSejour": "Type de séjour",
+    "nonRenseigne": "Non renseigné",
+    "nonEstime": "non estimé",
+    "ficheAbsente": "La fiche pratique n'a pas pu être chargée.",
+    "mode": "Mode choisi",
+    "budgetTrajet": "Budget du trajet",
+    "type": "Type retenu",
+    "criteres": "Critères",
+    "budgetMoyen": "Budget moyen",
+    "montantFourchette": "{moyen} (de {bas} à {haut})",
+    "activites": "Activités retenues",
+    "parPersonne": "{montant} par personne",
+    "aucuneActivite": "Aucune activité retenue.",
+    "aucuneRando": "Aucune randonnée retenue.",
+    "budgetTotal": "Budget total estimé"
+  },
+
   "liens": {
     "chercherSur": "Chercher sur {partenaire}",
     "itineraire": "Voir l'itinéraire"
