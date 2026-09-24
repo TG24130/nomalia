@@ -22,6 +22,7 @@ import {
   updateDoc,
   where,
 } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js';
+import { langue } from './i18n.js';
 
 /** Modèle d'un voyage vide — référence du schéma (CLAUDE.md §4). */
 export const VOYAGE_VIDE = {
@@ -236,6 +237,7 @@ export async function creerVoyage(donneesInitiales = {}) {
 
   const voyage = fusionner(structuredClone(VOYAGE_VIDE), donneesInitiales);
   voyage.proprietaire = identifiantUtilisateur;
+  voyage.langue = langue();
   voyage.destinationNormalisee = normaliser(voyage.destination);
   voyage.creeLe = serverTimestamp();
   voyage.modifieLe = serverTimestamp();

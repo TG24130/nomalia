@@ -393,6 +393,16 @@
     "mention": "Estimation indicative."
   },
 
+  "langue": {
+    "titre": "Choisissez votre langue",
+    "changer": "Changer de langue",
+    "noms": {
+      "fr": "Français",
+      "en": "English",
+      "es": "Español"
+    }
+  },
+
   "synthese": {
     "titre": "Fiche de synthèse du voyage",
     "enregistrerPdf": "Enregistrer en PDF",

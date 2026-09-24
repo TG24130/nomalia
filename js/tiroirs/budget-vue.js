@@ -67,7 +67,7 @@ export async function afficher(conteneur, voyage, actions) {
       const resultat = await genererFiche({
         destination: voyage.destination,
         mois: voyage.mois,
-        langue: voyage.langue ?? 'fr',
+        langue: langue(),
         nationalite: voyage.nationalite ?? 'FR',
       });
       fiche = resultat.fiche;

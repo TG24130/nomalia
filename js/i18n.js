@@ -14,6 +14,41 @@ export const LANGUES_PREVUES = ['fr', 'en', 'es', 'zh'];
 /** Langue utilisée si aucune n'est demandée ou si le fichier est introuvable. */
 export const LANGUE_DEFAUT = 'fr';
 
+/** Langues proposées à l'utilisateur, dans l'ordre des drapeaux. */
+export const LANGUES_PROPOSEES = ['fr', 'en', 'es'];
+
+/** Clé de stockage local de la langue choisie. */
+const CLE_PREFERENCE = 'nomalia.langue';
+
+/**
+ * Langue choisie sur cet appareil, ou null si aucun choix n'a été fait.
+ * Le stockage local peut être indisponible (navigation privée) : on fait
+ * alors comme si rien n'avait été choisi.
+ * @returns {string|null}
+ */
+export function languePreferee() {
+  try {
+    const valeur = localStorage.getItem(CLE_PREFERENCE);
+    return LANGUES_PROPOSEES.includes(valeur) ? valeur : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Retient la langue choisie et charge ses libellés.
+ * @param {string} langue
+ * @returns {Promise<string>} la langue effectivement chargée
+ */
+export async function choisirLangue(langue) {
+  try {
+    localStorage.setItem(CLE_PREFERENCE, langue);
+  } catch {
+    // Sans stockage, le choix vaut pour la session en cours.
+  }
+  return chargerLangue(langue);
+}
+
 let langueCourante = LANGUE_DEFAUT;
 let traductions = {};
 

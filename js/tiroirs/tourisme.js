@@ -33,13 +33,13 @@ function demandeLieux(voyage, type) {
       destination: voyage.destinationNormalisee ?? voyage.destination,
       type: typeListe,
       mois: voyage.mois,
-      langue: voyage.langue ?? 'fr',
+      langue: langue(),
     }),
     parametres: {
       destination: voyage.destination,
       type: typeListe,
       mois: voyage.mois,
-      langue: voyage.langue ?? 'fr',
+      langue: langue(),
       voyageurs: voyage.voyageurs ?? { adultes: 2, enfants: 0 },
     },
   };

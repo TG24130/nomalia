@@ -1465,3 +1465,62 @@ details[open] > .point__entete::after,
     text-decoration: none;
   }
 }
+
+/* — Choix de la langue — */
+
+.drapeau {
+  display: block;
+  flex: none;
+  border-radius: 3px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12);
+}
+
+.choix-langues {
+  display: grid;
+  gap: 12px;
+  margin-top: var(--espace);
+}
+
+.choix-langue {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 64px;
+  padding: 10px 16px;
+  border: 2px solid var(--couleur-bordure);
+  border-radius: var(--rayon);
+  background: var(--couleur-carte);
+  color: var(--couleur-texte);
+  font: inherit;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.choix-langue:hover,
+.choix-langue:focus-visible {
+  border-color: var(--couleur-accent);
+}
+
+.choix-langue--courante {
+  border-color: var(--couleur-accent);
+  background: var(--couleur-accent-clair);
+}
+
+/* Discret, sous le logo de l'accueil : on ne change pas de langue souvent. */
+.bouton-langue {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 10px auto 0;
+  min-height: 40px;
+  padding: 4px 14px;
+  border: 1px solid var(--couleur-bordure);
+  border-radius: 999px;
+  background: var(--couleur-carte);
+  color: var(--couleur-texte);
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+}

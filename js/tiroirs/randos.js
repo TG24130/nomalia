@@ -103,7 +103,7 @@ export function afficher(conteneur, voyage, actions) {
       const resultat = await genererRandos({
         destination: voyage.destination,
         mois: voyage.mois,
-        langue: voyage.langue ?? 'fr',
+        langue: langue(),
         ...criteres,
       });
       liste = resultat;

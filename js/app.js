@@ -16,7 +16,18 @@ import {
 } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js';
 import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js';
 
-import { chargerLangue, echapper, t, traduireDom, langue } from './i18n.js';
+import {
+  LANGUE_DEFAUT,
+  LANGUES_PROPOSEES,
+  chargerLangue,
+  choisirLangue,
+  echapper,
+  langue,
+  languePreferee,
+  t,
+  traduireDom,
+} from './i18n.js';
+import { drapeau } from './drapeaux.js';
 import {
   ENVIRONNEMENT,
   EST_LOCAL,
@@ -248,6 +259,44 @@ function carteVoyage(voyage) {
   `;
 }
 
+/**
+ * Écran de choix de la langue : au premier passage après la connexion, puis
+ * à la demande depuis la liste des voyages. Le choix vaut pour l'interface
+ * comme pour les réponses de l'IA.
+ */
+function afficherEcranLangue() {
+  boutonDeconnexion.hidden = false;
+  afficherBanniere(banniere, { etape: 'accueil', titre: t('app.nom'), sousTitre: t('app.slogan') });
+  masquerParcours();
+
+  const boutons = LANGUES_PROPOSEES.map(
+    (code) => `
+      <button class="choix-langue${code === langue() ? ' choix-langue--courante' : ''}"
+              type="button" data-langue="${code}" lang="${code}">
+        ${drapeau(code, 48)}
+        <span>${echapper(t(`langue.noms.${code}`))}</span>
+      </button>
+    `
+  ).join('');
+
+  vue.innerHTML = `
+    <section class="carte">
+      ${logo()}
+      <h2>${echapper(t('langue.titre'))}</h2>
+      <div class="choix-langues">${boutons}</div>
+    </section>
+  `;
+
+  vue.querySelectorAll('[data-langue]').forEach((bouton) => {
+    bouton.addEventListener('click', async () => {
+      await choisirLangue(bouton.dataset.langue);
+      traduireDom();
+      document.getElementById('pied-env').textContent = `${ENVIRONNEMENT} · ${langue()}`;
+      await afficherEcranAccueil();
+    });
+  });
+}
+
 /** Affiche la liste des voyages de l'utilisateur. */
 async function afficherEcranAccueil() {
   boutonDeconnexion.hidden = false;
@@ -270,7 +319,14 @@ async function afficherEcranAccueil() {
     : `<p class="note">${echapper(t('accueil.aucunVoyage'))}</p>`;
 
   vue.innerHTML = `
-    <section class="carte carte--logo">${logo()}</section>
+    <section class="carte carte--logo">
+      ${logo()}
+      <button class="bouton-langue" type="button" id="bouton-langue"
+              aria-label="${echapper(t('langue.changer'))}">
+        ${drapeau(langue(), 26)}
+        <span>${echapper(t(`langue.noms.${langue()}`))}</span>
+      </button>
+    </section>
     <h2>${echapper(t('accueil.titre'))}</h2>
     ${liste}
     <button class="bouton bouton--principal" type="button" id="bouton-nouveau">
@@ -279,6 +335,7 @@ async function afficherEcranAccueil() {
   `;
 
   document.getElementById('bouton-nouveau').addEventListener('click', nouveauVoyage);
+  document.getElementById('bouton-langue').addEventListener('click', afficherEcranLangue);
   vue.querySelectorAll('[data-action]').forEach((bouton) => {
     bouton.addEventListener('click', gererActionVoyage);
   });
@@ -728,6 +785,12 @@ async function gererUtilisateur(utilisateur) {
     masquerMessage();
     configurerVoyages(firebase.db, utilisateur);
     configurerApi(firebase.fonctions);
+
+    // Premier passage sur cet appareil : on demande la langue avant tout.
+    if (!languePreferee()) {
+      afficherEcranLangue();
+      return;
+    }
     await afficherEcranAccueil();
   } catch (erreur) {
     // Un refus des règles Firestore se traite comme une absence d'autorisation.
@@ -763,7 +826,7 @@ async function enregistrerServiceWorker() {
 }
 
 async function demarrer() {
-  await chargerLangue('fr');
+  await chargerLangue(languePreferee() ?? LANGUE_DEFAUT);
   traduireDom();
 
   document.getElementById('pied-env').textContent = `${ENVIRONNEMENT} · ${langue()}`;
