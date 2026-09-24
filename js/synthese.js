@@ -129,11 +129,11 @@ function fichePratique(voyage, fiche) {
   const points = POINTS.filter((nom) => fiche.points[nom])
     .map((nom) => {
       const point = fiche.points[nom];
-      const resume = apercu(nom, point, fiche);
+      const resume = apercu(nom, point, voyage);
       return `
         <div class="synthese__point">
           <h4>${echapper(t(`fiche.${nom}`))}${resume ? ` — ${echapper(resume)}` : ''}</h4>
-          ${contenu(nom, point, fiche, voyage.mois)}
+          ${contenu(nom, point, voyage)}
         </div>
       `;
     })

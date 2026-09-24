@@ -99,6 +99,8 @@ export const SCHEMA_FICHE = {
           type: 'object',
           properties: {
             hotelNuit: trioPrix,
+            locationNuit: trioPrix,
+            campingNuit: trioPrix,
             repasJour: trioPrix,
             // Contraint par le schéma plutôt que par la seule consigne : le
             // modèle ne peut alors pas renvoyer la monnaie locale, que
@@ -106,7 +108,7 @@ export const SCHEMA_FICHE = {
             devise: { type: 'string', enum: ['EUR'] },
             resume,
           },
-          required: ['hotelNuit', 'repasJour', 'devise', 'resume'],
+          required: ['hotelNuit', 'locationNuit', 'campingNuit', 'repasJour', 'devise', 'resume'],
           additionalProperties: false,
         },
         temperatureMer: {
@@ -208,7 +210,7 @@ export function validerFiche(fiche) {
   }
 
   if (estObjet(points.budgetMoyen)) {
-    for (const poste of ['hotelNuit', 'repasJour']) {
+    for (const poste of ['hotelNuit', 'locationNuit', 'campingNuit', 'repasJour']) {
       const valeurs = points.budgetMoyen[poste];
       if (!estObjet(valeurs)) {
         erreurs.push(`budgetMoyen.${poste} manquant`);

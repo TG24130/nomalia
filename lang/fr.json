@@ -197,10 +197,13 @@
     "vaccinsObligatoires": "Obligatoires",
     "vaccinsRecommandes": "Recommandés",
     "aucun": "Aucun",
-    "parNuit": "{montant} / nuit",
-    "hotelNuit": "Hôtel par nuit",
-    "repasJour": "Repas par jour",
-    "budgetParPersonne": "Par personne. Ordres de grandeur, à confirmer sur place.",
+    "parJour": "≈ {montant} / jour",
+    "hotelNuit": "Hôtel, la nuit",
+    "locationNuit": "Location ou gîte, la nuit",
+    "campingNuit": "Camping, la nuit",
+    "jourGroupe": "Une journée pour vous",
+    "repasJour": "Repas, par jour et par personne",
+    "budgetParPersonne": "« Une journée pour vous » : une nuit du logement choisi (l'hôtel tant qu'aucun n'est choisi) et les repas de chacun, un enfant comptant pour 0,6. Ordres de grandeur, à confirmer sur place.",
     "sources": "Sources consultées"
   },
 
@@ -365,7 +368,7 @@
     "hypotheses": "Hypothèses retenues",
     "hypothese": {
       "hebergementSaisi": "Hébergement : {prix} € au total pour {nuits} nuits, tel que vous l'avez indiqué.",
-      "hebergementFiche": "Hébergement : prix moyens de la destination, sur {nuits} nuits. Indiquez un prix trouvé pour affiner.",
+      "hebergementFiche": "Hébergement : prix moyens de la destination pour le type de logement choisi (l'hôtel à défaut), sur {nuits} nuits. Indiquez le prix total trouvé pour affiner.",
       "hebergementInconnu": "Hébergement non estimé : la fiche de la destination n'était pas disponible.",
       "repas": "Repas : prix moyens de la destination sur {jours} jours, pour {parts} parts (un enfant compte pour {coefficient}).",
       "repasInconnu": "Repas non estimés : la fiche de la destination n'était pas disponible.",

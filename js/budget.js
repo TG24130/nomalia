@@ -59,6 +59,51 @@ export const POSTES = [
   'imprevus',
 ];
 
+/** Prix de la fiche à retenir selon le type de logement choisi. */
+const PRIX_PAR_LOGEMENT = {
+  hotel: 'hotelNuit',
+  appartement: 'locationNuit',
+  gite: 'locationNuit',
+  'chez-habitant': 'locationNuit',
+  camping: 'campingNuit',
+  'camping-materiel-loue': 'campingNuit',
+};
+
+/**
+ * Prix par nuit de la fiche pour le logement choisi ; l'hôtel à défaut.
+ * @param {object} budgetMoyen point budgetMoyen de la fiche
+ * @param {string|null} type type de logement du voyage
+ * @returns {{ eco: number, moyen: number, confort: number }|null}
+ */
+function prixNuitFiche(budgetMoyen, type) {
+  return budgetMoyen?.[PRIX_PAR_LOGEMENT[type]] ?? budgetMoyen?.hotelNuit ?? null;
+}
+
+/**
+ * Coût d'une journée sur place pour tout le groupe : une nuit du logement
+ * choisi et les repas de chacun. Sert d'ordre de grandeur dans la fiche.
+ *
+ * @param {object} voyage
+ * @param {object} budgetMoyen point budgetMoyen de la fiche
+ * @returns {{ eco: number, moyen: number, confort: number }|null}
+ */
+export function coutJournalier(voyage, budgetMoyen) {
+  const nuit = prixNuitFiche(budgetMoyen, voyage?.hebergement?.type);
+  const repas = budgetMoyen?.repasJour;
+  if (!nuit || !repas) return null;
+
+  const adultes = nombrePositif(voyage?.voyageurs?.adultes) ?? 1;
+  const enfants = Number(voyage?.voyageurs?.enfants) || 0;
+  const parts = adultes + enfants * COEFFICIENT_ENFANT;
+
+  return Object.fromEntries(
+    ['eco', 'moyen', 'confort'].map((niveau) => [
+      niveau,
+      arrondir((nombrePositif(nuit[niveau]) ?? 0) + (nombrePositif(repas[niveau]) ?? 0) * parts),
+    ])
+  );
+}
+
 /**
  * Arrondit un montant à l'euro.
  * @param {number} valeur
@@ -130,9 +175,10 @@ export function calculerBudget(voyage, fiche = null) {
       cle: 'hebergementVan',
       valeurs: { nuits, bas: NUIT_VAN.bas, haut: NUIT_VAN.haut },
     });
-  } else if (budgetMoyen?.hotelNuit) {
+  } else if (prixNuitFiche(budgetMoyen, voyage?.hebergement?.type)) {
+    const prixNuit = prixNuitFiche(budgetMoyen, voyage?.hebergement?.type);
     for (const { cle, prix } of NIVEAUX) {
-      const parNuit = nombrePositif(budgetMoyen.hotelNuit[prix]) ?? 0;
+      const parNuit = nombrePositif(prixNuit[prix]) ?? 0;
       detail.hebergement[cle] = arrondir(parNuit * nuits);
     }
     hypotheses.push({ cle: 'hebergementFiche', valeurs: { nuits } });

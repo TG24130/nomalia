@@ -53,7 +53,7 @@ Contenu attendu, en dix points :
 6. langue — langue officielle et facilité à se débrouiller en anglais ou en français.
 7. prises — types de prises (lettres), tension, et si un adaptateur est nécessaire depuis la France.
 8. vaccins — obligatoires et recommandés, avec la mention que cela doit être confirmé par un médecin.
-9. budgetMoyen — prix indicatifs par nuit et par jour et par personne, en trois niveaux.
+9. budgetMoyen — prix indicatifs en trois niveaux (eco, moyen, confort) : « hotelNuit » une chambre double d'hôtel par nuit ; « locationNuit » un appartement ou un gîte entier pour une famille, par nuit ; « campingNuit » un emplacement de camping pour une tente ou un van, par nuit ; « repasJour » les repas d'une journée pour une personne.
 10. temperatureMer — « moisChoisi » est la température de la mer en degrés Celsius pendant le mois du voyage, jamais le numéro du mois ; « parMois » contient les douze moyennes mensuelles en degrés, de janvier à décembre, et la valeur de « moisChoisi » doit être celle de ${nomMois} dans ce tableau. Si la destination n'a pas de littoral, mets null pour les deux et explique-le en une phrase dans « resume ».
 
 Renseigne « sources » avec les adresses des pages effectivement consultées. Si tu n'en as consulté aucune, renvoie un tableau vide.`;

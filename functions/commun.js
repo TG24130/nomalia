@@ -39,8 +39,10 @@ export const DUREE_CACHE_MS = 30 * 24 * 60 * 60 * 1000;
  * 2 : tous les montants sont en euros, convertis au taux courant. Avant, les
  *     prix revenaient dans la monnaie locale et se retrouvaient additionnés
  *     avec des postes déjà libellés en euros.
+ * 3 : la fiche donne aussi les prix d'une location et d'un camping par nuit,
+ *     pour que le budget suive le type d'hébergement choisi.
  */
-export const VERSION_CACHE = 2;
+export const VERSION_CACHE = 3;
 
 setGlobalOptions({
   region: 'europe-west1',

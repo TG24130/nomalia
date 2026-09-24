@@ -12,6 +12,7 @@
 import { attente } from '../attente.js';
 import { echapper, langue, libelles, t } from '../i18n.js';
 import { genererFiche } from '../api.js';
+import { coutJournalier } from '../budget.js';
 import { modifierVoyage } from '../voyage.js';
 
 /** La fiche peut être passée : elle n'est qu'informative. */
@@ -71,10 +72,10 @@ function moisAbrege(mois) {
  * Valeur courte affichée à droite du titre, carte repliée.
  * @param {string} nom
  * @param {object} point
- * @param {object} fiche
+ * @param {object} voyage
  * @returns {string}
  */
-export function apercu(nom, point, fiche) {
+export function apercu(nom, point, voyage) {
   switch (nom) {
     case 'meilleuresPeriodes':
       return point.mois.map((mois) => t(`mois.${mois}`)).join(', ');
@@ -95,10 +96,12 @@ export function apercu(nom, point, fiche) {
         ? t('fiche.vaccinsObligatoiresNombre', { nombre: point.obligatoires.length })
         : t('fiche.vaccinsAucunObligatoire');
 
-    case 'budgetMoyen':
-      return t('fiche.parNuit', {
-        montant: formaterMontant(point.hotelNuit.moyen, point.devise),
-      });
+    case 'budgetMoyen': {
+      // Ce que coûte une journée sur place au groupe entier : c'est la
+      // question qu'on se pose, plus que le prix d'une chambre.
+      const jour = coutJournalier(voyage, point);
+      return jour ? t('fiche.parJour', { montant: formaterMontant(jour.moyen, point.devise) }) : '';
+    }
 
     case 'temperatureMer':
       return point.moisChoisi === null ? '' : `${Math.round(point.moisChoisi)} °C`;
@@ -118,11 +121,11 @@ function liste(valeurs) {
  * Contenu déplié d'un point.
  * @param {string} nom
  * @param {object} point
- * @param {object} fiche
- * @param {number} moisVoyage
+ * @param {object} voyage
  * @returns {string}
  */
-export function contenu(nom, point, fiche, moisVoyage) {
+export function contenu(nom, point, voyage) {
+  const moisVoyage = voyage?.mois;
   const morceaux = [];
 
   if (point.resume) morceaux.push(`<p>${echapper(point.resume)}</p>`);
@@ -154,6 +157,7 @@ export function contenu(nom, point, fiche, moisVoyage) {
       break;
 
     case 'budgetMoyen': {
+      const jour = coutJournalier(voyage, point);
       const ligne = (cle, valeurs) => `
         <tr>
           <th scope="row">${echapper(t(`fiche.${cle}`))}</th>
@@ -174,7 +178,10 @@ export function contenu(nom, point, fiche, moisVoyage) {
           </thead>
           <tbody>
             ${ligne('hotelNuit', point.hotelNuit)}
+            ${point.locationNuit ? ligne('locationNuit', point.locationNuit) : ''}
+            ${point.campingNuit ? ligne('campingNuit', point.campingNuit) : ''}
             ${ligne('repasJour', point.repasJour)}
+            ${jour ? ligne('jourGroupe', jour) : ''}
           </tbody>
         </table>
         <p class="note">${echapper(t('fiche.budgetParPersonne'))}</p>
@@ -208,14 +215,14 @@ export function contenu(nom, point, fiche, moisVoyage) {
  * Construit une carte dépliable.
  * @param {string} nom
  * @param {object} fiche
- * @param {number} moisVoyage
+ * @param {object} voyage
  * @returns {string}
  */
-function carte(nom, fiche, moisVoyage) {
+function carte(nom, fiche, voyage) {
   const point = fiche.points[nom];
   if (!point) return '';
 
-  const valeur = apercu(nom, point, fiche);
+  const valeur = apercu(nom, point, voyage);
 
   return `
     <details class="carte carte--point">
@@ -223,7 +230,7 @@ function carte(nom, fiche, moisVoyage) {
         <span class="point__titre">${echapper(t(`fiche.${nom}`))}</span>
         ${valeur ? `<span class="point__apercu">${echapper(valeur)}</span>` : ''}
       </summary>
-      <div class="point__contenu">${contenu(nom, point, fiche, moisVoyage)}</div>
+      <div class="point__contenu">${contenu(nom, point, voyage)}</div>
     </details>
   `;
 }
@@ -282,7 +289,7 @@ export async function afficher(conteneur, voyage, actions) {
   }
 
   const fiche = resultat.fiche;
-  const cartes = POINTS.map((nom) => carte(nom, fiche, voyage.mois)).join('');
+  const cartes = POINTS.map((nom) => carte(nom, fiche, voyage)).join('');
 
   // L'alerte sur la saison est affichée avant les cartes : repliée dans la
   // carte « Meilleures périodes », elle serait passée inaperçue.

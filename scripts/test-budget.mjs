@@ -7,7 +7,7 @@
  * émulateur (CLAUDE.md §6, tiroir 6).
  */
 
-import { COEFFICIENT_ENFANT, TAUX_IMPREVUS, calculerBudget } from '../js/budget.js';
+import { COEFFICIENT_ENFANT, TAUX_IMPREVUS, calculerBudget, coutJournalier } from '../js/budget.js';
 
 let echecs = 0;
 
@@ -28,6 +28,8 @@ const fiche = {
   points: {
     budgetMoyen: {
       hotelNuit: { eco: 50, moyen: 90, confort: 180 },
+      locationNuit: { eco: 70, moyen: 120, confort: 220 },
+      campingNuit: { eco: 15, moyen: 28, confort: 45 },
       repasJour: { eco: 25, moyen: 45, confort: 80 },
       devise: 'EUR',
     },
@@ -129,6 +131,31 @@ const vanPrixSaisi = calculerBudget(
   fiche
 );
 verifier('van : un prix de nuit saisi l’emporte', vanPrixSaisi.detail.hebergement.moyen, 240);
+
+console.log('\n— Cas 6 : le prix suit le type de logement —');
+
+const camping = calculerBudget({ jours: 4, hebergement: { type: 'camping' } }, fiche);
+verifier('camping : 28 € × 4 nuits', camping.detail.hebergement.moyen, 112);
+
+const gite = calculerBudget({ jours: 4, hebergement: { type: 'gite' } }, fiche);
+verifier('gîte : prix de location, 120 € × 4', gite.detail.hebergement.moyen, 480);
+
+const ficheAncienne = {
+  points: {
+    budgetMoyen: {
+      hotelNuit: { eco: 50, moyen: 90, confort: 180 },
+      repasJour: { eco: 25, moyen: 45, confort: 80 },
+    },
+  },
+};
+const ancienne = calculerBudget({ jours: 4, hebergement: { type: 'camping' } }, ficheAncienne);
+verifier('fiche sans prix camping : repli sur l’hôtel', ancienne.detail.hebergement.moyen, 360);
+
+const journee = coutJournalier(
+  { voyageurs: { adultes: 2, enfants: 1 }, hebergement: { type: 'appartement' } },
+  fiche.points.budgetMoyen
+);
+verifier('coût d’une journée : 120 + 45 × 2,6', journee.moyen, Math.round(120 + 45 * 2.6));
 
 console.log(echecs === 0 ? '\nTous les cas passent.\n' : `\n${echecs} vérification(s) en échec.\n`);
 process.exit(echecs === 0 ? 0 : 1);
