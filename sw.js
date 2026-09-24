@@ -8,7 +8,7 @@
  * Incrémenter VERSION_CACHE à chaque mise en ligne pour forcer la mise à jour.
  */
 
-const VERSION_CACHE = 'nomalia-v13';
+const VERSION_CACHE = 'nomalia-v14';
 
 /**
  * Fichiers mis en cache dès l'installation.
@@ -50,6 +50,8 @@ const FICHIERS_STATIQUES = [
   './js/tiroirs/randos.js',
   './js/tiroirs/budget-vue.js',
   './lang/fr.json',
+  './lang/en.json',
+  './lang/es.json',
   // Photos des bandeaux : 420 ko à elles trois, mises en cache dès
   // l'installation parce qu'elles s'affichent sur le premier écran.
   './images/accueil.jpg',

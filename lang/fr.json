@@ -155,6 +155,7 @@
   },
 
   "parcours": {
+    "navigation": "Étapes du voyage",
     "position": "Étape {numero} sur {total} · {titre}",
     "saisie": "Votre voyage",
     "fiche": "Fiche pratique",

@@ -1,0 +1,439 @@
+{
+  "app": {
+    "nom": "NOMALIA",
+    "slogan": "Prepara tu viaje, paso a paso",
+    "mentionEstimation": "Estimaciones orientativas — compruébalas antes de reservar."
+  },
+
+  "fin": {
+    "titre": "Tu viaje está listo",
+    "jours": "{nombre} día",
+    "jours_pluriel": "{nombre} días",
+    "voyageurs": "{nombre} viajero",
+    "voyageurs_pluriel": "{nombre} viajeros",
+    "criteres": "{nombre} criterio",
+    "criteres_pluriel": "{nombre} criterios",
+    "lieux": "{nombre} lugar elegido",
+    "lieux_pluriel": "{nombre} lugares elegidos",
+    "randos": "{nombre} ruta elegida",
+    "randos_pluriel": "{nombre} rutas elegidas",
+    "aCompleter": "Por completar",
+    "modifier": "Modificar",
+    "budget": "Presupuesto estimado",
+    "budgetFourchette": "Entre {bas} y {haut} según tus elecciones",
+    "retour": "Volver a mis viajes"
+  },
+
+  "attente": {
+    "fiche": [
+      "Reunimos la información práctica…",
+      "Clima, temporada, temperatura del mar…",
+      "Trámites, salud, moneda…",
+      "Contrastamos las fuentes…"
+    ],
+    "incontournables": [
+      "Buscamos los lugares imprescindibles…",
+      "Horarios, precios, reservas…",
+      "Buscamos trucos para evitar las multitudes…",
+      "Damos forma a los consejos…"
+    ],
+    "romantique": [
+      "Buscamos lugares para disfrutar en pareja…",
+      "Miradores, puestas de sol…",
+      "Mesas y momentos que reservar…",
+      "Damos forma a los consejos…"
+    ],
+    "safari": [
+      "Buscamos parques y reservas…",
+      "Qué especies, en qué temporada…",
+      "Guías, vehículos, entradas…",
+      "Damos forma a los consejos…"
+    ],
+    "etapes": [
+      "Trazamos un itinerario de ciudad en ciudad…",
+      "Ordenamos las etapas geográficamente…",
+      "Distancias y tiempos de trayecto…",
+      "Damos forma a los consejos…"
+    ],
+    "business": [
+      "Buscamos los barrios de negocios…",
+      "Dónde alojarse, dónde invitar a comer…",
+      "Aeropuerto, transporte, espacios de trabajo…",
+      "Damos forma a los consejos…"
+    ],
+    "randos": [
+      "Buscamos rutas que encajen…",
+      "Distancia, desnivel, duración…",
+      "Comprobamos los puntos de salida…",
+      "Damos forma a los consejos…"
+    ]
+  },
+
+  "commun": {
+    "chargement": "Cargando…",
+    "chargementIA": "Buscando, puede tardar unos segundos…",
+    "suivant": "Siguiente",
+    "precedent": "Atrás",
+    "retourAccueil": "Volver a mis viajes",
+    "passer": "Saltar este paso",
+    "tiroirAVenir": "Este paso estará disponible pronto.",
+    "enregistrer": "Guardar",
+    "annuler": "Cancelar",
+    "supprimer": "Eliminar",
+    "confirmerSupprimer": "Sí, eliminar",
+    "dupliquer": "Duplicar",
+    "reprendre": "Retomar",
+    "reessayer": "Reintentar",
+    "oui": "Sí",
+    "non": "No",
+    "aVerifier": "por comprobar",
+    "etape": "Paso {courante} de {total}"
+  },
+
+  "erreurs": {
+    "generique": "Se ha producido un error. Inténtalo de nuevo en un momento.",
+    "reseau": "No se puede conectar. Comprueba tu conexión a internet.",
+    "nonAutorise": "Esta dirección de correo no tiene acceso a la aplicación.",
+    "connexion": "El inicio de sesión ha fallado. Inténtalo de nuevo.",
+    "configurationTitre": "Aplicación sin configurar",
+    "configuration": "La configuración de Firebase está incompleta. La aplicación no puede arrancar.",
+    "ia": "La búsqueda no ha dado resultado. Inténtalo de nuevo en un momento.",
+    "destinationNonTraitable": "No se ha podido procesar este destino. Prueba a escribirlo de otra forma.",
+    "parametres": "Faltan datos del viaje. Vuelve al primer paso.",
+    "voyageIntrouvable": "No se encuentra este viaje."
+  },
+
+  "auth": {
+    "titre": "Bienvenido",
+    "connexionGoogle": "Iniciar sesión con Google",
+    "deconnexion": "Cerrar sesión",
+    "invite": "Inicia sesión para ver tus viajes.",
+    "refusTitre": "Acceso denegado",
+    "connecteEnTant": "Sesión iniciada como {email}",
+    "essayerAutreCompte": "Probar con otra cuenta"
+  },
+
+  "accueil": {
+    "titre": "Mis viajes",
+    "aucunVoyage": "Todavía no hay viajes.",
+    "nouveauVoyage": "Nuevo viaje",
+    "voyageSansTitre": "Viaje sin destino",
+    "duree": "{jours} días",
+    "modifieLe": "Modificado el {date}",
+    "confirmerSuppression": "¿Eliminar definitivamente «{titre}»?"
+  },
+
+  "saisie": {
+    "titre": "Tu viaje",
+    "destination": "Destino",
+    "destinationAide": "Ciudad, isla, región o país",
+    "jours": "Número de días",
+    "mois": "Mes de salida",
+    "quand": "¿Cuándo ir?",
+    "quandOption": {
+      "choix": "Elijo yo el mes",
+      "prix": "El mes más barato",
+      "climat": "El mes con mejor clima"
+    },
+    "conseil": "Recomendado: {mois}. {raison}",
+    "conseilChargement": "Buscamos el mejor mes…",
+    "conseilSansDestination": "Indica primero el destino.",
+    "choisirSejour": "Lo decidiré más tarde",
+    "sejour": "Tipo de estancia",
+    "sejourAide": "Opcional — empieza a buscar lugares por adelantado. Se puede cambiar en el paso Estancia.",
+    "choisirMois": "Elige un mes",
+    "dateDepart": "Fecha de salida",
+    "dateDepartAide": "Opcional — permite rellenar de antemano las búsquedas de vuelos y alojamiento.",
+    "adultes": "Adultos",
+    "enfants": "Niños",
+    "depart": "Ciudad de salida",
+    "departAide": "Opcional — sirve para estimar el transporte.",
+    "valider": "Preparar mi viaje",
+    "erreurDestination": "Indica un destino.",
+    "erreurJours": "Indica un número de días.",
+    "erreurMois": "Elige un mes de salida."
+  },
+
+  "parcours": {
+    "navigation": "Pasos del viaje",
+    "position": "Paso {numero} de {total} · {titre}",
+    "saisie": "Tu viaje",
+    "fiche": "Guía práctica",
+    "transport": "Transporte",
+    "hebergement": "Alojamiento",
+    "tourisme": "Estancia",
+    "randos": "Senderismo",
+    "budget": "Presupuesto"
+  },
+
+  "mois": {
+    "1": "Enero",
+    "2": "Febrero",
+    "3": "Marzo",
+    "4": "Abril",
+    "5": "Mayo",
+    "6": "Junio",
+    "7": "Julio",
+    "8": "Agosto",
+    "9": "Septiembre",
+    "10": "Octubre",
+    "11": "Noviembre",
+    "12": "Diciembre"
+  },
+
+  "fiche": {
+    "titre": "Guía práctica",
+    "visa": "Trámites y visado",
+    "climat": "Clima",
+    "meilleuresPeriodes": "Mejores épocas",
+    "decalageHoraire": "Diferencia horaria",
+    "monnaie": "Moneda",
+    "langue": "Idioma",
+    "prises": "Enchufes",
+    "vaccins": "Salud y vacunas",
+    "budgetMoyen": "Presupuesto medio en destino",
+    "temperatureMer": "Temperatura del mar",
+    "avertissementVisa": "Consulta las recomendaciones oficiales de viaje antes de salir.",
+    "avertissementVaccins": "Información orientativa, que debe confirmar tu médico o un centro de vacunación internacional.",
+    "alerteMois": "El mes elegido no es de las mejores épocas para este destino.",
+    "alerteMoisDetail": "{mois} no es de las mejores épocas aquí. Las más favorables: {favorables}.",
+    "adaptateurOui": "Se necesita adaptador desde Francia.",
+    "adaptateurNon": "No se necesita adaptador desde Francia.",
+    "lienFranceDiplomatie": "Recomendaciones de viaje (France Diplomatie)",
+    "decalageAucun": "Ninguna",
+    "decalageHeures": "{heures} h",
+    "vaccinsAucunObligatoire": "Ninguna obligatoria",
+    "vaccinsObligatoiresNombre": "{nombre} obligatoria(s)",
+    "vaccinsObligatoires": "Obligatorias",
+    "vaccinsRecommandes": "Recomendadas",
+    "aucun": "Ninguno",
+    "parJour": "≈ {montant} / día",
+    "hotelNuit": "Hotel, por noche",
+    "locationNuit": "Alquiler o casa rural, por noche",
+    "campingNuit": "Camping, por noche",
+    "jourGroupe": "Un día para vuestro grupo",
+    "repasJour": "Comidas, por día y por persona",
+    "budgetParPersonne": "«Un día para vuestro grupo»: una noche en el alojamiento elegido (un hotel mientras no se elija ninguno) y las comidas de cada uno; un niño cuenta como 0,6. Órdenes de magnitud, por confirmar en destino.",
+    "sources": "Fuentes consultadas"
+  },
+
+  "transport": {
+    "titre": "Transporte",
+    "question": "¿Cómo piensas llegar?",
+    "mode": {
+      "avion": "Avión",
+      "bateau": "Barco",
+      "train": "Tren",
+      "voiture": "Coche",
+      "avion+voiture": "Avión + coche de alquiler",
+      "train+voiture": "Tren + coche de alquiler",
+      "bateau+voiture": "Barco + coche de alquiler",
+      "van": "Furgoneta / autocaravana"
+    },
+    "bloc": {
+      "avion": "Buscar un vuelo",
+      "train": "Buscar un tren",
+      "bateau": "Buscar una travesía",
+      "voiture": "Ver la ruta",
+      "location": "Alquilar un coche en destino",
+      "van": "Alquilar una furgoneta o autocaravana en destino"
+    },
+    "aSaisir": "búsqueda que introducir en la web",
+    "rappel": "Tu viaje: {destination}, {mois}, {jours} días, {voyageurs} viajeros.",
+    "aeroports": "Aeropuertos elegidos: de {origine} a {destination}.",
+    "aeroportInconnu": "no encontrado",
+    "gares": "Estaciones elegidas: de {origine} a {destination}.",
+    "gareInconnue": "no encontrada",
+    "sansDate": "Indica una fecha de salida en el paso anterior para que las búsquedas lleguen rellenadas.",
+    "prixEstime": "Precio estimado del transporte (€, total)",
+    "prixEstimeAide": "Opcional — afina el presupuesto."
+  },
+
+  "hebergement": {
+    "titre": "Alojamiento",
+    "question": "¿Qué tipo de alojamiento buscas?",
+    "type": {
+      "hotel": "Hotel",
+      "gite": "Casa rural",
+      "appartement": "Apartamento",
+      "chez-habitant": "Casa de un particular",
+      "camping": "Camping",
+      "camping-materiel-loue": "Camping con material alquilado"
+    },
+    "filtres": "Características deseadas",
+    "chercher": "Dónde buscar",
+    "groupe": {
+      "confort": "Confort",
+      "salle-de-bain": "Baño",
+      "services": "Servicios",
+      "pratique": "Práctico",
+      "situation": "Ubicación",
+      "categorie": "Categoría"
+    },
+    "filtre": {
+      "petit-dejeuner": "Desayuno incluido",
+      "piscine": "Piscina",
+      "parking": "Aparcamiento",
+      "borne-recharge": "Punto de recarga eléctrica",
+      "annulation-gratuite": "Cancelación gratuita",
+      "animaux": "Se admiten mascotas",
+      "vue-mer": "Vistas al mar",
+      "climatisation": "Aire acondicionado",
+      "balcon-terrasse": "Balcón o terraza",
+      "douche-italienne": "Ducha a ras de suelo",
+      "baignoire-balneo": "Bañera de hidromasaje",
+      "jacuzzi-privatif": "Jacuzzi privado",
+      "spa": "Spa o sauna",
+      "wifi-gratuit": "Wi-Fi gratis",
+      "restaurant": "Restaurante propio",
+      "navette-aeroport": "Traslado al aeropuerto",
+      "cuisine": "Cocina equipada",
+      "machine-a-laver": "Lavadora",
+      "accessible": "Accesible para personas con movilidad reducida",
+      "centre-ville": "Cerca del centro",
+      "proche-plage": "Cerca de la playa",
+      "au-calme": "Tranquilo",
+      "etoiles-3": "3 estrellas",
+      "etoiles-4": "4 estrellas",
+      "etoiles-5": "5 estrellas"
+    },
+    "rappelSejour": "Tu estancia: {destination}, {dates}, {nuits} noches, {voyageurs} viajeros.",
+    "rappelFiltres": "Características que marcar en la web: {filtres}.",
+    "prixTotal": "Precio total encontrado para tus {nuits} noches (€)",
+    "prixTotalAide": "Opcional — el importe total que muestra la web de reservas. Sustituye a la estimación en el presupuesto."
+  },
+
+  "tourisme": {
+    "titre": "Tipo de estancia",
+    "question": "¿Qué tipo de estancia te apetece?",
+    "type": {
+      "repos-total": "Descanso total",
+      "incontournables": "Imprescindibles",
+      "safari": "Safari",
+      "romantique": "Romántico",
+      "trip-liberte": "Ruta libre",
+      "business": "Negocios"
+    },
+    "lieuxRetenus": "Lugares elegidos",
+    "prixEntree": "Entrada estimada",
+    "entreeLibre": "entrada libre o precio desconocido",
+    "lienOfficiel": "Web oficial",
+    "reserver": "Ver actividades",
+    "reserverChez": "Ver actividades en {partenaire}",
+    "retenusRecapitulatif": "{nombre} lugar(es) elegido(s) — {total} por persona.",
+    "reposTitre": "Una estancia sin programa",
+    "reposConseils": "Para descansar de verdad, la elección del alojamiento cuenta más que las visitas. Elige un sitio en el que te apetezca pasar el día, y guarda una o dos excursiones en reserva en lugar de un programa.",
+    "reposFiltres": "Características de alojamiento recomendadas: {filtres}.",
+    "aucunTrouve": "No se ha podido proponer ningún lugar para este destino. Inténtalo de nuevo en un momento o salta este paso."
+  },
+
+  "randos": {
+    "titre": "Senderismo",
+    "question": "¿Te apetecen algunas rutas de senderismo?",
+    "niveau": "Nivel",
+    "niveaux": {
+      "facile": "Fácil",
+      "moyen": "Medio",
+      "difficile": "Difícil",
+      "tres-difficile": "Muy difícil"
+    },
+    "dureeMax": "Tiempo máximo de marcha",
+    "deniveleMax": "Desnivel máximo",
+    "boucle": "Tipo de recorrido",
+    "estBoucle": "Circular",
+    "estAllerRetour": "Ida y vuelta",
+    "estEnfants": "Con niños",
+    "enfants": "Apta para niños",
+    "distance": "Distancia",
+    "duree": "Duración",
+    "denivele": "Desnivel",
+    "distanceValeur": "{km} km",
+    "deniveleValeur": "{m} m de desnivel",
+    "depart": "Salida",
+    "meilleureSaison": "Mejor temporada",
+    "voirTrace": "Buscar el recorrido",
+    "chercher": "Buscar rutas",
+    "relancer": "Volver a buscar",
+    "aucuneTrouvee": "Ninguna ruta encaja con estos criterios. Un nivel difícil suele implicar más desnivel: prueba a aumentarlo o a alargar la duración.",
+    "retenuesRecapitulatif": "{nombre} ruta(s) elegida(s)."
+  },
+
+  "budget": {
+    "titre": "Presupuesto estimado",
+    "bas": "Económico",
+    "moyen": "Medio",
+    "haut": "Confort",
+    "detail": {
+      "transport": "Transporte",
+      "hebergement": "Alojamiento",
+      "repas": "Comidas",
+      "activites": "Actividades",
+      "transportLocal": "Transporte en destino",
+      "annexes": "Gastos varios",
+      "imprevus": "Imprevistos"
+    },
+    "detailTitre": "Desglose por partida",
+    "parPersonne": "Unos {montant} por persona, en el nivel medio.",
+    "terminer": "Terminar",
+    "hypotheses": "Supuestos utilizados",
+    "hypothese": {
+      "hebergementSaisi": "Alojamiento: {prix} € en total para {nuits} noches, tal como lo indicaste.",
+      "hebergementFiche": "Alojamiento: precios medios del destino para el tipo elegido (hotel por defecto), durante {nuits} noches. Indica el precio total encontrado para afinarlo.",
+      "hebergementInconnu": "Alojamiento sin estimar: la guía del destino no estaba disponible.",
+      "repas": "Comidas: precios medios del destino durante {jours} días, para {parts} partes (un niño cuenta como {coefficient}).",
+      "repasInconnu": "Comidas sin estimar: la guía del destino no estaba disponible.",
+      "transportSaisi": "Transporte: {prix} € en total, tal como lo indicaste.",
+      "transportInconnu": "Transporte sin estimar: indica un precio en el paso Transporte para verlo aquí.",
+      "voiture": "Coche de alquiler: {jours} días, de {bas} a {haut} € al día según la gama.",
+      "van": "Furgoneta o autocaravana de alquiler: {jours} días, de {bas} a {haut} € al día según el modelo y la temporada.",
+      "hebergementVan": "Alojamiento: noches en áreas de autocaravanas o campings, de {bas} a {haut} € la noche, durante {nuits} noches.",
+      "activites": "Actividades: {nombre} lugar(es) elegido(s), es decir {parPersonne} € por persona para {personnes} personas.",
+      "annexes": "Gastos varios: de {bas} a {haut} € al día y por persona (transporte urbano, cafés, recuerdos).",
+      "imprevus": "Imprevistos: {taux} % del total."
+    },
+    "mention": "Estimación orientativa."
+  },
+
+  "langue": {
+    "titre": "Elige tu idioma",
+    "changer": "Cambiar de idioma",
+    "noms": {
+      "fr": "Français",
+      "en": "English",
+      "es": "Español"
+    }
+  },
+
+  "synthese": {
+    "titre": "Resumen del viaje",
+    "enregistrerPdf": "Guardar en PDF",
+    "aidePdf": "En la ventana de impresión, elige «Guardar como PDF».",
+    "chargement": "Preparando el resumen del viaje…",
+    "dates": "Fechas",
+    "du": "del {debut} al {fin}",
+    "duree": "Duración",
+    "jours": "{nombre} días",
+    "voyageurs": "Viajeros",
+    "voyageursDetail": "{adultes} adulto(s), {enfants} niño(s)",
+    "typeSejour": "Tipo de estancia",
+    "nonRenseigne": "Sin indicar",
+    "nonEstime": "sin estimar",
+    "ficheAbsente": "No se ha podido cargar la guía práctica.",
+    "mode": "Modo elegido",
+    "budgetTrajet": "Presupuesto del trayecto",
+    "type": "Tipo elegido",
+    "criteres": "Características",
+    "budgetMoyen": "Presupuesto medio",
+    "montantFourchette": "{moyen} (de {bas} a {haut})",
+    "activites": "Actividades elegidas",
+    "parPersonne": "{montant} por persona",
+    "aucuneActivite": "Ninguna actividad elegida.",
+    "aucuneRando": "Ninguna ruta elegida.",
+    "budgetTotal": "Presupuesto total estimado"
+  },
+
+  "liens": {
+    "chercherSur": "Buscar en {partenaire}",
+    "itineraire": "Ver la ruta"
+  }
+}
