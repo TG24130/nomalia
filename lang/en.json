@@ -151,7 +151,11 @@
     "valider": "Plan my trip",
     "erreurDestination": "Enter a destination.",
     "erreurJours": "Enter a number of days.",
-    "erreurMois": "Choose a month of departure."
+    "erreurMois": "Choose a month of departure.",
+    "nationalite": "Nationality (passport)",
+    "nationaliteAide": "Used for entry requirements and health advice in the travel guide.",
+    "nationalitesFrequentes": "Most common",
+    "nationalitesToutes": "All countries"
   },
 
   "parcours": {
@@ -193,13 +197,12 @@
     "vaccins": "Health and vaccinations",
     "budgetMoyen": "Average budget on site",
     "temperatureMer": "Sea temperature",
-    "avertissementVisa": "Check official travel advice before you leave.",
+    "avertissementVisa": "Check your country's official travel advice before you leave.",
     "avertissementVaccins": "For guidance only — confirm with your doctor or a travel vaccination centre.",
     "alerteMois": "The chosen month is not one of the best times for this destination.",
     "alerteMoisDetail": "{mois} is not one of the best times here. The most favourable: {favorables}.",
-    "adaptateurOui": "Adapter needed from France.",
-    "adaptateurNon": "No adapter needed from France.",
-    "lienFranceDiplomatie": "Travel advice (France Diplomatie)",
+    "adaptateurOui": "Adapter needed from your country.",
+    "adaptateurNon": "No adapter needed from your country.",
     "decalageAucun": "None",
     "decalageHeures": "{heures} h",
     "vaccinsAucunObligatoire": "None required",
@@ -214,7 +217,8 @@
     "jourGroupe": "One day for your group",
     "repasJour": "Meals, per day and per person",
     "budgetParPersonne": "“One day for your group”: one night in the chosen accommodation (a hotel until one is chosen) and everyone's meals, a child counting as 0.6. Rough figures, to be confirmed on site.",
-    "sources": "Sources consulted"
+    "sources": "Sources consulted",
+    "lienConseilsOfficiels": "Official travel advice"
   },
 
   "transport": {

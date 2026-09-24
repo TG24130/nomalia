@@ -8,7 +8,7 @@
  * Incrémenter VERSION_CACHE à chaque mise en ligne pour forcer la mise à jour.
  */
 
-const VERSION_CACHE = 'nomalia-v15';
+const VERSION_CACHE = 'nomalia-v16';
 
 /**
  * Fichiers mis en cache dès l'installation.
@@ -25,6 +25,7 @@ const FICHIERS_STATIQUES = [
   './js/app.js',
   './js/synthese.js',
   './js/drapeaux.js',
+  './js/pays.js',
   './js/i18n.js',
   './js/firebase-config.js',
   './js/voyage.js',

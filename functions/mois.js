@@ -31,11 +31,12 @@ const LANGUES = ['fr', 'en', 'es', 'zh'];
 /**
  * Valide les paramètres reçus du front.
  * @param {object} donnees
- * @returns {{ destination: string, langue: string }}
+ * @returns {{ destination: string, langue: string, nationalite: string }}
  */
 function lireParametres(donnees) {
   const destination = String(donnees?.destination ?? '').trim();
   const langue = String(donnees?.langue ?? 'fr');
+  const nationalite = String(donnees?.nationalite ?? 'FR').toUpperCase();
 
   if (destination.length < 2 || destination.length > 120) {
     throw new HttpsError('invalid-argument', 'Destination invalide.');
@@ -43,12 +44,15 @@ function lireParametres(donnees) {
   if (!LANGUES.includes(langue)) {
     throw new HttpsError('invalid-argument', 'Langue non prise en charge.');
   }
+  if (!/^[A-Z]{2}$/.test(nationalite)) {
+    throw new HttpsError('invalid-argument', 'Nationalité invalide.');
+  }
 
-  return { destination, langue };
+  return { destination, langue, nationalite };
 }
 
 /**
- * `conseillerMois({ destination, langue })`
+ * `conseillerMois({ destination, langue, nationalite })`
  *
  * @returns {Promise<{ moinsCher: { mois: number, raison: string },
  *                     meilleurClimat: { mois: number, raison: string },
@@ -60,7 +64,8 @@ export const conseillerMois = onCall(
     await verifierAcces(requete);
 
     const parametres = lireParametres(requete.data);
-    const cle = `${normaliser(parametres.destination)}_${parametres.langue}`;
+    // Le pays de départ change la saison des prix : il entre dans la clé.
+    const cle = `${normaliser(parametres.destination)}_${parametres.langue}_${parametres.nationalite.toLowerCase()}`;
 
     const enCache = await db.collection('conseilsMois').doc(cle).get();
 

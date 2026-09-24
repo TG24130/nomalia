@@ -151,7 +151,11 @@
     "valider": "Préparer mon voyage",
     "erreurDestination": "Indiquez une destination.",
     "erreurJours": "Indiquez un nombre de jours.",
-    "erreurMois": "Choisissez un mois de départ."
+    "erreurMois": "Choisissez un mois de départ.",
+    "nationalite": "Nationalité (passeport)",
+    "nationaliteAide": "Sert aux formalités d'entrée et aux conseils de santé de la fiche.",
+    "nationalitesFrequentes": "Les plus courantes",
+    "nationalitesToutes": "Tous les pays"
   },
 
   "parcours": {
@@ -193,13 +197,12 @@
     "vaccins": "Santé et vaccins",
     "budgetMoyen": "Budget moyen sur place",
     "temperatureMer": "Température de la mer",
-    "avertissementVisa": "Vérifiez sur France Diplomatie avant de partir.",
+    "avertissementVisa": "Vérifiez les conseils officiels aux voyageurs de votre pays avant de partir.",
     "avertissementVaccins": "Informations indicatives, à confirmer avec votre médecin ou un centre de vaccinations internationales.",
     "alerteMois": "Le mois choisi ne fait pas partie des meilleures périodes pour cette destination.",
     "alerteMoisDetail": "{mois} ne fait pas partie des meilleures périodes ici. Les plus favorables : {favorables}.",
-    "adaptateurOui": "Adaptateur nécessaire depuis la France.",
-    "adaptateurNon": "Pas d'adaptateur nécessaire depuis la France.",
-    "lienFranceDiplomatie": "Conseils aux voyageurs (France Diplomatie)",
+    "adaptateurOui": "Adaptateur nécessaire depuis votre pays.",
+    "adaptateurNon": "Pas d'adaptateur nécessaire depuis votre pays.",
     "decalageAucun": "Aucun",
     "decalageHeures": "{heures} h",
     "vaccinsAucunObligatoire": "Aucun obligatoire",
@@ -214,7 +217,8 @@
     "jourGroupe": "Une journée pour vous",
     "repasJour": "Repas, par jour et par personne",
     "budgetParPersonne": "« Une journée pour vous » : une nuit du logement choisi (l'hôtel tant qu'aucun n'est choisi) et les repas de chacun, un enfant comptant pour 0,6. Ordres de grandeur, à confirmer sur place.",
-    "sources": "Sources consultées"
+    "sources": "Sources consultées",
+    "lienConseilsOfficiels": "Conseils officiels aux voyageurs"
   },
 
   "transport": {

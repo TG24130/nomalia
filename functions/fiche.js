@@ -94,7 +94,7 @@ export const genererFiche = onCall(
  * @returns {Promise<{ ficheId: string, fiche: object, depuisCache: boolean }>}
  */
 async function obtenirFiche(parametres) {
-  const ficheId = cleFiche(parametres.destination, parametres.mois, parametres.langue);
+  const ficheId = cleFiche(parametres.destination, parametres.mois, parametres.langue, parametres.nationalite);
 
   // Le cache passe avant tout appel à l'API (CLAUDE.md §9).
   const enCache = await lireCache('fiches', ficheId);

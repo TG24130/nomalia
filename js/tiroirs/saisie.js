@@ -7,12 +7,13 @@
  *  - reprise : le voyage existe, chaque modification est enregistrée aussitôt
  *    via js/voyage.js.
  *
- * La nationalité est fixée à FR en V0 : présente dans les données, absente de
- * l'écran.
+ * La nationalité (celle du passeport) règle les formalités d'entrée et les
+ * conseils de santé de la fiche ; la France est proposée par défaut.
  */
 
 import { conseillerMois } from '../api.js';
 import { echapper, langue, t, traduireDom } from '../i18n.js';
+import { optionsPays } from '../pays.js';
 import { TYPES_SEJOUR } from '../sejours.js';
 import { modifierVoyage } from '../voyage.js';
 
@@ -107,6 +108,7 @@ export function afficher(conteneur, voyage, actions) {
     mois: voyage?.mois ?? null,
     dateDepart: voyage?.dateDepart ?? null,
     depart: voyage?.depart ?? '',
+    nationalite: voyage?.nationalite ?? 'FR',
     voyageurs: {
       adultes: voyage?.voyageurs?.adultes ?? 2,
       enfants: voyage?.voyageurs?.enfants ?? 0,
@@ -181,6 +183,17 @@ export function afficher(conteneur, voyage, actions) {
       </div>
 
       <div class="champ">
+        <label for="saisie-nationalite">${echapper(t('saisie.nationalite'))}</label>
+        <select id="saisie-nationalite">
+          ${optionsPays(valeurs.nationalite, {
+            frequents: t('saisie.nationalitesFrequentes'),
+            tous: t('saisie.nationalitesToutes'),
+          })}
+        </select>
+        <p class="champ__aide">${echapper(t('saisie.nationaliteAide'))}</p>
+      </div>
+
+      <div class="champ">
         <label for="saisie-sejour">${echapper(t('saisie.sejour'))}</label>
         <select id="saisie-sejour">${optionsSejour(valeurs.tourisme.type)}</select>
         <p class="champ__aide">${echapper(t('saisie.sejourAide'))}</p>
@@ -248,11 +261,12 @@ export function afficher(conteneur, voyage, actions) {
       return;
     }
 
-    if (conseilsPour !== destination) {
+    const demande = `${destination}|${valeurs.nationalite}`;
+    if (conseilsPour !== demande) {
       montrerConseil(t('saisie.conseilChargement'));
       try {
-        conseils = await conseillerMois({ destination, langue: langue() });
-        conseilsPour = destination;
+        conseils = await conseillerMois({ destination, langue: langue(), nationalite: valeurs.nationalite });
+        conseilsPour = demande;
       } catch (echec) {
         montrerConseil(t(echec.cleLibelle ?? 'erreurs.ia'));
         return;
@@ -345,6 +359,11 @@ export function afficher(conteneur, voyage, actions) {
 
   conteneur.querySelector('#saisie-depart').addEventListener('input', (evenement) => {
     retenir({ depart: evenement.target.value });
+  });
+
+  conteneur.querySelector('#saisie-nationalite').addEventListener('change', (evenement) => {
+    retenir({ nationalite: evenement.target.value });
+    if (champQuand.value !== 'choix') appliquerConseil();
   });
 
   conteneur.querySelector('#saisie-sejour').addEventListener('change', (evenement) => {

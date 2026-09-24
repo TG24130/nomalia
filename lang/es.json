@@ -151,7 +151,11 @@
     "valider": "Preparar mi viaje",
     "erreurDestination": "Indica un destino.",
     "erreurJours": "Indica un número de días.",
-    "erreurMois": "Elige un mes de salida."
+    "erreurMois": "Elige un mes de salida.",
+    "nationalite": "Nacionalidad (pasaporte)",
+    "nationaliteAide": "Sirve para los requisitos de entrada y los consejos de salud de la guía.",
+    "nationalitesFrequentes": "Las más habituales",
+    "nationalitesToutes": "Todos los países"
   },
 
   "parcours": {
@@ -193,13 +197,12 @@
     "vaccins": "Salud y vacunas",
     "budgetMoyen": "Presupuesto medio en destino",
     "temperatureMer": "Temperatura del mar",
-    "avertissementVisa": "Consulta las recomendaciones oficiales de viaje antes de salir.",
+    "avertissementVisa": "Consulta las recomendaciones oficiales de viaje de tu país antes de salir.",
     "avertissementVaccins": "Información orientativa, que debe confirmar tu médico o un centro de vacunación internacional.",
     "alerteMois": "El mes elegido no es de las mejores épocas para este destino.",
     "alerteMoisDetail": "{mois} no es de las mejores épocas aquí. Las más favorables: {favorables}.",
-    "adaptateurOui": "Se necesita adaptador desde Francia.",
-    "adaptateurNon": "No se necesita adaptador desde Francia.",
-    "lienFranceDiplomatie": "Recomendaciones de viaje (France Diplomatie)",
+    "adaptateurOui": "Se necesita adaptador desde tu país.",
+    "adaptateurNon": "No se necesita adaptador desde tu país.",
     "decalageAucun": "Ninguna",
     "decalageHeures": "{heures} h",
     "vaccinsAucunObligatoire": "Ninguna obligatoria",
@@ -214,7 +217,8 @@
     "jourGroupe": "Un día para vuestro grupo",
     "repasJour": "Comidas, por día y por persona",
     "budgetParPersonne": "«Un día para vuestro grupo»: una noche en el alojamiento elegido (un hotel mientras no se elija ninguno) y las comidas de cada uno; un niño cuenta como 0,6. Órdenes de magnitud, por confirmar en destino.",
-    "sources": "Fuentes consultadas"
+    "sources": "Fuentes consultadas",
+    "lienConseilsOfficiels": "Recomendaciones oficiales de viaje"
   },
 
   "transport": {

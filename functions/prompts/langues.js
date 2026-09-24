@@ -14,6 +14,19 @@ export const MOIS = [
   'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre',
 ];
 
+/**
+ * Nom d'un pays en français, pour le citer dans un prompt.
+ * @param {string} code ISO 3166-1 alpha-2
+ * @returns {string}
+ */
+export function nomPays(code) {
+  try {
+    return new Intl.DisplayNames(['fr'], { type: 'region' }).of(code) ?? code;
+  } catch {
+    return code;
+  }
+}
+
 /** Nom de chaque langue de réponse, tel qu'il s'écrit dans un prompt français. */
 const NOMS_LANGUES = {
   fr: 'français',
@@ -41,7 +54,7 @@ const CONSIGNES_NATIVES = {
  */
 export function consigneLangue(langue) {
   const nom = NOMS_LANGUES[langue] ?? NOMS_LANGUES.fr;
-  const lecteur = nom === 'français' ? 'francophone' : `de langue ${nom}`;
+  const lecteur = { fr: 'francophone', en: 'anglophone', es: 'hispanophone', zh: 'sinophone' }[langue] ?? 'francophone';
   const native = CONSIGNES_NATIVES[langue] ? `\n${CONSIGNES_NATIVES[langue]}` : '';
   return `Langue de la réponse : rédige tous les textes du JSON en ${nom}, quelle que soit la langue de cette demande. Les noms des champs du JSON, eux, restent tels que le schéma les définit. Les noms de lieux prennent la forme usuelle pour un lecteur ${lecteur}.${native}`;
 }

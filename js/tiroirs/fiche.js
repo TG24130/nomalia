@@ -135,7 +135,7 @@ export function contenu(nom, point, voyage) {
       if (point.lienOfficiel) {
         morceaux.push(`
           <p><a href="${echapper(point.lienOfficiel)}" target="_blank" rel="noopener noreferrer">
-            ${echapper(t('fiche.lienFranceDiplomatie'))}</a>
+            ${echapper(t('fiche.lienConseilsOfficiels'))}</a>
             <span class="a-verifier">${echapper(t('commun.aVerifier'))}</span></p>
         `);
       }

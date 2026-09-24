@@ -105,14 +105,16 @@ export function normaliser(texte) {
 }
 
 /**
- * Construit la clé de cache d'une fiche : `destination_mois_langue`.
+ * Construit la clé de cache d'une fiche : `destination_mois_langue_nationalite`.
+ * La nationalité en fait partie : visa et vaccins en dépendent.
  * @param {string} destination
  * @param {number} mois 1 à 12
  * @param {string} langue
+ * @param {string} nationalite code ISO du pays du passeport
  * @returns {string}
  */
-export function cleFiche(destination, mois, langue) {
-  return `${normaliser(destination)}_${String(mois).padStart(2, '0')}_${langue}`;
+export function cleFiche(destination, mois, langue, nationalite) {
+  return `${normaliser(destination)}_${String(mois).padStart(2, '0')}_${langue}_${nationalite.toLowerCase()}`;
 }
 
 /**

@@ -127,7 +127,7 @@ NOMALIA/
 
 ### Tiroir 0 — Saisie
 
-Champs : destination (texte libre), nombre de jours, « Quand partir ? » (je choisis / le mois le moins cher / le mois au meilleur climat — Cloud Function `conseillerMois`, de mémoire, sans recherche web), mois de départ, date de départ (facultative), adultes, enfants, ville de départ, type de séjour (facultatif). Le type de séjour est demandé ici, bien qu'il appartienne au tiroir 4 : le connaître dès la saisie permet de lancer `genererLieux` à l'ouverture de la fiche, pendant que l'utilisateur parcourt les tiroirs suivants. Il reste modifiable au tiroir 4. Nationalité fixée à `FR` en V0 (champ présent dans les données, non affiché). Bouton « Préparer mon voyage » → crée le document voyage puis ouvre la fiche.
+Champs : destination (texte libre), nombre de jours, « Quand partir ? » (je choisis / le mois le moins cher / le mois au meilleur climat — Cloud Function `conseillerMois`, de mémoire, sans recherche web), mois de départ, date de départ (facultative), adultes, enfants, ville de départ, type de séjour (facultatif). Le type de séjour est demandé ici, bien qu'il appartienne au tiroir 4 : le connaître dès la saisie permet de lancer `genererLieux` à l'ouverture de la fiche, pendant que l'utilisateur parcourt les tiroirs suivants. Il reste modifiable au tiroir 4. Nationalité (passeport) choisie dans une liste de pays, `FR` par défaut : elle règle visa, vaccins, décalage horaire et adaptateur de la fiche, et entre dans la clé de cache de la fiche (`destination_mois_langue_nationalite`). Bouton « Préparer mon voyage » → crée le document voyage puis ouvre la fiche.
 
 ### Tiroir 1 — Fiche en 10 points
 
