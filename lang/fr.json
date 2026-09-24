@@ -31,12 +31,6 @@
       "Formalités, santé, monnaie…",
       "On recoupe les sources…"
     ],
-    "incontournables": [
-      "On repère les lieux à ne pas manquer…",
-      "Horaires, tarifs, réservation…",
-      "On cherche les astuces pour éviter la foule…",
-      "On met les conseils en forme…"
-    ],
     "romantique": [
       "On cherche les endroits à voir à deux…",
       "Points de vue, couchers de soleil…",
@@ -312,7 +306,6 @@
     "question": "Quel séjour souhaitez-vous ?",
     "type": {
       "repos-total": "Repos total",
-      "incontournables": "Les incontournables",
       "safari": "Safari",
       "romantique": "Romantique",
       "trip-liberte": "Trip liberté",

@@ -31,12 +31,6 @@
       "Formalities, health, currency…",
       "Cross-checking sources…"
     ],
-    "incontournables": [
-      "Finding the places not to miss…",
-      "Opening hours, prices, booking…",
-      "Looking for tips to avoid the crowds…",
-      "Putting the advice together…"
-    ],
     "romantique": [
       "Looking for places to enjoy as a couple…",
       "Viewpoints, sunsets…",
@@ -312,7 +306,6 @@
     "question": "What kind of stay would you like?",
     "type": {
       "repos-total": "Total relaxation",
-      "incontournables": "Must-sees",
       "safari": "Safari",
       "romantique": "Romantic",
       "trip-liberte": "Road trip",

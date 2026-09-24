@@ -268,23 +268,6 @@ const BANDEAUX = {
 
 /** Chaque entrée compose un paysage de 120 × 60 pour une carte de choix. */
 const VIGNETTES = {
-  incontournables: () =>
-    scene(120, 60, (d) => {
-      const ciel = d('#ffd9a0', '#ffb877');
-      return {
-        defs: ciel.def,
-        corps: `
-          <rect width="120" height="60" fill="${ciel.url}"/>
-          <circle cx="102" cy="14" r="9" fill="#fff3d6"/>
-          <path d="M20 26 60 10l40 16Z" fill="#a85a30"/>
-          <rect x="24" y="26" width="72" height="4" fill="#8c4726"/>
-          <path d="M31 30v18M45 30v18M60 30v18M75 30v18M89 30v18"
-                stroke="#a85a30" stroke-width="6"/>
-          <rect x="20" y="48" width="80" height="5" fill="#8c4726"/>
-          <path d="M0 53h120v7H0Z" fill="#e8c79a"/>`,
-      };
-    }),
-
   business: () =>
     scene(120, 60, (d) => {
       const ciel = d('#ffd9b0', '#cfe3f2');

@@ -1,5 +1,5 @@
 /**
- * schemas/lieux.js — schéma des listes de lieux (incontournables, business, safari…).
+ * schemas/lieux.js — schéma des listes de lieux (business, safari, étapes, romantique).
  *
  * Même principe que schemas/fiche.js : le schéma contraint la sortie du
  * modèle, et validerLieux() revérifie côté serveur avant mise en cache
@@ -11,7 +11,6 @@
 
 /** Types de listes demandables. */
 export const TYPES_LIEUX = [
-  'incontournables',
   'business',
   'safari',
   'etapes',

@@ -36,7 +36,7 @@ const FAMILLES = {
   lieux: {
     systeme: SYSTEME_LIEUX,
     prompt: promptLieux({
-      destination: 'Népal', type: 'incontournables', mois: 10, langue: 'fr',
+      destination: 'Népal', type: 'etapes', mois: 10, langue: 'fr',
       nombre: NOMBRE_LIEUX, voyageurs: { adultes: 2, enfants: 0 },
     }),
     schema: SCHEMA_LIEUX, valider: validerLieux, effort: 'low', recherches: 2,

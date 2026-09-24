@@ -8,7 +8,6 @@
 
 /** Types proposés, dans l'ordre d'affichage. */
 export const TYPES_SEJOUR = [
-  'incontournables',
   'business',
   'trip-liberte',
   'safari',
@@ -23,7 +22,6 @@ export const TYPES_SEJOUR = [
  * visites mais dans le choix de l'hébergement.
  */
 export const LISTE_PAR_TYPE = {
-  incontournables: 'incontournables',
   business: 'business',
   'trip-liberte': 'etapes',
   safari: 'safari',

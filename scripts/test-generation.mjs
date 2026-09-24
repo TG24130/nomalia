@@ -119,9 +119,9 @@ const FAMILLES = {
       `${l.nom} — ${l.prixEntree === null ? 'accès libre ou prix inconnu' : `${l.prixEntree} ${l.devise}`}`,
     cas: [
       {
-        nom: 'Népal, incontournables',
+        nom: 'Népal, trip liberté',
         parametres: {
-          destination: 'Népal', type: 'incontournables', mois: 10, langue: 'fr',
+          destination: 'Népal', type: 'etapes', mois: 10, langue: 'fr',
           nombre: NOMBRE_LIEUX, voyageurs: { adultes: 2, enfants: 0 },
         },
       },

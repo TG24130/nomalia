@@ -216,7 +216,7 @@ export async function afficher(conteneur, voyage, actions) {
       `;
     } else if (chargement) {
       // Les messages disent ce qui est cherché : visites, adresses, étapes…
-      contenu = attente(libelles(`attente.${LISTE_PAR_TYPE[type] ?? 'incontournables'}`), 3);
+      contenu = attente(libelles(`attente.${LISTE_PAR_TYPE[type]}`), 3);
     } else if (erreurListe) {
       contenu = `
         <section class="carte">

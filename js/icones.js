@@ -91,10 +91,6 @@ const TRACES = {
   // en ville. Deux simples cercles se lisaient comme un graphe.
   'trip-liberte': '<path d="M6.5 11.6S9.6 8.9 9.6 6.8a3.1 3.1 0 1 0-6.2 0c0 2.1 3.1 4.8 3.1 4.8Z"/><circle cx="6.5" cy="6.7" r="1.1"/><path d="M17.5 21.2s3.1-2.7 3.1-4.8a3.1 3.1 0 1 0-6.2 0c0 2.1 3.1 4.8 3.1 4.8Z"/><circle cx="17.5" cy="16.3" r="1.1"/><path stroke-dasharray="1.8 2.4" d="M8.6 12.6c2.8 1.2 4.4 2.7 5.4 4.6"/>',
 
-
-  // Un monument à colonnes : le lieu qu'on ne manque pas.
-  incontournables: '<path d="M3 9l9-5 9 5"/><path d="M5.5 9v9M9.8 9v9M14.2 9v9M18.5 9v9"/><path d="M4 18h16"/><path d="M2 21h20"/>',
-
   // Validation d'une étape franchie.
   coche: '<path d="M5 12.5 10 17.5 19 7"/>',
 };

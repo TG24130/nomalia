@@ -58,7 +58,7 @@ Toute décision d'architecture doit permettre ces évolutions sans réécriture.
   "ficheId": "crete-grece_07_fr",
   "transport": { "mode": "avion+voiture", "notes": "" },
   "hebergement": { "type": "appartement", "filtres": ["piscine", "annulation-gratuite"] },
-  "tourisme": { "type": "incontournables", "lieuxRetenus": [] },
+  "tourisme": { "type": "trip-liberte", "lieuxRetenus": [] },
   "randos": { "niveau": "facile", "dureeMax": "3h", "retenues": [] },
   "budget": null,
   "etapeCourante": "transport"
@@ -70,7 +70,7 @@ Valeurs possibles :
 - `transport.mode` : `avion`, `bateau`, `train`, `voiture`, `avion+voiture`, `train+voiture`, `bateau+voiture`, `van` (location sur place ; loueurs selon la région, nuits en aire dans le budget)
 - `hebergement.type` : `hotel`, `gite`, `appartement`, `chez-habitant`, `camping`, `camping-materiel-loue`
 - `hebergement.filtres` : `petit-dejeuner`, `piscine`, `parking`, `annulation-gratuite`, `animaux`, `vue-mer`, `climatisation`, `etoiles-3`, `etoiles-4`, `etoiles-5`
-- `tourisme.type` : `incontournables`, `business`, `trip-liberte`, `safari`, `romantique`, `repos-total`
+- `tourisme.type` : `business`, `trip-liberte`, `safari`, `romantique`, `repos-total`
 
 ### Collection `fiches/{ficheId}` (cache)
 
@@ -195,7 +195,6 @@ Champ optionnel « prix total trouvé pour vos N nuits » (`hebergement.prixTota
 - `business` → `genererLieux(type: "business")` : quartier d'affaires où loger, restaurants pour repas d'affaires, coworking ; conseils pratiques (accès depuis l'aéroport, transports, réservation).
 - `repos-total` → conseils courts + rappel des filtres hébergement conseillés (piscine, spa).
 - `trip-liberte`, `safari`, `romantique` → `genererLieux` avec le type correspondant (`etapes`, `safari`, `romantique`).
-- `incontournables` → `genererLieux(type: "incontournables")` : 5 lieux avec description, conseils (horaires, réservation nécessaire ou non, astuces), prix d'entrée estimé, lien officiel « à vérifier », et un lien de recherche GetYourGuide/Viator construit par `liens.js` à partir du nom du lieu.
 
 L'utilisateur coche les lieux retenus (stockés dans `tourisme.lieuxRetenus` avec leur prix estimé).
 

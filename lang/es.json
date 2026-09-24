@@ -31,12 +31,6 @@
       "Trámites, salud, moneda…",
       "Contrastamos las fuentes…"
     ],
-    "incontournables": [
-      "Buscamos los lugares imprescindibles…",
-      "Horarios, precios, reservas…",
-      "Buscamos trucos para evitar las multitudes…",
-      "Damos forma a los consejos…"
-    ],
     "romantique": [
       "Buscamos lugares para disfrutar en pareja…",
       "Miradores, puestas de sol…",
@@ -312,7 +306,6 @@
     "question": "¿Qué tipo de estancia te apetece?",
     "type": {
       "repos-total": "Descanso total",
-      "incontournables": "Imprescindibles",
       "safari": "Safari",
       "romantique": "Romántico",
       "trip-liberte": "Ruta libre",

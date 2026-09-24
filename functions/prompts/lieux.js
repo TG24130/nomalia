@@ -3,7 +3,7 @@
  *
  * Aucun prompt dans le code métier (CLAUDE.md §9).
  *
- * Une liste par type de séjour choisi au tiroir 4 : incontournables,
+ * Une liste par type de séjour choisi au tiroir 4 :
  * business, étapes d'un trip liberté, safari ou séjour romantique.
  */
 
@@ -42,8 +42,6 @@ export function promptLieux({ destination, type, mois, langue, nombre, voyageurs
   // description et les conseils, plutôt que dans des champs qui resteraient
   // vides pour tous les autres types.
   const CONSIGNES = {
-    incontournables: `Sélectionne les ${nombre} lieux incontournables de cette destination : sites archéologiques, musées, villages, points de vue ou curiosités naturelles. Pour chacun, précise les horaires d'ouverture habituels, s'il faut réserver à l'avance, et le temps à prévoir sur place.`,
-
     safari: `Sélectionne les ${nombre} meilleurs endroits d'observation de la faune sauvage de cette destination : parcs nationaux, réserves, zones humides ou sites d'observation réputés. Pour chacun, dis quelles espèces on y voit vraiment et à quelle période de l'année elles sont les plus visibles. Dans les conseils, précise le mode d'observation (véhicule tout-terrain, à pied, en bateau), s'il faut passer par un guide ou un opérateur agréé, la durée habituelle d'une sortie et le meilleur moment de la journée. Le prix d'entrée est le droit d'entrée du parc par adulte, hors prestation de guide.`,
 
     etapes: `Construis un itinéraire de ${nombre} étapes pour parcourir cette destination de ville en ville, dans un ordre géographique cohérent, sans revenir deux fois au même endroit. Numérote les étapes dans l'ordre du parcours. Pour chacune, dis ce qui justifie de s'y arrêter et combien de nuits y passer. Dans les conseils, précise la distance et le temps de trajet depuis l'étape précédente ainsi que le moyen de transport le plus pratique entre les deux. Le prix d'entrée n'a pas de sens pour une étape : mets null.`,
@@ -53,7 +51,7 @@ export function promptLieux({ destination, type, mois, langue, nombre, voyageurs
     business: `Prépare un séjour professionnel dans cette destination en ${nombre} adresses, dans cet ordre de priorité : le ou les quartiers d'affaires et le secteur où loger pour y être au plus près, deux ou trois restaurants adaptés à un déjeuner ou un dîner d'affaires (calmes, service efficace, réputés), puis un espace de coworking ou un lieu où travailler hors de l'hôtel. Pour chacun, dis en quoi il est pratique pour un voyageur d'affaires. Dans les conseils, précise comment le rejoindre depuis l'aéroport principal et avec quel transport (durée, coût approximatif), s'il faut réserver, et le niveau de prix. Le prix d'entrée est le prix d'une journée pour un coworking, et null pour un quartier ou un restaurant.`,
   };
 
-  const consigneType = CONSIGNES[type] ?? CONSIGNES.incontournables;
+  const consigneType = CONSIGNES[type];
 
   const consigneEnfants = avecEnfants
     ? `\nLe voyage se fait avec ${voyageurs.enfants} enfant(s) : indique pour chaque lieu s'il leur convient, et ce qu'il faut prévoir.`

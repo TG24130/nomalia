@@ -165,7 +165,7 @@ export function genererFiche(parametres) {
 }
 
 /**
- * Demande une liste de lieux (plages ou incontournables).
+ * Demande une liste de lieux pour le type de séjour choisi.
  *
  * @param {{ destination: string, type: string, mois: number, langue: string,
  *           voyageurs: { adultes: number, enfants: number } }} parametres

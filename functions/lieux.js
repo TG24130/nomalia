@@ -113,7 +113,7 @@ async function obtenirLieux(parametres) {
       prompt: promptLieux(parametres),
       schema: SCHEMA_LIEUX,
       valider: validerLieux,
-      // Mesuré sur le même cas — Népal, incontournables :
+      // Mesuré sur un même cas — Népal, liste de lieux à visiter :
       //   5 recherches, effort medium : 610 s, 234 000 tokens d'entrée
       //   2 recherches, effort low    :  42 s,  31 000 tokens d'entrée
       // Les cinq mêmes lieux dans les deux cas. Sans budget explicite,
