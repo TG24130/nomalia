@@ -24,6 +24,8 @@
  * la V0, mais le paramètre sera ajouté ici, sans toucher aux appelants.
  */
 
+import { langue } from './i18n.js';
+
 /**
  * @typedef {object} ParamsLien
  * @property {string} [destination] destination du voyage
@@ -34,6 +36,16 @@
  * @property {number} [enfants]
  * @property {string} [requete] texte libre, pour une recherche par nom
  */
+
+/**
+ * Valeur propre à la langue de l'interface, le français à défaut : chaque
+ * partenaire a sa version de site par langue (domaine, chemin ou paramètre).
+ * @param {{ fr: string, en?: string, es?: string }} valeurs
+ * @returns {string}
+ */
+function selonLangue(valeurs) {
+  return valeurs[langue()] ?? valeurs.fr;
+}
 
 /** Encode une valeur pour une chaîne de requête. */
 function encoder(valeur) {
@@ -89,7 +101,7 @@ const PARTENAIRES = {
     preremplissage: false,
     // Google Flights n'a pas de format d'URL de recherche documenté : le
     // paramètre de requête en langage naturel n'est pas un contrat public.
-    construire: () => 'https://www.google.com/travel/flights?hl=fr&curr=EUR',
+    construire: () => `https://www.google.com/travel/flights?hl=${langue()}&curr=EUR`,
   },
 
   skyscanner: {
@@ -102,11 +114,18 @@ const PARTENAIRES = {
     // Les codes d'aéroport viennent de js/aeroports.js ; sans eux, ou sans
     // date, on ouvre la page de recherche.
     construire: ({ iataOrigine, iataDestination, dateDebut, dateFin, adultes, enfants }) => {
-      if (!iataOrigine || !iataDestination) return 'https://www.skyscanner.fr/';
+      const site = selonLangue({
+        fr: 'https://www.skyscanner.fr/transport/vols',
+        en: 'https://www.skyscanner.net/transport/flights',
+        es: 'https://www.skyscanner.es/transporte/vuelos',
+      });
+      const accueil = site.replace(/\/transport.*$/, '/');
+
+      if (!iataOrigine || !iataDestination) return accueil;
 
       const aller = enAaMmJj(dateDebut);
       const retour = enAaMmJj(dateFin);
-      if (!aller) return 'https://www.skyscanner.fr/';
+      if (!aller) return accueil;
 
       // Le site termine toujours le chemin par une barre oblique ; un aller
       // simple se note en omettant la date de retour.
@@ -115,7 +134,7 @@ const PARTENAIRES = {
         .join('/')
         .toLowerCase();
 
-      return `https://www.skyscanner.fr/transport/vols/${trajet}/${requete([
+      return `${site}/${trajet}/${requete([
         ['adults', adultes],
         ['children', enfants],
       ])}`;
@@ -128,7 +147,8 @@ const PARTENAIRES = {
     nom: 'Trainline',
     affiliateId: null,
     preremplissage: false,
-    construire: () => 'https://www.thetrainline.com/fr',
+    construire: () =>
+      selonLangue({ fr: 'https://www.thetrainline.com/fr', en: 'https://www.thetrainline.com/', es: 'https://www.thetrainline.com/es' }),
   },
 
   sncfconnect: {
@@ -144,14 +164,16 @@ const PARTENAIRES = {
     nom: 'Ferryhopper',
     affiliateId: null,
     preremplissage: false,
-    construire: () => 'https://www.ferryhopper.com/fr/',
+    construire: () =>
+      selonLangue({ fr: 'https://www.ferryhopper.com/fr/', en: 'https://www.ferryhopper.com/en/', es: 'https://www.ferryhopper.com/es/' }),
   },
 
   directferries: {
     nom: 'Direct Ferries',
     affiliateId: null,
     preremplissage: false,
-    construire: () => 'https://www.directferries.fr/',
+    construire: () =>
+      selonLangue({ fr: 'https://www.directferries.fr/', en: 'https://www.directferries.co.uk/', es: 'https://www.directferries.es/' }),
   },
 
   /* — Location de voiture — */
@@ -160,14 +182,16 @@ const PARTENAIRES = {
     nom: 'DiscoverCars',
     affiliateId: null,
     preremplissage: false,
-    construire: () => 'https://www.discovercars.com/fr',
+    construire: () =>
+      selonLangue({ fr: 'https://www.discovercars.com/fr', en: 'https://www.discovercars.com/', es: 'https://www.discovercars.com/es' }),
   },
 
   rentalcars: {
     nom: 'Rentalcars',
     affiliateId: null,
     preremplissage: false,
-    construire: () => 'https://www.rentalcars.com/fr/',
+    construire: () =>
+      selonLangue({ fr: 'https://www.rentalcars.com/fr/', en: 'https://www.rentalcars.com/', es: 'https://www.rentalcars.com/es/' }),
   },
 
   /* — Itinéraire en voiture personnelle — */
@@ -178,7 +202,7 @@ const PARTENAIRES = {
     preremplissage: 'documente',
     // Format documenté : Google Maps URLs, paramètre api=1.
     construire: ({ origine, destination }) => {
-      const parametres = ['api=1', `destination=${encoder(destination)}`, 'travelmode=driving'];
+      const parametres = ['api=1', `destination=${encoder(destination)}`, 'travelmode=driving', `hl=${langue()}`];
       if (origine) parametres.splice(1, 0, `origin=${encoder(origine)}`);
       return `https://www.google.com/maps/dir/?${parametres.join('&')}`;
     },
@@ -188,7 +212,8 @@ const PARTENAIRES = {
     nom: 'ViaMichelin',
     affiliateId: null,
     preremplissage: false,
-    construire: () => 'https://www.viamichelin.fr/itineraires',
+    construire: () =>
+      selonLangue({ fr: 'https://www.viamichelin.fr/itineraires', en: 'https://www.viamichelin.com/', es: 'https://www.viamichelin.es/' }),
   },
 
   /* — Vans et camping-cars (tiroir 2) — */
@@ -196,7 +221,12 @@ const PARTENAIRES = {
   // Ces loueurs cherchent par agence ou par coordonnées GPS, pas par nom de
   // lieu : aucun format de lien prérempli n'a pu être établi. La recherche
   // web, elle, est préremplie et trouve aussi les loueurs locaux.
-  yescapa: { nom: 'Yescapa', affiliateId: null, preremplissage: false, construire: () => 'https://www.yescapa.fr/' },
+  yescapa: {
+    nom: 'Yescapa',
+    affiliateId: null,
+    preremplissage: false,
+    construire: () => selonLangue({ fr: 'https://www.yescapa.fr/', en: 'https://www.yescapa.com/', es: 'https://www.yescapa.es/' }),
+  },
   indiecampers: { nom: 'Indie Campers', affiliateId: null, preremplissage: false, construire: () => 'https://indiecampers.com/' },
   roadsurfer: { nom: 'Roadsurfer', affiliateId: null, preremplissage: false, construire: () => 'https://roadsurfer.com/' },
   outdoorsy: { nom: 'Outdoorsy', affiliateId: null, preremplissage: false, construire: () => 'https://www.outdoorsy.com/' },
@@ -209,11 +239,18 @@ const PARTENAIRES = {
   },
   recherchevan: {
     nom: 'Loueurs locaux (Google)',
+    noms: { en: 'Local rentals (Google)', es: 'Alquiler local (Google)' },
     affiliateId: null,
     preremplissage: 'documente',
     construire: ({ destination }) =>
       destination
-        ? `https://www.google.com/search?q=${encoder(`location van aménagé camping-car ${destination}`)}`
+        ? `https://www.google.com/search?hl=${langue()}&q=${encoder(
+            `${selonLangue({
+              fr: 'location van aménagé camping-car',
+              en: 'campervan motorhome rental',
+              es: 'alquiler furgoneta camper autocaravana',
+            })} ${destination}`
+          )}`
         : 'https://www.google.com/',
   },
 
@@ -228,14 +265,15 @@ const PARTENAIRES = {
     // l'inverse, avait été fait dans un navigateur que Booking bloque.
     preremplissage: 'observe',
     construire: ({ destination, dateDebut, dateFin, adultes, enfants, filtres }) => {
-      if (!destination) return 'https://www.booking.com/index.fr.html';
+      const suffixe = selonLangue({ fr: 'fr', en: 'en-gb', es: 'es' });
+      if (!destination) return `https://www.booking.com/index.${suffixe}.html`;
 
       const nflt = (filtres ?? [])
         .map((filtre) => FILTRES_BOOKING[filtre])
         .filter(Boolean)
         .join(';');
 
-      return `https://www.booking.com/searchresults.fr.html${requete([
+      return `https://www.booking.com/searchresults.${suffixe}.html${requete([
         ['ss', destination],
         ['checkin', dateDebut],
         ['checkout', dateFin],
@@ -246,9 +284,27 @@ const PARTENAIRES = {
       ])}`;
     },
   },
-  hotels: { nom: 'Hotels.com', affiliateId: null, preremplissage: false, construire: () => 'https://fr.hotels.com/' },
-  abritel: { nom: 'Abritel', affiliateId: null, preremplissage: false, construire: () => 'https://www.abritel.fr/' },
-  gitesdefrance: { nom: 'Gîtes de France', affiliateId: null, preremplissage: false, construire: () => 'https://www.gites-de-france.com/fr' },
+  hotels: {
+    nom: 'Hotels.com',
+    affiliateId: null,
+    preremplissage: false,
+    construire: () => selonLangue({ fr: 'https://fr.hotels.com/', en: 'https://uk.hotels.com/', es: 'https://es.hotels.com/' }),
+  },
+  // Abritel est la marque française de Vrbo.
+  abritel: {
+    nom: 'Abritel',
+    noms: { en: 'Vrbo', es: 'Vrbo' },
+    affiliateId: null,
+    preremplissage: false,
+    construire: () => selonLangue({ fr: 'https://www.abritel.fr/', en: 'https://www.vrbo.com/', es: 'https://www.vrbo.com/es-es/' }),
+  },
+  gitesdefrance: {
+    nom: 'Gîtes de France',
+    affiliateId: null,
+    preremplissage: false,
+    construire: () =>
+      selonLangue({ fr: 'https://www.gites-de-france.com/fr', en: 'https://www.gites-de-france.com/en', es: 'https://www.gites-de-france.com/en' }),
+  },
   airbnb: {
     nom: 'Airbnb',
     affiliateId: null,
@@ -257,9 +313,10 @@ const PARTENAIRES = {
     // Vérifié le 21/09/2026 : la page renvoyée porte bien la destination et
     // les dates demandées, y compris avec un nom accentué.
     construire: ({ destination, dateDebut, dateFin, adultes, enfants }) => {
-      if (!destination || !dateDebut) return 'https://www.airbnb.fr/';
+      const site = selonLangue({ fr: 'https://www.airbnb.fr', en: 'https://www.airbnb.com', es: 'https://www.airbnb.es' });
+      if (!destination || !dateDebut) return `${site}/`;
 
-      return `https://www.airbnb.fr/s/${encoder(destination)}/homes${requete([
+      return `${site}/s/${encoder(destination)}/homes${requete([
         ['checkin', dateDebut],
         ['checkout', dateFin],
         ['adults', adultes],
@@ -275,15 +332,21 @@ const PARTENAIRES = {
     // Format produit par le site : /hotels/{lieu}/{début}/{fin}/{n}adults
     // Vérifié le 21/09/2026, même méthode qu'Airbnb.
     construire: ({ destination, dateDebut, dateFin, adultes, enfants }) => {
-      if (!destination || !dateDebut || !dateFin) return 'https://www.kayak.fr/hotels';
+      const site = selonLangue({ fr: 'https://www.kayak.fr', en: 'https://www.kayak.co.uk', es: 'https://www.kayak.es' });
+      if (!destination || !dateDebut || !dateFin) return `${site}/hotels`;
 
       const voyageurs = [`${adultes ?? 1}adults`];
       if (enfants) voyageurs.push(`${enfants}children`);
 
-      return `https://www.kayak.fr/hotels/${encoder(destination)}/${dateDebut}/${dateFin}/${voyageurs.join('/')}`;
+      return `${site}/hotels/${encoder(destination)}/${dateDebut}/${dateFin}/${voyageurs.join('/')}`;
     },
   },
-  pitchup: { nom: 'Pitchup', affiliateId: null, preremplissage: false, construire: () => 'https://www.pitchup.com/fr/' },
+  pitchup: {
+    nom: 'Pitchup',
+    affiliateId: null,
+    preremplissage: false,
+    construire: () => selonLangue({ fr: 'https://www.pitchup.com/fr/', en: 'https://www.pitchup.com/', es: 'https://www.pitchup.com/es/' }),
+  },
 
   /* — Activités (tiroir 4) — */
 
@@ -296,8 +359,9 @@ const PARTENAIRES = {
     // son accueil (24/09/2026). Gardé pour l'affiliation prévue.
     construire: ({ requete, destination }) => {
       const termes = [requete, destination].filter(Boolean).join(' ');
-      if (!termes) return 'https://www.getyourguide.fr/';
-      return `https://www.getyourguide.fr/s/?q=${encoder(termes)}`;
+      const site = selonLangue({ fr: 'https://www.getyourguide.fr', en: 'https://www.getyourguide.com', es: 'https://www.getyourguide.es' });
+      if (!termes) return `${site}/`;
+      return `${site}/s/?q=${encoder(termes)}`;
     },
   },
 
@@ -307,8 +371,9 @@ const PARTENAIRES = {
     preremplissage: 'observe',
     construire: ({ requete, destination }) => {
       const termes = [requete, destination].filter(Boolean).join(' ');
-      if (!termes) return 'https://www.viator.com/fr-FR/';
-      return `https://www.viator.com/fr-FR/searchResults/all?text=${encoder(termes)}`;
+      const locale = selonLangue({ fr: 'fr-FR', en: 'en-GB', es: 'es-ES' });
+      if (!termes) return `https://www.viator.com/${locale}/`;
+      return `https://www.viator.com/${locale}/searchResults/all?text=${encoder(termes)}`;
     },
   },
 
@@ -335,7 +400,8 @@ const PARTENAIRES = {
     construire: ({ requete, destination }) => {
       const termes = [requete, destination].filter(Boolean).join(' ');
       if (!termes) return 'https://www.google.com/';
-      return `https://www.google.com/search?q=${encoder(`${termes} randonnée`)}`;
+      const mot = selonLangue({ fr: 'randonnée', en: 'hike', es: 'ruta senderismo' });
+      return `https://www.google.com/search?hl=${langue()}&q=${encoder(`${termes} ${mot}`)}`;
     },
   },
 
@@ -343,7 +409,8 @@ const PARTENAIRES = {
     nom: 'AllTrails',
     affiliateId: null,
     preremplissage: false,
-    construire: () => 'https://www.alltrails.com/fr',
+    construire: () =>
+      selonLangue({ fr: 'https://www.alltrails.com/fr', en: 'https://www.alltrails.com/', es: 'https://www.alltrails.com/es' }),
   },
 
   /* — Repérage d'un lieu sur une carte — */
@@ -354,7 +421,7 @@ const PARTENAIRES = {
     preremplissage: 'documente',
     // Format documenté : Google Maps URLs, recherche par requête.
     construire: ({ requete, destination }) =>
-      `https://www.google.com/maps/search/?api=1&query=${encoder([requete, destination].filter(Boolean).join(' '))}`,
+      `https://www.google.com/maps/search/?api=1&hl=${langue()}&query=${encoder([requete, destination].filter(Boolean).join(' '))}`,
   },
 };
 
@@ -364,7 +431,8 @@ const PARTENAIRES = {
  * @returns {string}
  */
 export function nomPartenaire(cle) {
-  return PARTENAIRES[cle]?.nom ?? cle;
+  const entree = PARTENAIRES[cle];
+  return entree?.noms?.[langue()] ?? entree?.nom ?? cle;
 }
 
 /**
