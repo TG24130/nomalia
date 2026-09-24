@@ -149,7 +149,9 @@ export async function afficher(conteneur, voyage, actions) {
     const prix = formaterPrix(lieu.prixEntree, lieu.devise);
 
     // Le lien d'activité est construit à partir du nom du lieu (CLAUDE.md §6).
-    const lienActivite = lienReservation('getyourguide', {
+    // Viator plutôt que GetYourGuide : sur téléphone, l'app GetYourGuide
+    // intercepte le lien et perd la recherche (constaté le 24/09/2026).
+    const lienActivite = lienReservation('viator', {
       requete: lieu.nom,
       destination: voyage.destination,
     });
@@ -172,7 +174,7 @@ export async function afficher(conteneur, voyage, actions) {
         ${lienOfficiel}
         <a class="bouton bouton--lien" href="${echapper(lienActivite)}"
            target="_blank" rel="noopener noreferrer">
-          ${echapper(t('tourisme.reserverChez', { partenaire: nomPartenaire('getyourguide') }))}
+          ${echapper(t('tourisme.reserverChez', { partenaire: nomPartenaire('viator') }))}
         </a>
       </article>
     `;

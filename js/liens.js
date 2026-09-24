@@ -268,7 +268,9 @@ const PARTENAIRES = {
     nom: 'GetYourGuide',
     affiliateId: null,
     preremplissage: 'observe',
-    // Recherche par nom de lieu (CLAUDE.md §6, tiroir 4).
+    // Recherche par nom de lieu (CLAUDE.md §6, tiroir 4). Plus proposé dans
+    // l'app : sur téléphone, l'app GetYourGuide intercepte le lien et ouvre
+    // son accueil (24/09/2026). Gardé pour l'affiliation prévue.
     construire: ({ requete, destination }) => {
       const termes = [requete, destination].filter(Boolean).join(' ');
       if (!termes) return 'https://www.getyourguide.fr/';
