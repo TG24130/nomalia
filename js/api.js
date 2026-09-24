@@ -63,6 +63,72 @@ function cleErreur(erreur) {
 }
 
 /**
+ * Absence de l'écran au-delà de laquelle un appel en cours est relancé au
+ * retour. En deçà, la connexion a toutes les chances d'avoir tenu.
+ */
+const ABSENCE_AVANT_RELANCE_MS = 15000;
+
+/**
+ * Lance l'appel, et le relance quand l'écran revient après une veille.
+ *
+ * Sur téléphone, une mise en veille pendant la minute d'attente coupe parfois
+ * la connexion sans que la requête échoue : l'app attendait alors
+ * indéfiniment une réponse qui ne viendrait pas. Au retour, on relance ; la
+ * première réponse arrivée l'emporte. Si la génération avait abouti côté
+ * serveur, la relance est servie par le cache.
+ *
+ * @param {Function} fonction fonction appelable Firebase
+ * @param {object} donnees
+ * @returns {Promise<object>}
+ */
+function appelerAvecRelance(fonction, donnees) {
+  return new Promise((resoudre, rejeter) => {
+    let termine = false;
+    let enCours = 0;
+    let masqueDepuis = document.hidden ? Date.now() : null;
+    let relanceAttendue = false;
+
+    const conclure = (action, valeur) => {
+      if (termine) return;
+      termine = true;
+      document.removeEventListener('visibilitychange', surVisibilite);
+      action(valeur);
+    };
+
+    const lancer = () => {
+      enCours += 1;
+      fonction(donnees).then(
+        (reponse) => conclure(resoudre, reponse),
+        (erreur) => {
+          enCours -= 1;
+          if (enCours > 0) return;
+          // Un échec survenu écran éteint vient le plus souvent de la veille :
+          // on retente au retour plutôt que d'afficher une erreur.
+          if (document.hidden) relanceAttendue = true;
+          else conclure(rejeter, erreur);
+        }
+      );
+    };
+
+    function surVisibilite() {
+      if (document.hidden) {
+        masqueDepuis = Date.now();
+        return;
+      }
+      const longueAbsence = masqueDepuis && Date.now() - masqueDepuis >= ABSENCE_AVANT_RELANCE_MS;
+      masqueDepuis = null;
+      if (relanceAttendue || longueAbsence) {
+        relanceAttendue = false;
+        lancer();
+      }
+    }
+
+    document.addEventListener('visibilitychange', surVisibilite);
+    lancer();
+  });
+}
+
+/**
  * Appelle une Cloud Function.
  *
  * @param {string} nom nom de la fonction
@@ -77,7 +143,7 @@ async function appeler(nom, donnees) {
 
   try {
     const fonction = httpsCallable(servicesFonctions, nom, { timeout: DELAI_APPEL_MS });
-    const reponse = await fonction(donnees);
+    const reponse = await appelerAvecRelance(fonction, donnees);
     return reponse.data;
   } catch (erreur) {
     console.error(`Échec de l'appel à ${nom}`, erreur);
