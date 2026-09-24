@@ -13,7 +13,7 @@
 import { attente } from '../attente.js';
 import { echapper, langue, libelles, t } from '../i18n.js';
 import { genererRandos } from '../api.js';
-import { lienReservation, nomPartenaire } from '../liens.js';
+import { lienReservation } from '../liens.js';
 import { modifierVoyage } from '../voyage.js';
 
 /** Ce tiroir peut être passé (CLAUDE.md §7). */
@@ -152,12 +152,9 @@ export function afficher(conteneur, voyage, actions) {
 
     if (rando.adapteeEnfants) chiffres.push(t('randos.estEnfants'));
 
-    // Komoot partout : c'est le seul des trois à accepter une recherche par
-    // nom dans son URL. Visorando, pourtant prévu pour la France, n'expose
-    // aucun format exploitable, et l'envoyer sur sa page d'accueil serait
-    // moins utile qu'une recherche qui aboutit (CLAUDE.md §6, tiroir 5).
-    const partenaire = 'komoot';
-    const lienTrace = lienReservation(partenaire, {
+    // Une recherche web du tracé : elle mène à la page de l'itinéraire chez
+    // Komoot, AllTrails ou Visorando (voir liens.js, recherchetrace).
+    const lienTrace = lienReservation('recherchetrace', {
       requete: rando.nom,
       destination: voyage.destination,
     });
@@ -188,7 +185,7 @@ export function afficher(conteneur, voyage, actions) {
 
         <a class="bouton bouton--lien" href="${echapper(lienTrace)}"
            target="_blank" rel="noopener noreferrer">
-          ${echapper(t('randos.voirTraceChez', { partenaire: nomPartenaire(partenaire) }))}
+          ${echapper(t('randos.voirTrace'))}
         </a>
       </article>
     `;

@@ -337,7 +337,6 @@
     "depart": "Départ",
     "meilleureSaison": "Meilleure saison",
     "voirTrace": "Chercher le tracé",
-    "voirTraceChez": "Chercher le tracé sur {partenaire}",
     "chercher": "Chercher des randonnées",
     "relancer": "Relancer la recherche",
     "aucuneTrouvee": "Aucune randonnée ne correspond à ces critères. Un niveau difficile demande souvent plus de dénivelé : essayez de l'augmenter, ou d'allonger la durée.",

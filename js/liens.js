@@ -272,16 +272,19 @@ const PARTENAIRES = {
     construire: () => 'https://www.visorando.com/',
   },
 
-  komoot: {
-    nom: 'Komoot',
+  // Recherche web du tracé, plutôt qu'un lien Komoot : sur téléphone, l'app
+  // Komoot intercepte le lien et ouvre son accueil sans reprendre la
+  // recherche (constaté le 24/09/2026). Les résultats pointent vers la page
+  // précise de l'itinéraire chez Komoot, AllTrails ou Visorando, que les
+  // applications, elles, savent ouvrir.
+  recherchetrace: {
+    nom: 'Google',
     affiliateId: null,
-    preremplissage: 'observe',
-    // Format produit par le site : /discover?q=…
-    // Vérifié le 22/09/2026 par comparaison croisée sur deux itinéraires.
+    preremplissage: 'documente',
     construire: ({ requete, destination }) => {
       const termes = [requete, destination].filter(Boolean).join(' ');
-      if (!termes) return 'https://www.komoot.fr/';
-      return `https://www.komoot.fr/discover?q=${encoder(termes)}`;
+      if (!termes) return 'https://www.google.com/';
+      return `https://www.google.com/search?q=${encoder(`${termes} randonnée`)}`;
     },
   },
 
