@@ -419,7 +419,9 @@ const PARTENAIRES = {
         : 'https://www.safaribookings.com/',
   },
 
-  // Circuits de plusieurs jours : /i/{pays}-safari, vérifié sur la Tanzanie.
+  // Circuits de plusieurs jours : /i/{pays}-safari. Vérifiés sur téléphone le
+  // 24/09/2026 (Kenya, Afrique du Sud, Inde), comme SafariBookings : les deux
+  // sites n'existent qu'en anglais.
   tourradar: {
     nom: 'TourRadar',
     affiliateId: null,
