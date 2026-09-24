@@ -11,7 +11,8 @@
  * l'écran.
  */
 
-import { echapper, t, traduireDom } from '../i18n.js';
+import { conseillerMois } from '../api.js';
+import { echapper, langue, t, traduireDom } from '../i18n.js';
 import { TYPES_SEJOUR } from '../sejours.js';
 import { modifierVoyage } from '../voyage.js';
 
@@ -36,6 +37,9 @@ function optionsMois(moisChoisi) {
 
   return options.join('');
 }
+
+/** Façons de choisir le mois : soi-même, ou sur conseil. */
+const CRITERES_MOIS = ['choix', 'prix', 'climat'];
 
 /**
  * Premier jour possible du voyage, pour le mois choisi.
@@ -132,8 +136,18 @@ export function afficher(conteneur, voyage, actions) {
       </div>
 
       <div class="champ">
+        <label for="saisie-quand">${echapper(t('saisie.quand'))}</label>
+        <select id="saisie-quand">
+          ${CRITERES_MOIS.map(
+            (critere) => `<option value="${critere}">${echapper(t(`saisie.quandOption.${critere}`))}</option>`
+          ).join('')}
+        </select>
+      </div>
+
+      <div class="champ">
         <label for="saisie-mois">${echapper(t('saisie.mois'))}</label>
         <select id="saisie-mois">${optionsMois(valeurs.mois)}</select>
+        <p class="champ__aide" id="saisie-conseil" aria-live="polite" hidden></p>
         <p class="champ__erreur" id="erreur-mois" hidden></p>
       </div>
 
@@ -207,7 +221,67 @@ export function afficher(conteneur, voyage, actions) {
   const champMois = conteneur.querySelector('#saisie-mois');
   const champDate = conteneur.querySelector('#saisie-date');
 
+  const champQuand = conteneur.querySelector('#saisie-quand');
+  const zoneConseil = conteneur.querySelector('#saisie-conseil');
+
+  /** Conseils reçus, et la destination à laquelle ils répondent. */
+  let conseils = null;
+  let conseilsPour = null;
+
+  const montrerConseil = (texte) => {
+    zoneConseil.textContent = texte;
+    zoneConseil.hidden = !texte;
+  };
+
+  // Le conseil remplit le mois ; il reste modifiable, et le toucher à la main
+  // revient à « je choisis mon mois ».
+  const appliquerConseil = async () => {
+    const critere = champQuand.value;
+    if (critere === 'choix') {
+      montrerConseil('');
+      return;
+    }
+
+    const destination = valeurs.destination.trim();
+    if (destination.length < 2) {
+      montrerConseil(t('saisie.conseilSansDestination'));
+      return;
+    }
+
+    if (conseilsPour !== destination) {
+      montrerConseil(t('saisie.conseilChargement'));
+      try {
+        conseils = await conseillerMois({ destination, langue: langue() });
+        conseilsPour = destination;
+      } catch (echec) {
+        montrerConseil(t(echec.cleLibelle ?? 'erreurs.ia'));
+        return;
+      }
+    }
+
+    // Le choix a pu changer pendant l'attente.
+    if (champQuand.value !== critere) return;
+
+    const conseil = critere === 'prix' ? conseils.moinsCher : conseils.meilleurClimat;
+    champMois.value = String(conseil.mois);
+    champMois.dispatchEvent(new Event('change'));
+    montrerConseil(t('saisie.conseil', { mois: t(`mois.${conseil.mois}`), raison: conseil.raison }));
+  };
+
+  champQuand.addEventListener('change', appliquerConseil);
+
+  // « change » sur la destination ne part qu'une fois le champ quitté : pas
+  // un appel par lettre tapée.
+  conteneur.querySelector('#saisie-destination').addEventListener('change', () => {
+    if (champQuand.value !== 'choix') appliquerConseil();
+  });
+
   champMois.addEventListener('change', (evenement) => {
+    if (evenement.isTrusted) {
+      champQuand.value = 'choix';
+      montrerConseil('');
+    }
+
     const mois = Number.parseInt(evenement.target.value, 10);
     retenir({ mois: Number.isNaN(mois) ? null : mois });
 

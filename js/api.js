@@ -15,6 +15,7 @@ export const FONCTIONS = {
   genererFiche: 'genererFiche',
   genererLieux: 'genererLieux',
   genererRandos: 'genererRandos',
+  conseillerMois: 'conseillerMois',
 };
 
 /**
@@ -184,4 +185,15 @@ export function genererLieux(parametres) {
  */
 export function genererRandos(parametres) {
   return appeler(FONCTIONS.genererRandos, parametres);
+}
+
+/**
+ * Conseille le mois le moins cher et le mois au meilleur climat.
+ *
+ * @param {{ destination: string, langue: string }} parametres
+ * @returns {Promise<{ moinsCher: { mois: number, raison: string },
+ *                     meilleurClimat: { mois: number, raison: string }, depuisCache: boolean }>}
+ */
+export function conseillerMois(parametres) {
+  return appeler(FONCTIONS.conseillerMois, parametres);
 }

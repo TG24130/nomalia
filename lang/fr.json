@@ -129,6 +129,15 @@
     "destinationAide": "Ville, île, région ou pays",
     "jours": "Nombre de jours",
     "mois": "Mois de départ",
+    "quand": "Quand partir ?",
+    "quandOption": {
+      "choix": "Je choisis mon mois",
+      "prix": "Le mois le moins cher",
+      "climat": "Le mois au meilleur climat"
+    },
+    "conseil": "Conseillé : {mois}. {raison}",
+    "conseilChargement": "On cherche le meilleur mois…",
+    "conseilSansDestination": "Indiquez d'abord la destination.",
     "choisirSejour": "Je verrai plus tard",
     "sejour": "Type de séjour",
     "sejourAide": "Facultatif — lance la recherche des lieux à l'avance. Modifiable à l'étape Séjour.",

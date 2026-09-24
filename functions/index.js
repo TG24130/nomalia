@@ -20,3 +20,4 @@ export {
 export { genererFiche } from './fiche.js';
 export { genererLieux } from './lieux.js';
 export { genererRandos } from './randos.js';
+export { conseillerMois } from './mois.js';

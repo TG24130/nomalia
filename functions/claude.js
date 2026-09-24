@@ -124,7 +124,11 @@ export async function demanderJson({
         max_tokens: 16000,
         system: systeme,
         messages: [{ role: 'user', content: prompt }],
-        tools: [{ type: 'web_search_20260209', name: 'web_search', max_uses: maxRecherches }],
+        // Zéro recherche : l'outil n'est pas proposé du tout, et le modèle
+        // répond de ses seules connaissances, en quelques secondes.
+        ...(maxRecherches > 0
+          ? { tools: [{ type: 'web_search_20260209', name: 'web_search', max_uses: maxRecherches }] }
+          : {}),
         output_config: { effort, format: { type: 'json_schema', schema } },
       });
 
