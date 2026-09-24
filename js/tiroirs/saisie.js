@@ -222,7 +222,27 @@ export function afficher(conteneur, voyage, actions) {
     }
   });
 
+  // Chrome sur Android ignore `min` et ouvre le calendrier sur le mois
+  // courant ; il s'ouvre en revanche toujours sur la valeur du champ. On la
+  // pose donc juste avant l'ouverture, et on la retire si rien n'est choisi.
+  let valeurProvisoire = null;
+
+  const preparerCalendrier = () => {
+    if (champDate.value || !valeurs.mois) return;
+    valeurProvisoire = premierJourPossible(valeurs.mois);
+    champDate.value = valeurProvisoire;
+  };
+
+  champDate.addEventListener('pointerdown', preparerCalendrier);
+  champDate.addEventListener('focus', preparerCalendrier);
+
+  champDate.addEventListener('blur', () => {
+    if (valeurProvisoire && champDate.value === valeurProvisoire) champDate.value = '';
+    valeurProvisoire = null;
+  });
+
   champDate.addEventListener('change', (evenement) => {
+    valeurProvisoire = null;
     const date = evenement.target.value;
 
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
