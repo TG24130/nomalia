@@ -21,7 +21,7 @@ Toute décision d'architecture doit permettre ces évolutions sans réécriture.
 - **Backend** : Firebase
   - Authentication : connexion Google uniquement.
   - Firestore : données des voyages + cache des fiches.
-  - Cloud Functions (Node 20, 2nd gen) : tous les appels à l'API Claude.
+  - Cloud Functions (Node 22, 2nd gen) : tous les appels à l'API Claude.
 - **Hébergement du front** : GitHub Pages (même fonctionnement que le projet Quittance Facile).
 - **Deux environnements** : `test` (émulateurs Firebase en local) et `prod`. La config Firebase est choisie automatiquement selon l'hôte (localhost → test).
 - **PWA** : `manifest.json` + service worker minimal (mise en cache des fichiers statiques) pour installation sur l'écran d'accueil du téléphone.
