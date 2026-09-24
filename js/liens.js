@@ -281,8 +281,9 @@ const PARTENAIRES = {
         ['no_rooms', 1],
         ['group_children', enfants],
         ['nflt', nflt],
-        // Sans ce paramètre, Booking garde la langue du compte ou du téléphone
-        // (constaté le 24/09/2026), quel que soit le suffixe de la page.
+        // Sans ce paramètre, Booking garde la langue du compte ou du téléphone,
+        // quel que soit le suffixe de la page. Avec, l'anglais et l'espagnol
+        // s'affichent bien (vérifié sur téléphone le 24/09/2026).
         ['lang', suffixe],
       ])}`;
     },
