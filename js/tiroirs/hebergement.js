@@ -183,7 +183,7 @@ export async function afficher(conteneur, voyage, actions) {
 
     const liens = partenaires
       .map((partenaire) => {
-        const url = lienReservation(partenaire, params);
+        const url = lienReservation(partenaire, { ...params, filtres: [...retenus] });
         const mention = estPrerempli(partenaire, params)
           ? ''
           : `<span class="lien__mention">${echapper(t('transport.aSaisir'))}</span>`;

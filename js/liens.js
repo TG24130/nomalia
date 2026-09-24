@@ -63,6 +63,23 @@ function requete(paires) {
   return retenues.length ? `?${retenues.join('&')}` : '';
 }
 
+/**
+ * Critères d'hébergement que Booking sait recevoir dans son lien (`nflt`).
+ * Chaque code a été vérifié un à un sur téléphone le 24/09/2026 (4 étoiles
+ * pour les étoiles, 3 et 5 suivent le même format). Les autres critères
+ * restent à cocher sur le site : l'interface les rappelle.
+ */
+const FILTRES_BOOKING = {
+  piscine: 'hotelfacility=433',
+  'petit-dejeuner': 'mealplan=1',
+  'annulation-gratuite': 'fc=2',
+  parking: 'hotelfacility=2',
+  animaux: 'hotelfacility=4',
+  'etoiles-3': 'class=3',
+  'etoiles-4': 'class=4',
+  'etoiles-5': 'class=5',
+};
+
 const PARTENAIRES = {
   /* — Transport aérien — */
 
@@ -210,8 +227,13 @@ const PARTENAIRES = {
     // voyageurs arrivent préremplis. Le test du 21/09, qui concluait
     // l'inverse, avait été fait dans un navigateur que Booking bloque.
     preremplissage: 'observe',
-    construire: ({ destination, dateDebut, dateFin, adultes, enfants }) => {
+    construire: ({ destination, dateDebut, dateFin, adultes, enfants, filtres }) => {
       if (!destination) return 'https://www.booking.com/index.fr.html';
+
+      const nflt = (filtres ?? [])
+        .map((filtre) => FILTRES_BOOKING[filtre])
+        .filter(Boolean)
+        .join(';');
 
       return `https://www.booking.com/searchresults.fr.html${requete([
         ['ss', destination],
@@ -220,6 +242,7 @@ const PARTENAIRES = {
         ['group_adults', adultes],
         ['no_rooms', 1],
         ['group_children', enfants],
+        ['nflt', nflt],
       ])}`;
     },
   },
